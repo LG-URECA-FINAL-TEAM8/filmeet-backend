@@ -7,10 +7,8 @@ assignees: ''
 
 ---
 
-# 주간 일정 보고 템플릿
-
 ## 📅 기간
-YYYY.MM.DD - YYYY.MM.DD (N주차)
+2024.MM.DD - 2024.MM.DD (N주차)
 
 ## 👤 개발자 정보
 - 이름: 
