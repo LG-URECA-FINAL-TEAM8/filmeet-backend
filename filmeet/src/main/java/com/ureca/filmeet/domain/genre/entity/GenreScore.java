@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.genre.entity;
 
 import com.ureca.filmeet.domain.member.entity.Member;
+import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,11 +17,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GenreScore {
+public class GenreScore extends BaseTimeEntity {
 
     @Id
+    @Column(name = "genre_score_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long genreScoreId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
