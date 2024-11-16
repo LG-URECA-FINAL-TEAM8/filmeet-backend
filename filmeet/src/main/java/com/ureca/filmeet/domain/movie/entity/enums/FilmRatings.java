@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum FilmRatings {
-    ALL, TWELVE, FIFTEEN, ADULT
+    ALL, TWELVE, FIFTEEN, ADULT, RESTRICTED_RATING
 }
