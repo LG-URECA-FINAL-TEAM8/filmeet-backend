@@ -9,11 +9,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -36,6 +36,15 @@ public class Movie extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer runtime;
+
+    @Column(length = 200)
+    private String posterUrl;
+
+    private Integer likeCounts;
+
+    private Integer reviewCounts;
+
+    private BigDecimal averageRating;
 
     @Enumerated(EnumType.STRING)
     private FilmRatings filmRatings;
