@@ -1,8 +1,8 @@
 package com.ureca.filmeet.domain.movie.entity;
 
-import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.member.entity.Member;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,12 +20,13 @@ import lombok.NoArgsConstructor;
 public class MovieLikes extends BaseTimeEntity {
 
     @Id
+    @Column(name = "movie_likes_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeReviewId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private Review review;
+    @JoinColumn(name = "movie_id")
+    private Movie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

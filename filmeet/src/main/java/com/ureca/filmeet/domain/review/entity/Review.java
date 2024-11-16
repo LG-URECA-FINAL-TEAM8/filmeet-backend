@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 public class Review extends BaseTimeEntity {
 
     @Id
+    @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
@@ -34,7 +35,6 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false)
     private BigDecimal star;
 
     @Column(length = 500)
