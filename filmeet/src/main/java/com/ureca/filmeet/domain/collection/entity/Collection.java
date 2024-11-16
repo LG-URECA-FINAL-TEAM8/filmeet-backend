@@ -21,9 +21,11 @@ import lombok.NoArgsConstructor;
 public class Collection extends BaseTimeEntity {
 
     @Id
+    @Column(name = "collection_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long collectionId;
+    private Long id;
 
+    @Column(length = 50)
     private String title;
 
     @Column(length = 100)
