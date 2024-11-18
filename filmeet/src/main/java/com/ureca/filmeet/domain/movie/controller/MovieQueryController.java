@@ -1,5 +1,6 @@
 package com.ureca.filmeet.domain.movie.controller;
 
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
 import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.MovieQueryService;
@@ -42,6 +43,14 @@ public class MovieQueryController {
         List<Map<String, String>> boxOfficeMovies = boxOfficeCacheStore.getBoxOfficeMovies();
         return ApiResponse.ok(ExceptionCode.OK.getCode(),
                 boxOfficeMovies,
+                ExceptionCode.OK.getMessage());
+    }
+
+    @GetMapping("/rankings")
+    public ResponseEntity<ApiResponse<List<MoviesRankingsResponse>>> getMoviesRankings() {
+        List<MoviesRankingsResponse> moviesRankings = movieQueryService.getMoviesRankings();
+        return ApiResponse.ok(ExceptionCode.OK.getCode(),
+                moviesRankings,
                 ExceptionCode.OK.getMessage());
     }
 }
