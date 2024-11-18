@@ -26,4 +26,19 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             "AND m.averageRating > 0 "
     )
     List<Movie> findMoviesWithStarRatingAndLikes();
+
+    @Query("SELECT DISTINCT m " +
+            "FROM MovieGenre mg " +
+            "LEFT JOIN mg.movie m " +
+            "LEFT JOIN Review r ON r.movie.id = m.id AND r.member.memberId = :memberId " +
+            "LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.member.memberId = :memberId " +
+            "LEFT JOIN Collection c ON c.movie.id = m.id AND c.member.memberId = :memberId " +
+            "WHERE mg.genre.id IN :genreIds " +
+            "AND r.id IS NULL " +
+            "AND ml.id IS NULL " +
+            "AND c.id IS NULL")
+    List<Movie> findMoviesByPreferredGenresAndNotInteracted(
+            @Param("genreIds") List<Long> genreIds,
+            @Param("memberId") Long memberId
+    );
 }

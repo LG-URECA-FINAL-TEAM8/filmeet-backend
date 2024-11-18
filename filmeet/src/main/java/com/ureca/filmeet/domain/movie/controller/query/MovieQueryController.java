@@ -1,9 +1,11 @@
-package com.ureca.filmeet.domain.movie.controller;
+package com.ureca.filmeet.domain.movie.controller.query;
 
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
+import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
 import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.exception.ExceptionCode;
 import java.time.LocalDate;
@@ -12,6 +14,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +26,7 @@ public class MovieQueryController {
 
     private final MovieQueryService movieQueryService;
     private final BoxOfficeCacheStore boxOfficeCacheStore;
+    private final MovieRecommendationQueryService movieRecommendationQueryService;
 
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<List<UpcomingMoviesResponse>>> getUpcomingMovies(
@@ -51,6 +55,16 @@ public class MovieQueryController {
         List<MoviesRankingsResponse> moviesRankings = movieQueryService.getMoviesRankings();
         return ApiResponse.ok(ExceptionCode.OK.getCode(),
                 moviesRankings,
+                ExceptionCode.OK.getMessage());
+    }
+
+    @GetMapping("/recommendation/members/{memberId}")
+    public ResponseEntity<ApiResponse<List<RecommendationMoviesResponse>>> getMoviesRecommendation(
+            @PathVariable("memberId") Long memberId) {
+        List<RecommendationMoviesResponse> moviesRecommendation = movieRecommendationQueryService.getMoviesRecommendation(
+                memberId);
+        return ApiResponse.ok(ExceptionCode.OK.getCode(),
+                moviesRecommendation,
                 ExceptionCode.OK.getMessage());
     }
 }
