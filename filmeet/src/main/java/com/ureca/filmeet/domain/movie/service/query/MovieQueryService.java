@@ -1,4 +1,4 @@
-package com.ureca.filmeet.domain.movie.service;
+package com.ureca.filmeet.domain.movie.service.query;
 
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
