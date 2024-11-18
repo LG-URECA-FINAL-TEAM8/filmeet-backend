@@ -12,10 +12,18 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query("SELECT m FROM Movie m " +
             "WHERE m.releaseDate > :currentDate " +
             "AND m.releaseDate BETWEEN :startDate AND :endDate " +
-            "ORDER BY m.releaseDate ASC")
+            "ORDER BY m.releaseDate ASC"
+    )
     List<Movie> findUpcomingMoviesByDateRange(
             @Param("currentDate") LocalDate currentDate,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    @Query("SELECT m " +
+            "FROM Movie m " +
+            "WHERE m.likeCounts > 0 " +
+            "AND m.averageRating > 0 "
+    )
+    List<Movie> findMoviesWithStarRatingAndLikes();
 }

@@ -5,7 +5,7 @@ import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record UpcomingMoviesResponse(
+public record MoviesRankingsResponse(
         Long movieId,
         String title,
         String posterUrl,
@@ -17,8 +17,8 @@ public record UpcomingMoviesResponse(
         FilmRatings filmRatings
 ) {
 
-    public static UpcomingMoviesResponse of(Movie movie) {
-        return new UpcomingMoviesResponse(
+    public static MoviesRankingsResponse of(Movie movie) {
+        return new MoviesRankingsResponse(
                 movie.getId(),
                 movie.getTitle(),
                 movie.getPosterUrl(),
