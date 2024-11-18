@@ -3,7 +3,7 @@ package com.ureca.filmeet.domain.movie.controller;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
 import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
-import com.ureca.filmeet.domain.movie.service.MovieQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.exception.ExceptionCode;
 import java.time.LocalDate;
