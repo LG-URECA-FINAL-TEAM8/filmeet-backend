@@ -3,7 +3,7 @@ name: Test Deploy to Amazon ECS
 on:
   push:
     branches:
-      - feature/ci-cd
+      - Feat/FM-9
 
 jobs:
   deploy:
