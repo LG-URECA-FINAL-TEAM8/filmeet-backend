@@ -1,6 +1,6 @@
 package com.ureca.filmeet.domain.review.entity;
 
-import com.ureca.filmeet.domain.user.entity.User;
+import com.ureca.filmeet.domain.member.entity.Member;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -33,7 +33,7 @@ public class Review extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private User user;
+    private Member member;
 
     private BigDecimal star;
 

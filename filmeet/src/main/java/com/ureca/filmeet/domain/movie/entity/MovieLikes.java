@@ -1,6 +1,6 @@
 package com.ureca.filmeet.domain.movie.entity;
 
-import com.ureca.filmeet.domain.user.entity.User;
+import com.ureca.filmeet.domain.member.entity.Member;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,5 +30,5 @@ public class MovieLikes extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private User user;
+    private Member member;
 }
