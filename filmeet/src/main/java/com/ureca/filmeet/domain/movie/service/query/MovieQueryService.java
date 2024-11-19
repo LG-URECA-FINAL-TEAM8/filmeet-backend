@@ -39,7 +39,7 @@ public class MovieQueryService {
      */
     public List<MoviesRankingsResponse> getMoviesRankings() {
         // 1. 별점 & 좋아요 있는 영화 가져오기
-        List<Movie> movies = movieRepository.findMoviesWithStarRatingAndLikes();
+        List<Movie> movies = movieRepository.findMoviesWithStarRatingAndLikesUnion();
 
         // 2. 각 영화의 점수 계산
         Map<Movie, Double> movieScores = movieScoreService.calculateMovieScores(movies);
