@@ -43,7 +43,7 @@ public class SecurityConfig {
 //                                .authorizationRequestRepository(customAuthorizationRequestRepository))
 //                )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/images/**", "/users/signup", "/auth/**").permitAll()
+                        .requestMatchers("/**", "/images/**", "/users/signup", "/auth/**", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
