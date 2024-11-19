@@ -52,8 +52,8 @@ jobs:
       # Amazon ECR에 접근할 수 있는지 확인합니다. 'filmeet-backend'라는 ECR 저장소의 정보를 출력합니다.
 
       - name: Build and Push Docker Image with Debug
-        run: ./gradlew jib --debug
-      # Gradle의 Jib 플러그인을 사용하여 Docker 이미지를 빌드하고 Amazon ECR에 푸시합니다. 디버그 모드를 활성화하여 자세한 로그를 확인합니다.
+        run: ./gradlew jib
+      # Gradle의 Jib 플러그인을 사용하여 Docker 이미지를 빌드하고 Amazon ECR에 푸시합니다.
 
       - name: Update ECS Service
         run: |
