@@ -1,70 +1,64 @@
 name: Test Deploy to Amazon ECS
+# 워크플로 이름으로, GitHub Actions 대시보드에 표시됩니다.
 
 on:
   push:
     branches:
       - Feat/FM-9
+# 워크플로 트리거 조건. 'Feat/FM-9' 브랜치에 푸시될 때 워크플로가 실행됩니다.
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # 'deploy' 작업 정의. 이 작업은 최신 버전의 Ubuntu 환경에서 실행됩니다.
 
     defaults:
       run:
         working-directory: filmeet
+    # 모든 명령어 실행의 기본 작업 디렉터리를 'filmeet'으로 설정합니다.
 
     env:
       AWS_REGION: ap-northeast-2
       AWS_DEFAULT_REGION: ap-northeast-2
+    # 환경 변수 설정. AWS의 리전을 'ap-northeast-2'로 지정합니다.
 
     steps:
-      # 1️⃣ 저장소 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
+      # GitHub 저장소의 코드를 체크아웃합니다. GitHub Actions에서 기본적으로 사용되는 작업입니다.
 
-      # 2️⃣ AWS CLI 인증 설정
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
+      # AWS CLI를 설정합니다. GitHub Secrets에서 AWS 자격 증명을 가져와 인증을 구성합니다.
 
-      # 3️⃣ Java 17 설치
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+      # Java 17을 설치하고 빌드 환경을 구성합니다. Temurin(OpenJDK) 배포판을 사용합니다.
 
-      # 4️⃣ Gradle 권한 설정
       - name: Set permissions for gradlew
         run: chmod +x ./gradlew
+      # Gradle Wrapper(`gradlew`) 파일에 실행 권한을 부여합니다.
 
       - name: Verify ECR Access
         run: |
           aws ecr describe-repositories --region ap-northeast-2 --repository-names filmeet-backend
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Amazon ECR에 접근할 수 있는지 확인합니다. 'filmeet-backend'라는 ECR 저장소의 정보를 출력합니다.
 
-#      # 5️⃣ Docker 이미지 빌드 및 푸시 (Jib)
-#      - name: Build and Push Docker Image
-#        env:
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#        run: ./gradlew jib --stacktrace
       - name: Build and Push Docker Image with Debug
         run: ./gradlew jib --debug
-        working-directory: filmeet
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Gradle의 Jib 플러그인을 사용하여 Docker 이미지를 빌드하고 Amazon ECR에 푸시합니다. 디버그 모드를 활성화하여 자세한 로그를 확인합니다.
 
-      # 6️⃣ ECS 서비스 업데이트
       - name: Update ECS Service
         run: |
           aws ecs update-service \
             --cluster filmeet-cluster \
             --service filmeet-service \
             --force-new-deployment --debug
+# Amazon ECS 서비스(filmeet-service)를 업데이트합니다. 기존 태스크를 중지하고 새 태스크를 시작하도록 강제합니다. 디버그 옵션을 활성화하여 자세한 로그를 확인합니다.
