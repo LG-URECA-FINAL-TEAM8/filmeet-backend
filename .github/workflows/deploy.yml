@@ -14,21 +14,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ AWS CLI 구성
-      - name: Configure AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+      # 2️⃣ 디버깅: 현재 디렉토리 확인
+      - name: Debug Working Directory
+        run: pwd
 
-      # 3️⃣ Gradle Wrapper 실행 권한 설정
+      - name: List Files in Root
+        run: ls -al
+
+      # 3️⃣ Gradle 관련 작업 디렉토리 설정
       - name: Set permissions for gradlew
         run: chmod +x ./gradlew
+        working-directory: filmeet
 
       # 4️⃣ Docker 이미지 빌드 및 ECR 푸시
       - name: Build and Push Docker Image
         run: ./gradlew jib
+        working-directory: filmeet
 
       # 5️⃣ ECS 서비스 업데이트
       - name: Update ECS Service
