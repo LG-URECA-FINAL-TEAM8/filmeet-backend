@@ -10,7 +10,7 @@ def ecrPassword = System.getenv('AWS_ECR_PASSWORD')
 jib {
 	to {
 		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
-		tags = ['hi', 'git-' + System.getenv('GITHUB_SHA')]
+		tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
 		if (ecrPassword) {
 			auth {
 				username = 'AWS'
@@ -20,6 +20,7 @@ jib {
 	}
 	container {
 		creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
+		labels = [ 'build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ") ] // 빌드 시간 레이블 추가
 	}
 }
 
