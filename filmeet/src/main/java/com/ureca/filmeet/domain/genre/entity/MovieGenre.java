@@ -31,4 +31,8 @@ public class MovieGenre extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
+
+    public void changeMovie(Movie movie) {
+        this.movie = movie;
+    }
 }

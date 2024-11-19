@@ -1,5 +1,6 @@
 package com.ureca.filmeet.domain.movie.entity;
 
+import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -9,8 +10,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,4 +52,13 @@ public class Movie extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private FilmRatings filmRatings;
+
+    @OneToMany(mappedBy = "movie")
+    private List<MovieGenre> movieGenres = new ArrayList<>();
+
+    //===연관 관계 메서드===//
+    public void addMovieGenres(MovieGenre movieGenre) {
+        movieGenres.add(movieGenre);
+        movieGenre.changeMovie(this);
+    }
 }
