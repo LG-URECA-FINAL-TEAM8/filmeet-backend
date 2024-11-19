@@ -37,27 +37,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 4️⃣ Gradle 캐시 설정
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      # 5️⃣ Gradle 권한 설정
+      # 4️⃣ Gradle 권한 설정
       - name: Set permissions for gradlew
         run: chmod +x ./gradlew
 
-      # 6️⃣ Docker 이미지 빌드 및 푸시 (Jib)
+      # 5️⃣ Docker 이미지 빌드 및 푸시 (Jib)
       - name: Build and Push Docker Image
         env:
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        run: ./gradlew jib --stacktrace --info
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: ./gradlew jib --stacktrace
 
-      # 7️⃣ ECS 서비스 업데이트
+      # 6️⃣ ECS 서비스 업데이트
       - name: Update ECS Service
         run: |
           aws ecs update-service \
