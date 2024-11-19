@@ -10,7 +10,7 @@ def ecrPassword = System.getenv('AWS_ECR_PASSWORD')
 jib {
 	to {
 		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
-		tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
+		tags = ['hi', 'git-' + System.getenv('GITHUB_SHA')]
 		if (ecrPassword) {
 			auth {
 				username = 'AWS'
@@ -18,8 +18,9 @@ jib {
 			}
 		}
 	}
-	// 필요에 따라 추가 옵션 설정
-	// allowInsecureRegistries = true
+	container {
+		creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
+	}
 }
 
 group = 'com.ureca'
