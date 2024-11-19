@@ -1,0 +1,62 @@
+name: Test Deploy to Amazon ECS
+
+on:
+  push:
+    branches:
+      - Feat/FM-9  # 이 브랜치에 푸시될 때 워크플로우 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # 워크플로우를 실행할 환경 설정
+
+    # 작업 디렉토리 기본값 설정
+    defaults:
+      run:
+        working-directory: filmeet  # 'filmeet' 디렉토리에서 명령 실행
+
+    # 전역 환경 변수 설정
+    env:
+      AWS_REGION: ap-northeast-2  # AWS 리전 설정
+
+    steps:
+      # 1️⃣ 저장소 체크아웃
+      - name: 소스 코드 체크아웃
+        uses: actions/checkout@v3
+
+      # 2️⃣ AWS 자격 증명 설정
+      - name: AWS 자격 증명 구성
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key ID (GitHub Secrets에서 가져옴)
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key (GitHub Secrets에서 가져옴)
+          aws-region: ${{ env.AWS_REGION }}  # AWS 리전 설정
+
+      # 3️⃣ Java 17 설치
+      - name: Java 17 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'  # 사용하려는 Java 버전
+          distribution: 'temurin'  # Java 배포판 설정
+
+      # 4️⃣ Gradle 실행 권한 부여
+      - name: Gradle 실행 권한 설정
+        run: chmod +x ./gradlew  # Gradle Wrapper에 실행 권한 부여
+
+      # 5️⃣ Amazon ECR에 로그인
+      - name: Amazon ECR 로그인
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1  # ECR에 로그인하여 인증 토큰 획득
+
+      # 6️⃣ Docker 이미지 빌드 및 푸시
+      - name: Docker 이미지 빌드 및 푸시
+        run: ./gradlew jib --no-build-cache
+        env:
+          AWS_ECR_PASSWORD: ${{ steps.login-ecr.outputs.ecr-login-password }}  # ECR 로그인 비밀번호 설정
+
+      # 7️⃣ ECS 서비스 업데이트
+      - name: ECS 서비스 업데이트
+        run: |
+          aws ecs update-service \
+            --cluster filmeet-cluster \
+            --service filmeet-service \
+            --force-new-deployment # ECS 서비스 강제 재배포

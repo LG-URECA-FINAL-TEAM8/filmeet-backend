@@ -43,6 +43,7 @@ public class SecurityConfig {
 //                                .authorizationRequestRepository(customAuthorizationRequestRepository))
 //                )
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/actuator/health").permitAll() // 먼저 선언
                         .requestMatchers("/**", "/images/**", "/users/signup", "/auth/**", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
