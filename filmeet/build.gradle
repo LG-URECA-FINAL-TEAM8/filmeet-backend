@@ -1,27 +1,8 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.5'
-	id 'io.spring.dependency-management' version '1.1.6'
-	id 'com.google.cloud.tools.jib' version '3.4.4'
-}
-
-def ecrPassword = System.getenv('AWS_ECR_PASSWORD')
-
-jib {
-	to {
-		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
-		tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
-		if (ecrPassword) {
-			auth {
-				username = 'AWS'
-				password = ecrPassword
-			}
-		}
-	}
-	container {
-		creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
-		labels = [ 'build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ") ] // 빌드 시간 레이블 추가
-	}
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.google.cloud.tools.jib' version '3.4.4'
 }
 
 group = 'com.ureca'
@@ -44,25 +25,65 @@ repositories {
 }
 
 dependencies {
+
+    /* Spring Boot */
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    /* Auth */
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    /* Swagger */
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    /* JWT */
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    /* Lombok */
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    /* Redis */
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    /* MySQL */
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    /* Retry */
+    implementation 'org.springframework.retry:spring-retry'
+
+    /* Testing */
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+def ecrPassword = System.getenv('AWS_ECR_PASSWORD')
+
+jib {
+    to {
+        image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
+        tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
+        if (ecrPassword) {
+            auth {
+                username = 'AWS'
+                password = ecrPassword
+            }
+        }
+    }
+    container {
+        creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
+        labels = ['build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")] // 빌드 시간 레이블 추가
+    }
 }
