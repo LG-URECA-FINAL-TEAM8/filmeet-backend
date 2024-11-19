@@ -41,12 +41,25 @@ jobs:
       - name: Set permissions for gradlew
         run: chmod +x ./gradlew
 
-      # 5️⃣ Docker 이미지 빌드 및 푸시 (Jib)
-      - name: Build and Push Docker Image
+      - name: Verify ECR Access
+        run: |
+          aws ecr describe-repositories --region ap-northeast-2 --repository-names filmeet-backend
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: ./gradlew jib --stacktrace
+
+#      # 5️⃣ Docker 이미지 빌드 및 푸시 (Jib)
+#      - name: Build and Push Docker Image
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        run: ./gradlew jib --stacktrace
+      - name: Build and Push Docker Image with Debug
+        run: ./gradlew jib --debug
+        working-directory: filmeet
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # 6️⃣ ECS 서비스 업데이트
       - name: Update ECS Service
