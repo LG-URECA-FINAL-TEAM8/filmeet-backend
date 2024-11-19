@@ -49,7 +49,7 @@ jobs:
 
       # 6️⃣ Docker 이미지 빌드 및 푸시
       - name: Docker 이미지 빌드 및 푸시
-        run: ./gradlew jib  # Jib를 사용하여 이미지 빌드 및 ECR에 푸시
+        run: ./gradlew jib --no-build-cache
         env:
           AWS_ECR_PASSWORD: ${{ steps.login-ecr.outputs.ecr-login-password }}  # ECR 로그인 비밀번호 설정
 
