@@ -1,20 +1,25 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.5'
+	id 'org.springframework.boot' version '3.1.5'
 	id 'io.spring.dependency-management' version '1.1.6'
 	id 'com.google.cloud.tools.jib' version '3.4.4'
 }
 
+def ecrPassword = System.getenv('AWS_ECR_PASSWORD')
+
 jib {
 	to {
 		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend:latest'
-		auth {
-			username = "AWS"
-			password = System.getenv("AWS_SECRET_ACCESS_KEY")
+		if (ecrPassword) {
+			auth {
+				username = 'AWS'
+				password = ecrPassword
+			}
 		}
 	}
+	// 필요에 따라 추가 옵션 설정
+	// allowInsecureRegistries = true
 }
-
 
 group = 'com.ureca'
 version = '0.0.1-SNAPSHOT'
