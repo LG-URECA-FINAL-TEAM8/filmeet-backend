@@ -8,8 +8,13 @@ plugins {
 jib {
 	to {
 		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend:latest'
+		auth {
+			username = "AWS"
+			password = System.getenv("AWS_SECRET_ACCESS_KEY")
+		}
 	}
 }
+
 
 group = 'com.ureca'
 version = '0.0.1-SNAPSHOT'
