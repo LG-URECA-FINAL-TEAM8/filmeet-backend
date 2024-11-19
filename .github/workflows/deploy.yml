@@ -3,16 +3,18 @@ name: Test Deploy to Amazon ECS
 on:
   push:
     branches:
-      - Feat/FM-9
+      - feature/ci-cd
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ 저장소 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ AWS CLI 구성
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -20,10 +22,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: Build and Push Docker Image
-        run: |
-          ./gradlew jib
+      # 3️⃣ Gradle Wrapper 실행 권한 설정
+      - name: Set permissions for gradlew
+        run: chmod +x ./gradlew
 
+      # 4️⃣ Docker 이미지 빌드 및 ECR 푸시
+      - name: Build and Push Docker Image
+        run: ./gradlew jib
+
+      # 5️⃣ ECS 서비스 업데이트
       - name: Update ECS Service
         run: |
           aws ecs update-service \
