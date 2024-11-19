@@ -30,7 +30,7 @@ public class MovieRecommendationQueryService {
         return movieScores.entrySet()
                 .stream()
                 .sorted(Map.Entry.<Movie, Double>comparingByValue().reversed())
-                .limit(10)
+                .limit(20)
                 .map(entry -> RecommendationMoviesResponse.of(entry.getKey()))
                 .collect(Collectors.toList());
     }
