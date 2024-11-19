@@ -1,35 +1,44 @@
-name: Test Deploy to Amazon ECS
+name: Deploy to Amazon ECS (Test)
 
 on:
   push:
     branches:
       - Feat/FM-9
+  pull_request:
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_REGION: ap-northeast-2
+      AWS_DEFAULT_REGION: ap-northeast-2
+
     steps:
-      # 1️⃣ 저장소 체크아웃
+      # 1️⃣ 레포지토리 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Java 17 설치
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      # 2️⃣ AWS CLI 인증 설정
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
 
-      # 3️⃣ Gradle 권한 설정
+      # 3️⃣ Gradle Wrapper 실행 권한 부여
       - name: Set permissions for gradlew
         run: chmod +x ./gradlew
-        working-directory: filmeet
 
-      # 4️⃣ Docker 이미지 빌드 및 푸시
+      # 4️⃣ Docker 이미지 빌드 및 푸시 (Jib)
       - name: Build and Push Docker Image
-        run: ./gradlew jib
-        working-directory: filmeet
+        env:
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        run: ./gradlew jib --stacktrace
 
       # 5️⃣ ECS 서비스 업데이트
       - name: Update ECS Service
