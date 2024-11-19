@@ -20,12 +20,12 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             @Param("endDate") LocalDate endDate
     );
 
-    @Query("SELECT m " +
-            "FROM Movie m " +
-            "WHERE m.likeCounts > 0 " +
-            "AND m.averageRating > 0 "
-    )
-    List<Movie> findMoviesWithStarRatingAndLikes();
+    @Query(value =
+            "(SELECT * FROM movie m WHERE m.like_counts > 0 ORDER BY m.like_counts DESC LIMIT 1000) " +
+                    "UNION " +
+                    "(SELECT * FROM movie m WHERE m.average_rating > 0 ORDER BY m.average_rating DESC LIMIT 1000)",
+            nativeQuery = true)
+    List<Movie> findMoviesWithStarRatingAndLikesUnion();
 
     @Query("SELECT m " +
             "FROM Movie m " +

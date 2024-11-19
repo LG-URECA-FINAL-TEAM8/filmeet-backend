@@ -41,7 +41,7 @@ public class MovieRecommendationQueryService {
      * @return TOP 10 영화 ID 리스트
      */
     private List<Long> getTop10MovieIds() {
-        List<Movie> movies = movieRepository.findMoviesWithStarRatingAndLikes();
+        List<Movie> movies = movieRepository.findMoviesWithStarRatingAndLikesUnion();
         Map<Movie, Double> movieScores = movieScoreService.calculateMovieScores(movies);
 
         return movieScores.entrySet()
