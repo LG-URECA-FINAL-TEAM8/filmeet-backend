@@ -1,6 +1,5 @@
 package com.ureca.filmeet.global.config;
 
-import com.ureca.filmeet.global.security.CustomAuthorizationRequestRepository;
 import com.ureca.filmeet.global.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,15 +20,15 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
+            HttpSecurity http
 //            UnifiedOAuth2UserService unifiedOAuth2UserService,
-            CustomAuthorizationRequestRepository customAuthorizationRequestRepository
     ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
@@ -43,7 +42,9 @@ public class SecurityConfig {
 //                                .authorizationRequestRepository(customAuthorizationRequestRepository))
 //                )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/**", "/images/**", "/users/signup", "/auth/**", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/**", "/images/**", "/users/signup", "/auth/**", "/swagger",
+                                "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

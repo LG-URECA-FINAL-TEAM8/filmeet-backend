@@ -20,10 +20,10 @@ public class MovieRecommendationQueryService {
     private final MovieScoreService movieScoreService;
     private final GenreScoreRepository genreScoreRepository;
 
-    public List<RecommendationMoviesResponse> getMoviesRecommendation(Long memberId) {
+    public List<RecommendationMoviesResponse> getMoviesRecommendation(Long userId) {
         List<Long> top10MovieIds = getTop10MovieIds();
-        List<Long> genreIds = genreScoreRepository.findTop10GenreIdsByMemberId(memberId);
-        List<Movie> preferredMovies = movieRepository.findMoviesByPreferredGenresAndNotInteracted(genreIds, memberId,
+        List<Long> genreIds = genreScoreRepository.findTop10GenreIdsByMemberId(userId);
+        List<Movie> preferredMovies = movieRepository.findMoviesByPreferredGenresAndNotInteracted(genreIds, userId,
                 top10MovieIds);
         Map<Movie, Double> movieScores = movieScoreService.calculateMovieScores(preferredMovies);
 

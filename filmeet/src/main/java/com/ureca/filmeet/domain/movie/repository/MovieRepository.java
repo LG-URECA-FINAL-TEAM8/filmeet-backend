@@ -30,9 +30,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query("SELECT m " +
             "FROM Movie m " +
             "JOIN m.movieGenres mg " +
-            "LEFT JOIN Review r ON r.movie.id = m.id AND r.member.memberId = :memberId " +
-            "LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.member.memberId = :memberId " +
-            "LEFT JOIN Collection c ON c.movie.id = m.id AND c.member.memberId = :memberId " +
+            "LEFT JOIN Review r ON r.movie.id = m.id AND r.user.id = :userId " +
+            "LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.user.id = :userId " +
+            "LEFT JOIN Collection c ON c.movie.id = m.id AND c.user.id = :userId " +
             "WHERE mg.genre.id IN :genreIds " +
             "AND r.id IS NULL " +
             "AND ml.id IS NULL " +
@@ -40,7 +40,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             "AND m.id NOT IN :top10MovieIds")
     List<Movie> findMoviesByPreferredGenresAndNotInteracted(
             @Param("genreIds") List<Long> genreIds,
-            @Param("memberId") Long memberId,
+            @Param("userId") Long userId,
             @Param("top10MovieIds") List<Long> top10MovieIds
     );
 }

@@ -58,11 +58,11 @@ public class MovieQueryController {
                 ExceptionCode.OK.getMessage());
     }
 
-    @GetMapping("/recommendation/members/{memberId}")
+    @GetMapping("/recommendation/users/{userId}")
     public ResponseEntity<ApiResponse<List<RecommendationMoviesResponse>>> getMoviesRecommendation(
-            @PathVariable("memberId") Long memberId) {
+            @PathVariable("userId") Long userId) {
         List<RecommendationMoviesResponse> moviesRecommendation = movieRecommendationQueryService.getMoviesRecommendation(
-                memberId);
+                userId);
         return ApiResponse.ok(ExceptionCode.OK.getCode(),
                 moviesRecommendation,
                 ExceptionCode.OK.getMessage());
