@@ -1,6 +1,6 @@
 package com.ureca.filmeet.domain.genre.entity;
 
-import com.ureca.filmeet.domain.member.entity.Member;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +26,7 @@ public class GenreScore extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
