@@ -19,12 +19,22 @@ public class CollectionQueryController {
 
     private final CollectionQueryService collectionQueryService;
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/list/users/{userId}")
     public ResponseEntity<ApiResponse<Slice<CollectionGetResponse>>> getCollections(@PathVariable("userId") Long userId,
                                                                                     @RequestParam(defaultValue = "0") int page,
                                                                                     @RequestParam(defaultValue = "10") int size) {
 
         Slice<CollectionGetResponse> collectionGetResponses = collectionQueryService.getCollections(userId, page, size);
         return ApiResponse.ok(collectionGetResponses);
+    }
+
+    @GetMapping("/{collectionId}/users/{userId}")
+    public ResponseEntity<ApiResponse<CollectionGetResponse>> getCollection(
+            @PathVariable("collectionId") Long collectionId,
+            @PathVariable("userId") Long userId
+    ) {
+
+        CollectionGetResponse collectionGetResponse = collectionQueryService.getCollection(collectionId, userId);
+        return ApiResponse.ok(collectionGetResponse);
     }
 }

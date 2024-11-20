@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.collection.repository;
 
 import com.ureca.filmeet.domain.collection.entity.Collection;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,12 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
             "JOIN FETCH c.user u " +
             "WHERE c.user.id = :userId AND c.isDeleted = false ")
     Slice<Collection> findCollectionsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT c " +
+            "FROM Collection c " +
+            "WHERE c.id = :collectionId AND c.user.id = :userId AND c.isDeleted = false ")
+    Optional<Collection> findCollectionByCollectionIdAndUserId(
+            @Param("collectionId") Long collectionId,
+            @Param("userId") Long userId
+    );
 }
