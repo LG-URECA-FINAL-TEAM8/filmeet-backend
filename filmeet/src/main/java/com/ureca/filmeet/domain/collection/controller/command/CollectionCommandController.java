@@ -8,7 +8,9 @@ import com.ureca.filmeet.domain.collection.service.command.CollectionCommandServ
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,5 +37,10 @@ public class CollectionCommandController {
         Long collectionId = collectionCommandService.modifyCollection(collectionModifyRequest);
         CollectionModifyResponse collectionCreateResponse = new CollectionModifyResponse(collectionId);
         return ApiResponse.ok(collectionCreateResponse);
+    }
+
+    @DeleteMapping("/{collectionId}")
+    public void deleteCollection(@PathVariable("collectionId") Long collectionId) {
+        collectionCommandService.deleteCollection(collectionId);
     }
 }

@@ -1,7 +1,7 @@
 package com.ureca.filmeet.domain.collection.entity;
 
 import com.ureca.filmeet.domain.user.entity.User;
-import com.ureca.filmeet.global.common.BaseTimeEntity;
+import com.ureca.filmeet.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Collection extends BaseTimeEntity {
+public class Collection extends BaseEntity {
 
     @Id
     @Column(name = "collection_id")

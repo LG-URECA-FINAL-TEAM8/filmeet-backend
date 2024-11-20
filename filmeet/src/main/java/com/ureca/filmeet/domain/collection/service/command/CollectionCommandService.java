@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CollectionCommandService {
 
@@ -26,7 +27,6 @@ public class CollectionCommandService {
     private final CollectionMovieRepository collectionMovieRepository;
     private final CollectionMovieBulkRepository collectionMovieBulkRepository;
 
-    @Transactional
     public Long createCollection(CollectionCreateRequest collectionCreateRequest) {
 
         User user = userRepository.findById(collectionCreateRequest.userId())
@@ -50,7 +50,6 @@ public class CollectionCommandService {
         return savedCollection.getId();
     }
 
-    @Transactional
     public Long modifyCollection(CollectionModifyRequest modifyRequest) {
         // 1. 컬렉션 조회
         Collection collection = collectionRepository.findById(modifyRequest.collectionId())
@@ -86,5 +85,12 @@ public class CollectionCommandService {
         }
 
         return collection.getId();
+    }
+
+    public void deleteCollection(Long collectionId) {
+        Collection collection = collectionRepository.findById(collectionId)
+                .orElseThrow(() -> new RuntimeException("no collection"));
+
+        collection.delete();
     }
 }
