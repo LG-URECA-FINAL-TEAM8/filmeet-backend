@@ -24,7 +24,7 @@ public class Game extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gameId;
+    private Long id;
 
     @Column(length = 100, nullable = false)
     private String title;

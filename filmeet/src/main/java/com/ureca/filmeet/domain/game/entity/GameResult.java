@@ -1,7 +1,7 @@
 package com.ureca.filmeet.domain.game.entity;
 
-import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +22,7 @@ public class GameResult extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long resultId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -36,6 +36,6 @@ public class GameResult extends BaseTimeEntity {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @Column(nullable = false)
+    @Column(name = "`rank`")
     private Integer rank;
 }
