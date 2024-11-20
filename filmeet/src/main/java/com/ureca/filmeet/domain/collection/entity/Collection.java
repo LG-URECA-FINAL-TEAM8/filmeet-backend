@@ -1,7 +1,6 @@
 package com.ureca.filmeet.domain.collection.entity;
 
 import com.ureca.filmeet.domain.user.entity.User;
-import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,11 +32,13 @@ public class Collection extends BaseTimeEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id")
-    private Movie movie;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private User user;
 
+    @Builder
+    public Collection(String title, String content, User user) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+    }
 }

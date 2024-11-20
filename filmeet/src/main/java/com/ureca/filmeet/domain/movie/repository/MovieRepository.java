@@ -9,6 +9,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
+    @Query("SELECT m " +
+            "FROM Movie m " +
+            "WHERE m.id IN :movieIds")
+    List<Movie> findMoviesByMovieIds(
+            @Param("movieIds") List<Long> movieIds
+    );
+
     @Query("SELECT m FROM Movie m " +
             "WHERE m.releaseDate > :currentDate " +
             "AND m.releaseDate BETWEEN :startDate AND :endDate " +
@@ -32,7 +39,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             "JOIN m.movieGenres mg " +
             "LEFT JOIN Review r ON r.movie.id = m.id AND r.user.id = :userId " +
             "LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.user.id = :userId " +
-            "LEFT JOIN Collection c ON c.movie.id = m.id AND c.user.id = :userId " +
+            "LEFT JOIN CollectionMovie cm ON cm.movie.id = m.id " +
+            "LEFT JOIN Collection c ON c.id = cm.id AND c.user.id = :userId " +
             "WHERE mg.genre.id IN :genreIds " +
             "AND r.id IS NULL " +
             "AND ml.id IS NULL " +
