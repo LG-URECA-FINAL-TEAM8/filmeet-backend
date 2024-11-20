@@ -3,6 +3,7 @@ package com.ureca.filmeet.domain.collection.controller.command;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCreateRequest;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionModifyRequest;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionCreateResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionModifyResponse;
 import com.ureca.filmeet.domain.collection.service.command.CollectionCommandService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,10 @@ public class CollectionCommandController {
     }
 
     @PatchMapping
-    public ResponseEntity<ApiResponse<CollectionCreateResponse>> modifyCollection(
+    public ResponseEntity<ApiResponse<CollectionModifyResponse>> modifyCollection(
             @RequestBody CollectionModifyRequest collectionModifyRequest) {
         Long collectionId = collectionCommandService.modifyCollection(collectionModifyRequest);
-        CollectionCreateResponse collectionCreateResponse = new CollectionCreateResponse(collectionId);
+        CollectionModifyResponse collectionCreateResponse = new CollectionModifyResponse(collectionId);
         return ApiResponse.ok(collectionCreateResponse);
     }
 }
