@@ -1,13 +1,14 @@
-name: Test Deploy to Amazon ECS
+name: Deploy on PR Merge to Main
 
 on:
-  push:
+  pull_request:
+    types: [closed]  # PR이 닫힐 때 실행
     branches:
-      - Feat/FM-9  # 이 브랜치에 푸시될 때 워크플로우 실행
-
+      - main  # main 브랜치에 머지될 때 작동
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # 워크플로우를 실행할 환경 설정
+    if: github.event.pull_request.merged == true  # PR이 머지된 경우에만 실행
+    runs-on: ubuntu-latest
 
     # 작업 디렉토리 기본값 설정
     defaults:
