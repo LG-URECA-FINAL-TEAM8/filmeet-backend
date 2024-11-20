@@ -32,7 +32,7 @@ public class Game extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime startDate;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
