@@ -23,7 +23,7 @@ jib {
 		labels = [ 'build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ") ] // 빌드 시간 레이블 추가
 	}
 	extraDirectories {
-		paths = ['src/main/resources']  // application.yml이 있는 디렉토리
+		paths = ['./src/main/resources']  // 경로 수정
 		permissions = [
 				'/application.yml': '755'
 		]
