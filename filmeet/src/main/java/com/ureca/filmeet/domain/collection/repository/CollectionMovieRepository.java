@@ -12,8 +12,16 @@ public interface CollectionMovieRepository extends JpaRepository<CollectionMovie
     @Query("SELECT cm.movie.id FROM CollectionMovie cm WHERE cm.collection.id = :collectionId")
     List<Long> findMovieIdsByCollectionId(@Param("collectionId") Long collectionId);
 
+    @Query("SELECT cm " +
+            "FROM CollectionMovie cm " +
+            "JOIN FETCH cm.movie m " +
+            "WHERE cm.collection.id IN :collectionIds "
+    )
+    List<CollectionMovie> findMoviesByCollectionIds(@Param("collectionIds") List<Long> collectionIds);
+
     @Modifying
-    @Query("DELETE FROM CollectionMovie cm WHERE cm.collection.id = :collectionId AND cm.movie.id IN :movieIds")
+    @Query("DELETE FROM CollectionMovie cm " +
+            "WHERE cm.collection.id = :collectionId AND cm.movie.id IN :movieIds")
     void deleteByCollectionIdAndMovieIds(@Param("collectionId") Long collectionId,
                                          @Param("movieIds") List<Long> movieIds);
 }
