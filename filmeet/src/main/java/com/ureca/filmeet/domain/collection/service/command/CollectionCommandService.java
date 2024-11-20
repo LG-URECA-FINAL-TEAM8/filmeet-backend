@@ -52,9 +52,11 @@ public class CollectionCommandService {
 
     @Transactional
     public Long modifyCollection(CollectionModifyRequest modifyRequest) {
+        // 1. 컬렉션 조회
         Collection collection = collectionRepository.findById(modifyRequest.collectionId())
                 .orElseThrow(() -> new RuntimeException("no collection"));
 
+        // 2. 컬렉션 제목과 내용 수정
         collection.modifyCollection(modifyRequest.title(), modifyRequest.content());
 
         // 3. 기존에 저장된 영화 ID 목록 가져오기
