@@ -41,4 +41,9 @@ public class Collection extends BaseTimeEntity {
         this.content = content;
         this.user = user;
     }
+
+    public void modifyCollection(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
