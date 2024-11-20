@@ -22,6 +22,12 @@ jib {
 		creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
 		labels = [ 'build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ") ] // 빌드 시간 레이블 추가
 	}
+	extraDirectories {
+		paths = ['src/main/resources']  // application.yml이 있는 디렉토리
+		permissions = [
+				'/application.yml': '755'
+		]
+	}
 }
 
 group = 'com.ureca'
