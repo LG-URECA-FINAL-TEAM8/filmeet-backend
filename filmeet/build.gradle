@@ -1,27 +1,45 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.1.5'
-	id 'io.spring.dependency-management' version '1.1.6'
-	id 'com.google.cloud.tools.jib' version '3.4.4'
+    id 'java'
+    id 'org.springframework.boot' version '3.1.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.google.cloud.tools.jib' version '3.4.4'
 }
 
 def ecrPassword = System.getenv('AWS_ECR_PASSWORD')
 
 jib {
-	to {
-		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
-		tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
-		if (ecrPassword) {
-			auth {
-				username = 'AWS'
-				password = ecrPassword
-			}
-		}
-	}
-	container {
-		creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
-		labels = [ 'build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ") ] // 빌드 시간 레이블 추가
-	}
+    to {
+        image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
+        tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
+        if (ecrPassword) {
+            auth {
+                username = 'AWS'
+                password = ecrPassword
+            }
+        }
+    }
+    container {
+        creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
+        labels = ['build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")] // 빌드 시간 레이블 추가
+        environment = [
+                'AWS_ACCESS_KEY_ID'                                              : System.getenv('AWS_ACCESS_KEY_ID'),
+                'AWS_SECRET_ACCESS_KEY'                                          : System.getenv('AWS_SECRET_ACCESS_KEY'),
+                'SPRING_CLOUD_AWS_S3_BUCKET'                                     : System.getenv('SPRING_CLOUD_AWS_S3_BUCKET'),
+                'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID'    : System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID'),
+                'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET': System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET'),
+                'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID'     : System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID'),
+                'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_SECRET' : System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_SECRET'),
+                'KOBIS_APIKEY'                                                   : System.getenv('KOBIS_APIKEY'),
+                'JWT_SECRET'                                                     : System.getenv('JWT_SECRET'),
+                'JWT_VALIDITY_ACCESS'                                            : System.getenv('JWT_VALIDITY_ACCESS'),
+                'JWT_VALIDITY_REFRESH'                                           : System.getenv('JWT_VALIDITY_REFRESH'),
+                'SPRING_DATASOURCE_URL'                                          : System.getenv('SPRING_DATASOURCE_URL'),
+                'SPRING_DATASOURCE_USERNAME'                                     : System.getenv('SPRING_DATASOURCE_USERNAME'),
+                'SPRING_DATASOURCE_PASSWORD'                                     : System.getenv('SPRING_DATASOURCE_PASSWORD'),
+                'SPRING_DATA_REDIS_HOST'                                         : System.getenv('SPRING_DATA_REDIS_HOST'),
+                'SPRING_DATA_REDIS_PORT'                                         : System.getenv('SPRING_DATA_REDIS_PORT')
+        ]
+    }
 }
 
 group = 'com.ureca'
@@ -44,29 +62,18 @@ repositories {
 }
 
 dependencies {
-	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     /* Spring Boot */
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    /* Querydsl */
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     /* Auth */
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
