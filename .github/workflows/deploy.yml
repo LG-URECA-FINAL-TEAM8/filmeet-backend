@@ -85,5 +85,5 @@ jobs:
         run: |
           aws ecs update-service \
             --cluster filmeet-cluster \
-            --service filmeet-service2 \
+            --service filmeet-service \
             --force-new-deployment  # 새 배포 강제 실행
