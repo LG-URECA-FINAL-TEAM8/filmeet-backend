@@ -10,7 +10,7 @@ def ecrPassword = System.getenv('AWS_ECR_PASSWORD')
 jib {
 	to {
 		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
-		tags = ['latest', 'git-' + System.getenv('GITHUB_SHA'), 'test']
+		tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
 		if (ecrPassword) {
 			auth {
 				username = 'AWS'
