@@ -7,7 +7,6 @@ import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
-import com.ureca.filmeet.global.exception.ExceptionCode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -37,25 +36,19 @@ public class MovieQueryController {
         int defaultYear = year != null ? year : now.getYear();
         int defaultMonth = month != null ? month : now.getMonthValue();
 
-        return ApiResponse.ok(ExceptionCode.OK.getCode(),
-                movieQueryService.getUpcomingMovies(defaultYear, defaultMonth),
-                ExceptionCode.OK.getMessage());
+        return ApiResponse.ok(movieQueryService.getUpcomingMovies(defaultYear, defaultMonth));
     }
 
     @GetMapping("/boxoffice")
     public ResponseEntity<ApiResponse<List<Map<String, String>>>> getBoxOfficeMovies() {
         List<Map<String, String>> boxOfficeMovies = boxOfficeCacheStore.getBoxOfficeMovies();
-        return ApiResponse.ok(ExceptionCode.OK.getCode(),
-                boxOfficeMovies,
-                ExceptionCode.OK.getMessage());
+        return ApiResponse.ok(boxOfficeMovies);
     }
 
     @GetMapping("/rankings")
     public ResponseEntity<ApiResponse<List<MoviesRankingsResponse>>> getMoviesRankings() {
         List<MoviesRankingsResponse> moviesRankings = movieQueryService.getMoviesRankings();
-        return ApiResponse.ok(ExceptionCode.OK.getCode(),
-                moviesRankings,
-                ExceptionCode.OK.getMessage());
+        return ApiResponse.ok(moviesRankings);
     }
 
     @GetMapping("/recommendation/users/{userId}")
@@ -63,8 +56,6 @@ public class MovieQueryController {
             @PathVariable("userId") Long userId) {
         List<RecommendationMoviesResponse> moviesRecommendation = movieRecommendationQueryService.getMoviesRecommendation(
                 userId);
-        return ApiResponse.ok(ExceptionCode.OK.getCode(),
-                moviesRecommendation,
-                ExceptionCode.OK.getMessage());
+        return ApiResponse.ok(moviesRecommendation);
     }
 }
