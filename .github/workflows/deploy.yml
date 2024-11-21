@@ -86,4 +86,5 @@ jobs:
           aws ecs update-service \
             --cluster filmeet-cluster \
             --service filmeet-service \
+            --health-check-grace-period-seconds 120
             --force-new-deployment  # 새 배포 강제 실행
