@@ -2,7 +2,7 @@ package com.ureca.filmeet.domain.movie.entity;
 
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
-import com.ureca.filmeet.global.common.BaseTimeEntity;
+import com.ureca.filmeet.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Movie extends BaseTimeEntity {
+public class Movie extends BaseEntity {
 
     @Id
     @Column(name = "movie_id")
@@ -54,9 +54,33 @@ public class Movie extends BaseTimeEntity {
     private FilmRatings filmRatings;
 
     @OneToMany(mappedBy = "movie")
+    private List<Gallery> galleries = new ArrayList<>();
+
+    @OneToMany(mappedBy = "movie")
+    private List<MovieCountries> movieCountries = new ArrayList<>();
+
+    @OneToMany(mappedBy = "movie")
+    private List<MoviePersonnel> moviePersonnels = new ArrayList<>();
+
+    @OneToMany(mappedBy = "movie")
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
     //===연관 관계 메서드===//
+    public void addGalleries(Gallery gallery) {
+        galleries.add(gallery);
+        gallery.changeMovie(this);
+    }
+
+    public void addMovieCountries(MovieCountries movieCountry) {
+        movieCountries.add(movieCountry);
+        movieCountry.changeMovie(this);
+    }
+
+    public void addMoviePersonnels(MoviePersonnel moviePersonnel) {
+        moviePersonnels.add(moviePersonnel);
+        moviePersonnel.changeMovie(this);
+    }
+
     public void addMovieGenres(MovieGenre movieGenre) {
         movieGenres.add(movieGenre);
         movieGenre.changeMovie(this);

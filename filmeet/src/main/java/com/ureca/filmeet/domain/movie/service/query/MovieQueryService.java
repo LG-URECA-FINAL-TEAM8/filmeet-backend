@@ -26,4 +26,8 @@ public class MovieQueryService {
                 .map(UpcomingMoviesResponse::of)
                 .toList();
     }
+
+    public void getMovieDetail(Long movieId) {
+        
+    }
 }

@@ -76,4 +76,9 @@ public class MovieQueryController {
                 genreTypes, page, size);
         return ApiResponse.ok(moviesSearchByGenreResponses);
     }
+
+    @GetMapping("/{movieId}")
+    public void getMovieDetail(@PathVariable("movieId") Long movieId) {
+        movieQueryService.getMovieDetail(movieId);
+    }
 }
