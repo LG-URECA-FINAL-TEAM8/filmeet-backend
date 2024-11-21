@@ -86,6 +86,4 @@ jobs:
           aws ecs update-service \
             --cluster filmeet-cluster \
             --service filmeet-service \
-            --force-new-deployment  # 새 배포 강제 실행
-            --deployment-configuration maximumPercent=200,minimumHealthyPercent=75 \
-            --health-check-grace-period 300  
+            --force-new-deployment
