@@ -13,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public abstract class BaseEntity extends BaseTimeEntity {
 
     @Column(name = "is_deleted")
-    private boolean isDeleted;
+    private Boolean isDeleted = false;
 
     private LocalDateTime deletedAt;
 

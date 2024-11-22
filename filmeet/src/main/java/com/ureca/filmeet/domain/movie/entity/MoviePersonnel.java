@@ -40,4 +40,8 @@ public class MoviePersonnel extends BaseTimeEntity {
 
     @Column(length = 50)
     private String characterName;
+
+    public void changeMovie(Movie movie) {
+        this.movie = movie;
+    }
 }

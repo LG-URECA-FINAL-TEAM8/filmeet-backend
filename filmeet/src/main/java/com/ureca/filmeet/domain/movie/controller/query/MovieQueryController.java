@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.movie.controller.query;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
+import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
@@ -75,5 +76,11 @@ public class MovieQueryController {
         Page<MoviesSearchByGenreResponse> moviesSearchByGenreResponses = moviesSearchService.searchMoviesByGenre(
                 genreTypes, page, size);
         return ApiResponse.ok(moviesSearchByGenreResponses);
+    }
+
+    @GetMapping("/{movieId}")
+    public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(@PathVariable("movieId") Long movieId) {
+        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId);
+        return ApiResponse.ok(movieDetail);
     }
 }
