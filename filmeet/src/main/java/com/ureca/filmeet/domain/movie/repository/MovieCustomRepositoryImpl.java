@@ -39,7 +39,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                 .where(genreTypeIn(genreTypes))
                 .distinct()
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
+                .limit(pageable.getPageSize())
                 .fetch();
 
         if (movieIds.isEmpty()) {
@@ -63,7 +63,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                 .from(movie)
                 .join(movie.movieGenres, movieGenre)
                 .join(movieGenre.genre, genre)
-                .where(movie.id.in(movieIds))
+                .where(movie.id.in(movieIds).and(movie.isDeleted.isFalse()))
                 .orderBy(movie.releaseDate.desc())
                 .fetch();
 
@@ -92,7 +92,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                 .from(movie)
                 .join(movie.movieGenres, movieGenre)
                 .join(movieGenre.genre, genre)
-                .where(genreTypeIn(genreTypes))
+                .where(genreTypeIn(genreTypes).and(movie.isDeleted.isFalse()))
                 .distinct();
 
         return PageableExecutionUtils.getPage(new ArrayList<>(movieMap.values()), pageable, countQuery::fetchCount);
@@ -116,16 +116,16 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                         movie.id
                 ))
                 .from(movie)
-                .where(titleContains(title, cleanedTitle))
+                .where(titleContains(title, cleanedTitle).and(movie.isDeleted.isFalse()))
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
+                .limit(pageable.getPageSize())
                 .fetch();
 
         // Count 쿼리: 제목에 해당하는 영화의 총 개수
         long total = queryFactory
                 .select(movie.count())
                 .from(movie)
-                .where(titleContains(title, cleanedTitle))
+                .where(titleContains(title, cleanedTitle).and(movie.isDeleted.isFalse()))
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total);

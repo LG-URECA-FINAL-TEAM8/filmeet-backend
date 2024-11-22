@@ -51,20 +51,9 @@ public class MovieQueryService {
                 .map(movieGenre -> movieGenre.getGenre().getGenreType())
                 .toList();
 
-        // 참여자 정보 리스트 변환
-        List<PersonnelInfoResponse> personnels = movie.getMoviePersonnels()
-                .stream()
-                .map(mp -> new PersonnelInfoResponse(
-                        mp.getMoviePosition(),
-                        mp.getCharacterName(),
-                        mp.getPersonnel().getName(),
-                        mp.getPersonnel().getProfileImage()
-                ))
-                .toList();
+        List<PersonnelInfoResponse> personnels = getPersonnelInfoResponses(movie);
 
-        List<String> galleryImages = movie.getGalleries().stream()
-                .map(Gallery::getImageUrl)
-                .toList();
+        List<String> galleryImages = getGalleryImages(movie);
 
         return MovieDetailResponse.from(movie, countries, genres, personnels, galleryImages);
     }
@@ -85,7 +74,23 @@ public class MovieQueryService {
                 .toList();
 
         // 참여자 정보 리스트 변환
-        List<PersonnelInfoResponse> personnels = movie.getMoviePersonnels()
+        List<PersonnelInfoResponse> personnels = getPersonnelInfoResponses(movie);
+
+        List<String> galleryImages = getGalleryImages(movie);
+
+        return MovieDetailResponse.from(movie, countries, genres, personnels, galleryImages);
+    }
+
+    private static List<String> getGalleryImages(Movie movie) {
+        return movie.getGalleries()
+                .stream()
+                .map(Gallery::getImageUrl)
+                .toList();
+    }
+
+    // 참여자 정보 리스트 변환
+    private static List<PersonnelInfoResponse> getPersonnelInfoResponses(Movie movie) {
+        return movie.getMoviePersonnels()
                 .stream()
                 .map(mp -> new PersonnelInfoResponse(
                         mp.getMoviePosition(),
@@ -94,12 +99,5 @@ public class MovieQueryService {
                         mp.getPersonnel().getProfileImage()
                 ))
                 .toList();
-
-        List<String> galleryImages = movie.getGalleries()
-                .stream()
-                .map(Gallery::getImageUrl)
-                .toList();
-
-        return MovieDetailResponse.from(movie, countries, genres, personnels, galleryImages);
     }
 }
