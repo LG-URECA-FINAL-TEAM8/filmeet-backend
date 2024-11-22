@@ -3,11 +3,19 @@ package com.ureca.filmeet.domain.movie.repository;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface MovieRepository extends JpaRepository<Movie, Long> {
+public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustomRepository {
+
+    @Query("SELECT m " +
+            "FROM Movie m " +
+            "WHERE m.id IN :movieIds")
+    List<Movie> findMoviesByMovieIds(
+            @Param("movieIds") List<Long> movieIds
+    );
 
     @Query("SELECT m FROM Movie m " +
             "WHERE m.releaseDate > :currentDate " +
@@ -32,7 +40,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             "JOIN m.movieGenres mg " +
             "LEFT JOIN Review r ON r.movie.id = m.id AND r.user.id = :userId " +
             "LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.user.id = :userId " +
-            "LEFT JOIN Collection c ON c.movie.id = m.id AND c.user.id = :userId " +
+            "LEFT JOIN CollectionMovie cm ON cm.movie.id = m.id " +
+            "LEFT JOIN Collection c ON c.id = cm.id AND c.user.id = :userId " +
             "WHERE mg.genre.id IN :genreIds " +
             "AND r.id IS NULL " +
             "AND ml.id IS NULL " +
@@ -43,4 +52,21 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             @Param("userId") Long userId,
             @Param("top10MovieIds") List<Long> top10MovieIds
     );
+
+    @Query("SELECT m FROM Movie m " +
+            "LEFT JOIN FETCH m.movieCountries mc " +
+            "JOIN FETCH mc.countries c " +
+            "LEFT JOIN FETCH m.moviePersonnels mp " +
+            "JOIN FETCH mp.personnel p " +
+            "LEFT JOIN FETCH m.movieGenres mg " +
+            "JOIN FETCH mg.genre genre " +
+            "LEFT JOIN FETCH m.galleries g " +
+            "WHERE m.id = :movieId AND m.isDeleted = false ")
+    Optional<Movie> findMovieDetailInfoV1(@Param("movieId") Long movieId);
+
+    @Query("SELECT m FROM Movie m " +
+            "LEFT JOIN FETCH m.moviePersonnels mp " +
+            "JOIN FETCH mp.personnel p " +
+            "WHERE m.id = :movieId AND m.isDeleted = false ")
+    Optional<Movie> findMovieDetailInfo(@Param("movieId") Long movieId);
 }

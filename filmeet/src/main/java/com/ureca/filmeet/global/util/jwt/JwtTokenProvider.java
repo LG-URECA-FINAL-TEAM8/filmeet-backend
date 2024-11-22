@@ -13,6 +13,8 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
@@ -35,6 +37,17 @@ public class JwtTokenProvider {
 
     public String createRefreshToken(String username) {
         return createToken(username, null, refreshTokenValidity);
+    }
+
+    public Map<String, String> generateTokens(String username, Role role) {
+        String accessToken = createAccessToken(username, role);
+        String refreshToken = createRefreshToken(username);
+
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+
+        return tokens;
     }
 
     private String createToken(String username, Role role, long validityMinutes) {

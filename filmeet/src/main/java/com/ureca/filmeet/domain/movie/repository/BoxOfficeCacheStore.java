@@ -42,7 +42,7 @@ public class BoxOfficeCacheStore {
         try {
             log.info("Fetching box office data...");
             return kobisOpenAPIRestService.fetchDailyBoxOffice();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("Error fetching box office data, retrying...", e);
             throw e; // 재시도 대상 예외 던지기
         }

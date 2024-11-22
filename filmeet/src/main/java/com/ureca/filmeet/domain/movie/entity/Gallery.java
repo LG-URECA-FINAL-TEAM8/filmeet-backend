@@ -29,4 +29,8 @@ public class Gallery extends BaseTimeEntity {
 
     @Column(length = 100, nullable = false)
     private String imageUrl;
+
+    public void changeMovie(Movie movie) {
+        this.movie = movie;
+    }
 }
