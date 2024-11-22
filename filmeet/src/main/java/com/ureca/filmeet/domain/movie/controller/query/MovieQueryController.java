@@ -14,11 +14,13 @@ import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryServ
 import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
+import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,13 +90,13 @@ public class MovieQueryController {
     }
 
     @GetMapping("/search/title")
-    public ResponseEntity<ApiResponse<Page<MovieSearchByTitleResponse>>> searchMoviesByTitle(
+    public ResponseEntity<ApiResponse<SliceResponseDto<MovieSearchByTitleResponse>>> searchMoviesByTitle(
             @RequestParam(value = "keyword") String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<MovieSearchByTitleResponse> movieSearchByTitleResponses = moviesSearchService.searchMoviesByTitle(keyword,
+        Slice<MovieSearchByTitleResponse> movieSearchByTitleResponses = moviesSearchService.searchMoviesByTitle(keyword,
                 page, size);
-        return ApiResponse.ok(movieSearchByTitleResponses);
+        return ApiResponse.ok(SliceResponseDto.of(movieSearchByTitleResponses));
     }
 }

@@ -6,10 +6,11 @@ import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface MovieCustomRepository {
 
     Page<MoviesSearchByGenreResponse> searchMoviesByGenre(List<GenreType> genreTypes, Pageable pageable);
 
-    Page<MovieSearchByTitleResponse> searchMoviesByTitle(String title, Pageable pageable);
+    Slice<MovieSearchByTitleResponse> searchMoviesByTitle(String title, Pageable pageable);
 }

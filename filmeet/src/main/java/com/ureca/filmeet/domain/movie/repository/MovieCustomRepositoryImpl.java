@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.support.PageableExecutionUtils;
 
 @RequiredArgsConstructor
@@ -104,10 +106,10 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
     }
 
     @Override
-    public Page<MovieSearchByTitleResponse> searchMoviesByTitle(String title, Pageable pageable) {
-        String cleanedTitle = preprocessTitle(title);
+    public Slice<MovieSearchByTitleResponse> searchMoviesByTitle(String title, Pageable pageable) {
+        BooleanExpression predicate = isNotDeleted();
+        predicate = predicate.and(titleContains(title));
 
-        // Content 쿼리: 제목으로 영화 검색
         List<MovieSearchByTitleResponse> content = queryFactory
                 .select(new QMovieSearchByTitleResponse(
                         movie.releaseDate,
@@ -116,28 +118,34 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                         movie.id
                 ))
                 .from(movie)
-                .where(titleContains(title, cleanedTitle).and(movie.isDeleted.isFalse()))
+                .where(predicate)
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(pageable.getPageSize() + 1)
                 .fetch();
 
-        // Count 쿼리: 제목에 해당하는 영화의 총 개수
-        long total = queryFactory
-                .select(movie.count())
-                .from(movie)
-                .where(titleContains(title, cleanedTitle).and(movie.isDeleted.isFalse()))
-                .fetchOne();
+        // hasNext 판단: 반환된 데이터가 pageSize보다 많으면 true
+        boolean hasNext = content.size() > pageable.getPageSize();
 
-        return new PageImpl<>(content, pageable, total);
+        // Slice에 맞게 데이터 자르기 (pageSize 크기만큼만 반환)
+        if (hasNext) {
+            content = content.subList(0, pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    private BooleanExpression isNotDeleted() {
+        return movie.isDeleted.isFalse();
     }
 
     // 동적 조건: 제목 검색
-    private BooleanExpression titleContains(String originalTitle, String cleanedTitle) {
-        if (originalTitle == null || originalTitle.isBlank()) {
+    private BooleanExpression titleContains(String title) {
+        if (title == null || title.isBlank()) {
             return null;
         }
 
-        return movie.title.containsIgnoreCase(originalTitle)
+        String cleanedTitle = preprocessTitle(title);
+        return movie.title.containsIgnoreCase(title)
                 .or(Expressions.booleanTemplate(
                         "function('REPLACE', {0}, ' ', '') like {1}",
                         movie.title, "%" + cleanedTitle + "%"

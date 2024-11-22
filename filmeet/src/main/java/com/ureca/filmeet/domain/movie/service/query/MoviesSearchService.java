@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class MoviesSearchService {
         return movieRepository.searchMoviesByGenre(genreTypes, pageable);
     }
 
-    public Page<MovieSearchByTitleResponse> searchMoviesByTitle(String title, int page, int size) {
+    public Slice<MovieSearchByTitleResponse> searchMoviesByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return movieRepository.searchMoviesByTitle(title, pageable);
     }
