@@ -11,6 +11,7 @@ import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRankingsQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ public class MovieQueryController {
     private final MovieQueryService movieQueryService;
     private final BoxOfficeCacheStore boxOfficeCacheStore;
     private final MoviesSearchService moviesSearchService;
+    private final MovieUpcomingQueryService movieUpcomingQueryService;
     private final MovieRankingsQueryService movieRankingsQueryService;
     private final MovieRecommendationQueryService movieRecommendationQueryService;
 
@@ -45,7 +47,7 @@ public class MovieQueryController {
         int defaultYear = year != null ? year : now.getYear();
         int defaultMonth = month != null ? month : now.getMonthValue();
 
-        return ApiResponse.ok(movieQueryService.getUpcomingMovies(defaultYear, defaultMonth));
+        return ApiResponse.ok(movieUpcomingQueryService.getUpcomingMovies(defaultYear, defaultMonth));
     }
 
     @GetMapping("/boxoffice")
