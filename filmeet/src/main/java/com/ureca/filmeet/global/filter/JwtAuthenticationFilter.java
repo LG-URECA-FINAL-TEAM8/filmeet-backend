@@ -1,4 +1,4 @@
-package com.ureca.filmeet.global.security;
+package com.ureca.filmeet.global.filter;
 
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.service.query.UserQueryService;

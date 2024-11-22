@@ -2,6 +2,7 @@ package com.ureca.filmeet.global.util.jwt;
 
 import com.ureca.filmeet.domain.auth.dto.response.TokenResponse;
 import com.ureca.filmeet.domain.user.entity.Role;
+import com.ureca.filmeet.global.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class TokenService {
-
+    private static final String REFRESH_TOKEN_PREFIX = "refreshToken:";
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -34,7 +35,7 @@ public class TokenService {
 
         // Refresh Token Redis 저장
         redisTemplate.opsForValue().set(
-                "refreshToken:" + username,
+                REFRESH_TOKEN_PREFIX + username,
                 refreshToken,
                 jwtTokenProvider.getRefreshTokenValidity(),
                 TimeUnit.MINUTES
@@ -46,16 +47,16 @@ public class TokenService {
     public TokenResponse refreshAccessToken(String refreshToken) {
         // Refresh Token 유효성 검증
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new IllegalArgumentException("Invalid Refresh Token");
+            throw new AuthenticationException("Invalid Refresh Token");
         }
 
         // 사용자 이름 추출
         String username = jwtTokenProvider.getUsername(refreshToken);
 
         // Redis에서 저장된 Refresh Token 가져오기
-        String storedToken = redisTemplate.opsForValue().get("refreshToken:" + username);
+        String storedToken = redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + username);
         if (storedToken == null || !storedToken.equals(refreshToken)) {
-            throw new IllegalArgumentException("Refresh Token mismatch");
+            throw new AuthenticationException("Refresh Token mismatch");
         }
 
         // 새로운 Access Token 및 Refresh Token 생성
@@ -65,12 +66,17 @@ public class TokenService {
 
         // Redis에 새로운 Refresh Token 저장 (기존 Token 대체)
         redisTemplate.opsForValue().set(
-                "refreshToken:" + username,
+                REFRESH_TOKEN_PREFIX + username,
                 newRefreshToken,
                 jwtTokenProvider.getRefreshTokenValidity(),
                 TimeUnit.MINUTES
         );
 
         return new TokenResponse(newAccessToken, newRefreshToken);
+    }
+
+    public void invalidateTokens(String username) {
+        String redisKey = REFRESH_TOKEN_PREFIX + username;
+        redisTemplate.delete(redisKey);
     }
 }

@@ -5,21 +5,14 @@ import com.ureca.filmeet.domain.genre.entity.GenreScore;
 import com.ureca.filmeet.domain.movie.entity.MovieLikes;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -32,19 +25,18 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 15, nullable = false)
+    @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role; // 사용자 역할 (예: ROLE_USER, ROLE_ADMIN)
 
-    @Column(nullable = true)
-    private String providerId; // 제공자에서 사용하는 유저 ID
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 10)
     private String nickname;
 
     private String profileImage;
@@ -62,13 +54,13 @@ public class User extends BaseTimeEntity {
     private List<GenreScore> genreScores = new ArrayList<>();
 
     @Builder
-    public User(Long id, String username, String password, Role role, String providerId, String nickname,
-                String profileImage) {
+
+    public User(Long id, String username, String password, Role role, Provider provider, String nickname, String profileImage) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
-        this.providerId = providerId;
+        this.provider = provider;
         this.nickname = nickname;
         this.profileImage = profileImage;
     }
