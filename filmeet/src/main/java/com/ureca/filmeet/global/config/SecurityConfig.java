@@ -1,6 +1,10 @@
 package com.ureca.filmeet.global.config;
 
-import com.ureca.filmeet.global.security.JwtAuthenticationFilter;
+import com.ureca.filmeet.domain.auth.service.CustomOAuth2UserService;
+import com.ureca.filmeet.domain.auth.service.CustomOidcUserService;
+import com.ureca.filmeet.global.filter.JwtAuthenticationFilter;
+import com.ureca.filmeet.global.security.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ureca.filmeet.global.security.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +22,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOidcUserService customOidcUserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
@@ -28,19 +36,23 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http
-//            UnifiedOAuth2UserService unifiedOAuth2UserService,
     ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .oauth2Login(oauth2 -> oauth2
-//                        .userInfoEndpoint(userInfo -> userInfo
-//                                .userService(unifiedOAuth2UserService)) // OIDC + OAuth2 통합 서비스
-//                        .authorizationEndpoint(authEndpoint -> authEndpoint
-//                                .authorizationRequestRepository(customAuthorizationRequestRepository))
-//                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorization -> authorization
+                                .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(customOidcUserService) // OIDC Flow (Google)
+                                .userService(customOAuth2UserService)  // OAuth2 Flow (Naver)
+                        )
+                        .successHandler((request, response, authentication) ->
+                                oAuth2AuthenticationSuccessHandler
+                                        .onAuthenticationSuccess(request, response, authentication))
+                )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/health").permitAll() // 먼저 선언
                         .requestMatchers("/**", "/images/**", "/users/signup", "/auth/**", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
