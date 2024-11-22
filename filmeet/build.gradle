@@ -40,6 +40,38 @@ jib {
                 'SPRING_DATA_REDIS_PORT'                                         : System.getenv('SPRING_DATA_REDIS_PORT')
         ]
     }
+	to {
+		image = '688567278946.dkr.ecr.ap-northeast-2.amazonaws.com/filmeet-backend'
+		tags = ['latest', 'git-' + System.getenv('GITHUB_SHA')]
+		if (ecrPassword) {
+			auth {
+				username = 'AWS'
+				password = ecrPassword
+			}
+		}
+	}
+	container {
+		creationTime = 'USE_CURRENT_TIMESTAMP' // 이미지 생성 시간을 현재 시간으로 설정
+		labels = [ 'build.timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ") ] // 빌드 시간 레이블 추가
+		environment = [
+				'AWS_ACCESS_KEY_ID'                                 : System.getenv('AWS_ACCESS_KEY_ID'),
+				'AWS_SECRET_ACCESS_KEY'                             : System.getenv('AWS_SECRET_ACCESS_KEY'),
+				'SPRING_CLOUD_AWS_S3_BUCKET'                       : System.getenv('SPRING_CLOUD_AWS_S3_BUCKET'),
+				'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID'     : System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID'),
+				'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET' : System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET'),
+				'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID'      : System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID'),
+				'SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_SECRET'  : System.getenv('SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_SECRET'),
+				'KOBIS_APIKEY'                                      : System.getenv('KOBIS_APIKEY'),
+				'JWT_SECRET'                                        : System.getenv('JWT_SECRET'),
+				'JWT_VALIDITY_ACCESS'                               : System.getenv('JWT_VALIDITY_ACCESS'),
+				'JWT_VALIDITY_REFRESH'                              : System.getenv('JWT_VALIDITY_REFRESH'),
+				'SPRING_DATASOURCE_URL'                             : System.getenv('SPRING_DATASOURCE_URL'),
+				'SPRING_DATASOURCE_USERNAME'                        : System.getenv('SPRING_DATASOURCE_USERNAME'),
+				'SPRING_DATASOURCE_PASSWORD'                        : System.getenv('SPRING_DATASOURCE_PASSWORD'),
+				'SPRING_DATA_REDIS_HOST'                            : System.getenv('SPRING_DATA_REDIS_HOST'),
+				'SPRING_DATA_REDIS_PORT'                            : System.getenv('SPRING_DATA_REDIS_PORT')
+		]
+	}
 }
 
 group = 'com.ureca'

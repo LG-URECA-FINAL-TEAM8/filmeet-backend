@@ -5,10 +5,15 @@ on:
     types: [closed]  # PR이 닫힐 때 실행
     branches:
       - main  # main 브랜치에 머지될 때 작동
+  push:
+    branches:
+      - main  # main 브랜치에 직접 push될 때 작동
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true  # PR이 머지된 경우에만 실행
-    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'push') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest  # GitHub Actions 실행 환경 설정
 
     # 작업 디렉토리 기본값 설정
     defaults:
@@ -48,11 +53,32 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1  # ECR에 로그인하여 인증 토큰 획득
 
+      # 5️⃣ application.yml 생성
+      - name: application.yml 생성
+        run: |
+          cat > src/main/resources/application.yml <<EOL
+          $(cat src/main/resources/application.yml)
+          EOL
+
       # 6️⃣ Docker 이미지 빌드 및 푸시
       - name: Docker 이미지 빌드 및 푸시
         run: ./gradlew jib --no-build-cache
         env:
-          AWS_ECR_PASSWORD: ${{ steps.login-ecr.outputs.ecr-login-password }}  # ECR 로그인 비밀번호 설정
+          AWS_ECR_PASSWORD: ${{ steps.login-ecr.outputs.ecr-login-password }}
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          SPRING_DATA_REDIS_HOST: ${{ secrets.SPRING_DATA_REDIS_HOST }}
+          SPRING_DATA_REDIS_PORT: ${{ secrets.SPRING_DATA_REDIS_PORT }}
+          SPRING_CLOUD_AWS_S3_BUCKET: ${{ secrets.SPRING_CLOUD_AWS_S3_BUCKET }}
+          SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}
+          SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}
+          SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID }}
+          SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_SECRET: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_SECRET }}
+          KOBIS_APIKEY: ${{ secrets.KOBIS_APIKEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_VALIDITY_ACCESS: ${{ secrets.JWT_VALIDITY_ACCESS }}
+          JWT_VALIDITY_REFRESH: ${{ secrets.JWT_VALIDITY_REFRESH }}
 
       # 7️⃣ ECS 서비스 업데이트
       - name: ECS 서비스 업데이트
@@ -60,4 +86,6 @@ jobs:
           aws ecs update-service \
             --cluster filmeet-cluster \
             --service filmeet-service \
-            --force-new-deployment # ECS 서비스 강제 재배포
+            --force-new-deployment \
+            --deployment-configuration maximumPercent=200,minimumHealthyPercent=75 \
+            --health-check-grace-period 300
