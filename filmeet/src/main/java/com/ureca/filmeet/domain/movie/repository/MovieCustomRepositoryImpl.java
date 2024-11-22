@@ -6,10 +6,13 @@ import static com.ureca.filmeet.domain.movie.entity.QMovie.movie;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
+import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
+import com.ureca.filmeet.domain.movie.dto.response.QMovieSearchByTitleResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,7 +39,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                 .where(genreTypeIn(genreTypes))
                 .distinct()
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(pageable.getPageSize() + 1)
                 .fetch();
 
         if (movieIds.isEmpty()) {
@@ -98,5 +101,51 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
     // 동적 조건: 장르 필터링
     private BooleanExpression genreTypeIn(List<GenreType> genreTypes) {
         return (genreTypes == null || genreTypes.isEmpty()) ? null : genre.genreType.in(genreTypes);
+    }
+
+    @Override
+    public Page<MovieSearchByTitleResponse> searchMoviesByTitle(String title, Pageable pageable) {
+        String cleanedTitle = preprocessTitle(title);
+
+        // Content 쿼리: 제목으로 영화 검색
+        List<MovieSearchByTitleResponse> content = queryFactory
+                .select(new QMovieSearchByTitleResponse(
+                        movie.releaseDate,
+                        movie.title,
+                        movie.posterUrl,
+                        movie.id
+                ))
+                .from(movie)
+                .where(titleContains(title, cleanedTitle))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        // Count 쿼리: 제목에 해당하는 영화의 총 개수
+        long total = queryFactory
+                .select(movie.count())
+                .from(movie)
+                .where(titleContains(title, cleanedTitle))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    // 동적 조건: 제목 검색
+    private BooleanExpression titleContains(String originalTitle, String cleanedTitle) {
+        if (originalTitle == null || originalTitle.isBlank()) {
+            return null;
+        }
+
+        return movie.title.containsIgnoreCase(originalTitle)
+                .or(Expressions.booleanTemplate(
+                        "function('REPLACE', {0}, ' ', '') like {1}",
+                        movie.title, "%" + cleanedTitle + "%"
+                ));
+    }
+
+    // 검색어 전처리
+    private String preprocessTitle(String title) {
+        return (title == null || title.isBlank()) ? "" : title.replace(" ", "");
     }
 }

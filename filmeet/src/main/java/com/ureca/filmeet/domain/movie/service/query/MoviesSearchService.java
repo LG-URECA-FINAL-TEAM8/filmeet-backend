@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.movie.service.query;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
+import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import java.util.List;
@@ -22,5 +23,10 @@ public class MoviesSearchService {
 
         Pageable pageable = PageRequest.of(page, size);
         return movieRepository.searchMoviesByGenre(genreTypes, pageable);
+    }
+
+    public Page<MovieSearchByTitleResponse> searchMoviesByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return movieRepository.searchMoviesByTitle(title, pageable);
     }
 }

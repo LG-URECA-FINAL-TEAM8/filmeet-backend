@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.movie.controller.query;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
@@ -67,7 +68,7 @@ public class MovieQueryController {
         return ApiResponse.ok(moviesRecommendation);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/genre")
     public ResponseEntity<ApiResponse<Page<MoviesSearchByGenreResponse>>> searchMoviesByGenre(
             @RequestParam(value = "genreTypes", required = false) List<GenreType> genreTypes,
             @RequestParam(defaultValue = "0") int page,
@@ -82,5 +83,16 @@ public class MovieQueryController {
     public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(@PathVariable("movieId") Long movieId) {
         MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId);
         return ApiResponse.ok(movieDetail);
+    }
+
+    @GetMapping("/search/title")
+    public ResponseEntity<ApiResponse<Page<MovieSearchByTitleResponse>>> searchMoviesByTitle(
+            @RequestParam(value = "keyword") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<MovieSearchByTitleResponse> movieSearchByTitleResponses = moviesSearchService.searchMoviesByTitle(keyword,
+                page, size);
+        return ApiResponse.ok(movieSearchByTitleResponses);
     }
 }
