@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,14 +72,14 @@ public class MovieQueryController {
     }
 
     @GetMapping("/search/genre")
-    public ResponseEntity<ApiResponse<Page<MoviesSearchByGenreResponse>>> searchMoviesByGenre(
+    public ResponseEntity<ApiResponse<SliceResponseDto<MoviesSearchByGenreResponse>>> searchMoviesByGenre(
             @RequestParam(value = "genreTypes", required = false) List<GenreType> genreTypes,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<MoviesSearchByGenreResponse> moviesSearchByGenreResponses = moviesSearchService.searchMoviesByGenre(
+        Slice<MoviesSearchByGenreResponse> moviesSearchByGenreResponses = moviesSearchService.searchMoviesByGenre(
                 genreTypes, page, size);
-        return ApiResponse.ok(moviesSearchByGenreResponses);
+        return ApiResponse.ok(SliceResponseDto.of(moviesSearchByGenreResponses));
     }
 
     @GetMapping("/{movieId}")
