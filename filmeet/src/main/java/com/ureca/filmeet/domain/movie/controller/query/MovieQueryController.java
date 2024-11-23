@@ -68,9 +68,10 @@ public class MovieQueryController {
 
     @GetMapping("/recommendation/users/{userId}")
     public ResponseEntity<ApiResponse<List<RecommendationMoviesResponse>>> getMoviesRecommendation(
-            @PathVariable("userId") Long userId) {
+            @PathVariable("userId") Long userId,
+            @RequestParam(defaultValue = "20") int size) {
         List<RecommendationMoviesResponse> moviesRecommendation = movieRecommendationQueryService.getMoviesRecommendation(
-                userId);
+                userId, size);
         return ApiResponse.ok(moviesRecommendation);
     }
 

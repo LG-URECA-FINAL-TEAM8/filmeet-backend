@@ -20,7 +20,7 @@ public class MovieRecommendationQueryService {
     private final MovieScoreService movieScoreService;
     private final GenreScoreRepository genreScoreRepository;
 
-    public List<RecommendationMoviesResponse> getMoviesRecommendation(Long userId) {
+    public List<RecommendationMoviesResponse> getMoviesRecommendation(Long userId, int size) {
         List<Long> top10MovieIds = getTop10MovieIds();
         List<Long> genreIds = genreScoreRepository.findTop10GenreIdsByMemberId(userId);
         List<Movie> preferredMovies = movieRepository.findMoviesByPreferredGenresAndNotInteracted(genreIds, userId,
@@ -30,7 +30,7 @@ public class MovieRecommendationQueryService {
         return movieScores.entrySet()
                 .stream()
                 .sorted(Map.Entry.<Movie, Double>comparingByValue().reversed())
-                .limit(20)
+                .limit(size)
                 .map(entry -> RecommendationMoviesResponse.of(entry.getKey()))
                 .collect(Collectors.toList());
     }
