@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.movie.controller.query;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
@@ -10,13 +11,15 @@ import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRankingsQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
+import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,19 +35,23 @@ public class MovieQueryController {
     private final MovieQueryService movieQueryService;
     private final BoxOfficeCacheStore boxOfficeCacheStore;
     private final MoviesSearchService moviesSearchService;
+    private final MovieUpcomingQueryService movieUpcomingQueryService;
     private final MovieRankingsQueryService movieRankingsQueryService;
     private final MovieRecommendationQueryService movieRecommendationQueryService;
 
     @GetMapping("/upcoming")
-    public ResponseEntity<ApiResponse<List<UpcomingMoviesResponse>>> getUpcomingMovies(
+    public ResponseEntity<ApiResponse<SliceResponseDto<UpcomingMoviesResponse>>> getUpcomingMovies(
             @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "month", required = false) Integer month) {
+            @RequestParam(value = "month", required = false) Integer month,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
         LocalDate now = LocalDate.now();
         int defaultYear = year != null ? year : now.getYear();
         int defaultMonth = month != null ? month : now.getMonthValue();
 
-        return ApiResponse.ok(movieQueryService.getUpcomingMovies(defaultYear, defaultMonth));
+        return ApiResponse.ok(SliceResponseDto.of(
+                movieUpcomingQueryService.getUpcomingMovies(defaultYear, defaultMonth, page, size)));
     }
 
     @GetMapping("/boxoffice")
@@ -61,26 +68,38 @@ public class MovieQueryController {
 
     @GetMapping("/recommendation/users/{userId}")
     public ResponseEntity<ApiResponse<List<RecommendationMoviesResponse>>> getMoviesRecommendation(
-            @PathVariable("userId") Long userId) {
+            @PathVariable("userId") Long userId,
+            @RequestParam(defaultValue = "20") int size) {
         List<RecommendationMoviesResponse> moviesRecommendation = movieRecommendationQueryService.getMoviesRecommendation(
-                userId);
+                userId, size);
         return ApiResponse.ok(moviesRecommendation);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<Page<MoviesSearchByGenreResponse>>> searchMoviesByGenre(
+    @GetMapping("/search/genre")
+    public ResponseEntity<ApiResponse<SliceResponseDto<MoviesSearchByGenreResponse>>> searchMoviesByGenre(
             @RequestParam(value = "genreTypes", required = false) List<GenreType> genreTypes,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<MoviesSearchByGenreResponse> moviesSearchByGenreResponses = moviesSearchService.searchMoviesByGenre(
+        Slice<MoviesSearchByGenreResponse> moviesSearchByGenreResponses = moviesSearchService.searchMoviesByGenre(
                 genreTypes, page, size);
-        return ApiResponse.ok(moviesSearchByGenreResponses);
+        return ApiResponse.ok(SliceResponseDto.of(moviesSearchByGenreResponses));
     }
 
     @GetMapping("/{movieId}")
     public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(@PathVariable("movieId") Long movieId) {
         MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId);
         return ApiResponse.ok(movieDetail);
+    }
+
+    @GetMapping("/search/title")
+    public ResponseEntity<ApiResponse<SliceResponseDto<MovieSearchByTitleResponse>>> searchMoviesByTitle(
+            @RequestParam(value = "keyword") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Slice<MovieSearchByTitleResponse> movieSearchByTitleResponses = moviesSearchService.searchMoviesByTitle(keyword,
+                page, size);
+        return ApiResponse.ok(SliceResponseDto.of(movieSearchByTitleResponses));
     }
 }

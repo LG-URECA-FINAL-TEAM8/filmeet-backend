@@ -6,19 +6,20 @@ import static com.ureca.filmeet.domain.movie.entity.QMovie.movie;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
+import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
+import com.ureca.filmeet.domain.movie.dto.response.QMovieSearchByTitleResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 @RequiredArgsConstructor
 public class MovieCustomRepositoryImpl implements MovieCustomRepository {
@@ -26,21 +27,21 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
     private final JPQLQueryFactory queryFactory;
 
     @Override
-    public Page<MoviesSearchByGenreResponse> searchMoviesByGenre(List<GenreType> genreTypes, Pageable pageable) {
+    public Slice<MoviesSearchByGenreResponse> searchMoviesByGenre(List<GenreType> genreTypes, Pageable pageable) {
         // 1. 영화 ID 목록 가져오기
         List<Long> movieIds = queryFactory
                 .select(movie.id)
                 .from(movie)
                 .join(movie.movieGenres, movieGenre)
                 .join(movieGenre.genre, genre)
-                .where(genreTypeIn(genreTypes))
+                .where(isNotDeleted().and(genreTypeIn(genreTypes)))
                 .distinct()
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(pageable.getPageSize() + 1)
                 .fetch();
 
         if (movieIds.isEmpty()) {
-            return new PageImpl<>(List.of(), pageable, 0);
+            return new SliceImpl<>(List.of(), pageable, false);
         }
 
         // 2. 영화별 데이터 및 장르 수집
@@ -84,19 +85,65 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
             response.genreTypes().add(tuple.get(genre.genreType));
         }
 
-        JPQLQuery<Long> countQuery = queryFactory
-                .select(movie.id)
-                .from(movie)
-                .join(movie.movieGenres, movieGenre)
-                .join(movieGenre.genre, genre)
-                .where(genreTypeIn(genreTypes))
-                .distinct();
+        boolean hasNext = movieIds.size() > pageable.getPageSize();
 
-        return PageableExecutionUtils.getPage(new ArrayList<>(movieMap.values()), pageable, countQuery::fetchCount);
+        return new SliceImpl<>(new ArrayList<>(movieMap.values()), pageable, hasNext);
     }
 
     // 동적 조건: 장르 필터링
     private BooleanExpression genreTypeIn(List<GenreType> genreTypes) {
         return (genreTypes == null || genreTypes.isEmpty()) ? null : genre.genreType.in(genreTypes);
+    }
+
+    @Override
+    public Slice<MovieSearchByTitleResponse> searchMoviesByTitle(String title, Pageable pageable) {
+        BooleanExpression predicate = isNotDeleted();
+        predicate = predicate.and(titleContains(title));
+
+        List<MovieSearchByTitleResponse> content = queryFactory
+                .select(new QMovieSearchByTitleResponse(
+                        movie.releaseDate,
+                        movie.title,
+                        movie.posterUrl,
+                        movie.id
+                ))
+                .from(movie)
+                .where(predicate)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        // hasNext 판단: 반환된 데이터가 pageSize보다 많으면 true
+        boolean hasNext = content.size() > pageable.getPageSize();
+
+        // Slice에 맞게 데이터 자르기 (pageSize 크기만큼만 반환)
+        if (hasNext) {
+            content = content.subList(0, pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    private BooleanExpression isNotDeleted() {
+        return movie.isDeleted.isFalse();
+    }
+
+    // 동적 조건: 제목 검색
+    private BooleanExpression titleContains(String title) {
+        if (title == null || title.isBlank()) {
+            return null;
+        }
+
+        String cleanedTitle = preprocessTitle(title);
+        return movie.title.containsIgnoreCase(title)
+                .or(Expressions.booleanTemplate(
+                        "function('REPLACE', {0}, ' ', '') like {1}",
+                        movie.title, "%" + cleanedTitle + "%"
+                ));
+    }
+
+    // 검색어 전처리
+    private String preprocessTitle(String title) {
+        return (title == null || title.isBlank()) ? "" : title.replace(" ", "");
     }
 }

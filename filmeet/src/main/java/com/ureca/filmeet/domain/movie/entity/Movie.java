@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -84,5 +85,20 @@ public class Movie extends BaseEntity {
     public void addMovieGenres(MovieGenre movieGenre) {
         movieGenres.add(movieGenre);
         movieGenre.changeMovie(this);
+    }
+
+    @Builder
+    public Movie(String title, String plot, LocalDate releaseDate, Integer runtime, String posterUrl,
+                 Integer likeCounts,
+                 Integer reviewCounts, BigDecimal averageRating, FilmRatings filmRatings) {
+        this.title = title;
+        this.plot = plot;
+        this.releaseDate = releaseDate;
+        this.runtime = runtime;
+        this.posterUrl = posterUrl;
+        this.likeCounts = likeCounts;
+        this.reviewCounts = reviewCounts;
+        this.averageRating = averageRating;
+        this.filmRatings = filmRatings;
     }
 }
