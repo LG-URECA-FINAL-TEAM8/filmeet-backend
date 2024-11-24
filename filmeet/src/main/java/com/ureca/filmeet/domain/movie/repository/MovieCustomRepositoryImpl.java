@@ -7,11 +7,14 @@ import static com.ureca.filmeet.domain.movie.entity.QMovie.movie;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.QMovieSearchByTitleResponse;
+import com.ureca.filmeet.domain.movie.dto.response.QMoviesResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -145,5 +148,47 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
     // 검색어 전처리
     private String preprocessTitle(String title) {
         return (title == null || title.isBlank()) ? "" : title.replace(" ", "");
+    }
+
+    @Override
+    public Slice<MoviesResponse> findMoviesByGenre(GenreType genreType, Pageable pageable) {
+        boolean isGenreFilterActive = genreType != null;
+
+        JPQLQuery<MoviesResponse> query = queryFactory
+                .select(new QMoviesResponse(
+                        movie.id,
+                        movie.title,
+                        movie.posterUrl,
+                        movie.releaseDate
+                ))
+                .from(movie);
+
+        // 장르 필터에 따라 조건 추가
+        addJoinAndWhereClause(query, isGenreFilterActive, genreType);
+        List<MoviesResponse> movies = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        boolean hasNext = movies.size() > pageable.getPageSize();
+        if (hasNext) {
+            movies = movies.subList(0, pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(movies, pageable, hasNext);
+    }
+
+    private void addJoinAndWhereClause(JPQLQuery<?> query, boolean isGenreFilterActive, GenreType genreType) {
+        if (isGenreFilterActive) {
+            query.join(movie.movieGenres, movieGenre)
+                    .join(movieGenre.genre, genre)
+                    .where(isNotDeleted(), genreTypeEquals(genreType));
+        } else {
+            query.where(isNotDeleted());
+        }
+    }
+
+    private BooleanExpression genreTypeEquals(GenreType genreType) {
+        return genreType == null ? null : genre.genreType.eq(genreType);
     }
 }

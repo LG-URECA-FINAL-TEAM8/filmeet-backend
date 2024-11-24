@@ -3,6 +3,7 @@ package com.ureca.filmeet.domain.movie.service.query;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
 import com.ureca.filmeet.domain.movie.dto.response.ReviewInfo;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
@@ -13,6 +14,9 @@ import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,5 +105,10 @@ public class MovieQueryService {
                         mp.getPersonnel().getProfileImage()
                 ))
                 .toList();
+    }
+
+    public Slice<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return movieRepository.findMoviesByGenre(genreType, pageable);
     }
 }
