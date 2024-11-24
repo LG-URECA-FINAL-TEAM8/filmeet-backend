@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.collection.service.service;
 
 import com.ureca.filmeet.domain.collection.dto.response.CollectionGetResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionSearchByTitleResponse;
 import com.ureca.filmeet.domain.collection.dto.response.MovieInfoResponse;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
@@ -92,5 +93,12 @@ public class CollectionQueryService {
                         cm.getMovie().getReviewCounts()
                 ))
                 .toList();
+    }
+
+    public Slice<CollectionSearchByTitleResponse> searchCollectionByTitle(String titleKeyword, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        return collectionRepository.findCollectionsByTitleKeyword(titleKeyword, pageable)
+                .map(CollectionSearchByTitleResponse::of);
     }
 }
