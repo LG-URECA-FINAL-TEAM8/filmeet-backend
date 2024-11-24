@@ -86,9 +86,11 @@ public class MovieQueryController {
         return ApiResponse.ok(SliceResponseDto.of(moviesSearchByGenreResponses));
     }
 
-    @GetMapping("/{movieId}")
-    public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(@PathVariable("movieId") Long movieId) {
-        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId);
+    @GetMapping("/{movieId}/users/{userId}")
+    public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(
+            @PathVariable("movieId") Long movieId,
+            @PathVariable("userId") Long userId) {
+        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId, userId);
         return ApiResponse.ok(movieDetail);
     }
 

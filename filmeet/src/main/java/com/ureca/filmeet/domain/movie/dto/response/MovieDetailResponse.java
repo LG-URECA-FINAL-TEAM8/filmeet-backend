@@ -16,13 +16,16 @@ public record MovieDetailResponse(
         Integer likeCounts,
         Integer reviewCounts,
         BigDecimal averageRating,
-        List<String> countries, // 제작국가
+        boolean isLiked,
+        ReviewInfo reviewInfo,
+        List<String> countries,
         List<GenreType> genres,
         List<PersonnelInfoResponse> personnels,
         List<String> galleryImages
 ) {
 
-    public static MovieDetailResponse from(Movie movie, List<String> countries, List<GenreType> genres,
+    public static MovieDetailResponse from(Movie movie, boolean isLiked, ReviewInfo reviewInfo,
+                                           List<String> countries, List<GenreType> genres,
                                            List<PersonnelInfoResponse> personnels,
                                            List<String> galleryImages) {
 
@@ -36,6 +39,8 @@ public record MovieDetailResponse(
                 movie.getLikeCounts(),
                 movie.getReviewCounts(),
                 movie.getAverageRating(),
+                isLiked,
+                reviewInfo,
                 countries,
                 genres,
                 personnels,
