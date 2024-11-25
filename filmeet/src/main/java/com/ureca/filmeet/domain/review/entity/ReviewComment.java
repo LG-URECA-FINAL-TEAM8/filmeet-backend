@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.review.entity;
 
 import com.ureca.filmeet.domain.user.entity.User;
+import com.ureca.filmeet.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewComment {
+public class ReviewComment extends BaseTimeEntity {
 
     @Id
     @Column(name = "review_comment_id")
@@ -39,7 +40,7 @@ public class ReviewComment {
         if (this.review != null) {
             this.review.getReviewComments().remove(this);
         }
-        
+
         this.review = review;
         if (review != null) {
             review.getReviewComments().add(this);

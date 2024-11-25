@@ -11,7 +11,6 @@ public record GetMovieReviewsResponse(
         BigDecimal star,
         String nickName,
         String profileImage,
-        Boolean isLiked // 좋아요 여부 추가
-
+        Boolean isLiked
 ) {
 }
