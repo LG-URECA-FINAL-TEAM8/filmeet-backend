@@ -58,4 +58,8 @@ public class Review extends BaseEntity {
         this.movie = movie;
         this.user = user;
     }
+
+    public void modifyReview(String content) {
+        this.content = content;
+    }
 }

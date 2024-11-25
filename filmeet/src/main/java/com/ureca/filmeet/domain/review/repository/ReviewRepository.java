@@ -14,4 +14,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findReviewBy(
             @Param("movieId") Long movieId,
             @Param("userId") Long userId);
+
+    @Query("SELECT r " +
+            "FROM Review r " +
+            "WHERE r.id = :reviewId AND r.isDeleted = false ")
+    Optional<Review> findReviewBy(
+            @Param("reviewId") Long reviewId);
 }

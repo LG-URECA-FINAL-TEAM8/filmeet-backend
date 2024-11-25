@@ -3,7 +3,9 @@ package com.ureca.filmeet.domain.review.service.query;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.dto.request.CreateReviewRequest;
+import com.ureca.filmeet.domain.review.dto.request.ModifyReviewRequest;
 import com.ureca.filmeet.domain.review.dto.response.CreateReviewResponse;
+import com.ureca.filmeet.domain.review.dto.response.ModifyReviewResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -38,5 +40,14 @@ public class ReviewCommandService {
 
         Review saveReview = reviewRepository.save(review);
         return CreateReviewResponse.of(saveReview.getId());
+    }
+
+    public ModifyReviewResponse modifyReview(ModifyReviewRequest modifyReviewRequest) {
+        Review review = reviewRepository.findReviewBy(modifyReviewRequest.reviewId())
+                .orElseThrow(() -> new RuntimeException("no review"));
+
+        review.modifyReview(modifyReviewRequest.content());
+
+        return ModifyReviewResponse.of(review.getId());
     }
 }
