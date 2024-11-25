@@ -13,14 +13,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r " +
             "FROM Review r " +
-            "WHERE r.movie.id = :movieId AND r.user.id = :userId AND r.isDeleted = false ")
+            "WHERE r.movie.id = :movieId AND r.user.id = :userId AND r.isDeleted = false AND r.isVisible = true ")
     Optional<Review> findReviewBy(
             @Param("movieId") Long movieId,
             @Param("userId") Long userId);
 
     @Query("SELECT r " +
             "FROM Review r " +
-            "WHERE r.id = :reviewId AND r.isDeleted = false ")
+            "WHERE r.id = :reviewId AND r.isDeleted = false AND r.isVisible = true ")
     Optional<Review> findReviewBy(
             @Param("reviewId") Long reviewId);
 
