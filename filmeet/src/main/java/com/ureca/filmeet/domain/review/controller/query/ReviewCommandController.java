@@ -8,7 +8,9 @@ import com.ureca.filmeet.domain.review.service.query.ReviewCommandService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +33,11 @@ public class ReviewCommandController {
     public ResponseEntity<ApiResponse<ModifyReviewResponse>> modifyReview(
             @RequestBody ModifyReviewRequest modifyReviewRequest) {
         return ApiResponse.ok(reviewCommandService.modifyReview(modifyReviewRequest));
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<String>> deleteReview(@PathVariable("reviewId") Long reviewId) {
+        reviewCommandService.deleteReview(reviewId);
+        return ApiResponse.ok("삭제 성공");
     }
 }

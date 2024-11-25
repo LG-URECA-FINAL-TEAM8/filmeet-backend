@@ -50,4 +50,11 @@ public class ReviewCommandService {
 
         return ModifyReviewResponse.of(review.getId());
     }
+
+    public void deleteReview(Long reviewId) {
+        Review review = reviewRepository.findReviewBy(reviewId)
+                .orElseThrow(() -> new RuntimeException("no review"));
+
+        review.delete();
+    }
 }
