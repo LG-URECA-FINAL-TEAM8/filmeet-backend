@@ -20,6 +20,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             @Param("movieIds") List<Long> movieIds
     );
 
+    @Query("SELECT m " +
+            "FROM Movie m " +
+            "WHERE m.isDeleted = false AND m.id = :movieId ")
+    Optional<Movie> findMovieBy(@Param("movieId") Long movieId);
+
     @Query("SELECT m FROM Movie m " +
             "WHERE m.isDeleted = false " +
             "AND m.releaseDate > :currentDate " +

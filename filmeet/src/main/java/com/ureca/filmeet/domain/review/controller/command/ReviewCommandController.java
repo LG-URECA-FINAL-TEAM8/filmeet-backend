@@ -35,9 +35,12 @@ public class ReviewCommandController {
         return ApiResponse.ok(reviewCommandService.modifyReview(modifyReviewRequest));
     }
 
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ApiResponse<String>> deleteReview(@PathVariable("reviewId") Long reviewId) {
-        reviewCommandService.deleteReview(reviewId);
+    @DeleteMapping("/{reviewId}/movies/{movieId}")
+    public ResponseEntity<ApiResponse<String>> deleteReview(
+            @PathVariable("reviewId") Long reviewId,
+            @PathVariable("movieId") Long movieId
+    ) {
+        reviewCommandService.deleteReview(reviewId, movieId);
         return ApiResponse.ok("삭제 성공");
     }
 }
