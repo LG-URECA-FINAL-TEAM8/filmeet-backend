@@ -1,15 +1,14 @@
 package com.ureca.filmeet.domain.auth.service;
 
+import com.ureca.filmeet.domain.auth.dto.CustomOidcUser;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import com.ureca.filmeet.domain.user.service.command.UserCommandService;
-import com.ureca.filmeet.domain.user.service.query.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -43,6 +42,7 @@ public class CustomOidcUserService extends OidcUserService {
         String tmpProviderId = claims.get("sub").toString();
         String email = claims.get("email").toString();
         String name = claims.get("name").toString();
+        String picture = claims.get("picture").toString();
 
         Provider provider = Arrays.stream(Provider.values())
                 .filter(Provider::isOidcProvider)
@@ -54,10 +54,16 @@ public class CustomOidcUserService extends OidcUserService {
 
 
         User user = userRepository.findByUsername(providerId)
-                .orElseGet(() -> userCommandService.createTemporaryUser(providerId, name, Provider.GOOGLE));
+                .orElseGet(() -> userCommandService.createTemporaryUser(
+                        providerId, name, Provider.GOOGLE,picture));
 
         Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
 
-        return new DefaultOidcUser(authorities, idToken, oidcUser.getUserInfo());
+        return new CustomOidcUser(
+                oidcUser.getAuthorities(),
+                idToken,
+                oidcUser.getUserInfo(),
+                providerId
+        );
     }
 }

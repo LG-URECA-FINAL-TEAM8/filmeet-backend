@@ -44,6 +44,23 @@ public class TokenService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
+    public TokenResponse generateTokens(String username, Role role) {
+
+        // Access/Refresh Token 생성
+        String accessToken = jwtTokenProvider.createAccessToken(username, role);
+        String refreshToken = jwtTokenProvider.createRefreshToken(username);
+
+        // Refresh Token Redis 저장
+        redisTemplate.opsForValue().set(
+                REFRESH_TOKEN_PREFIX + username,
+                refreshToken,
+                jwtTokenProvider.getRefreshTokenValidity(),
+                TimeUnit.MINUTES
+        );
+
+        return new TokenResponse(accessToken, refreshToken);
+    }
+
     public TokenResponse refreshAccessToken(String refreshToken) {
         // Refresh Token 유효성 검증
         if (!jwtTokenProvider.validateToken(refreshToken)) {
