@@ -4,7 +4,7 @@ import com.ureca.filmeet.domain.review.dto.request.CreateReviewRequest;
 import com.ureca.filmeet.domain.review.dto.request.ModifyReviewRequest;
 import com.ureca.filmeet.domain.review.dto.response.CreateReviewResponse;
 import com.ureca.filmeet.domain.review.dto.response.ModifyReviewResponse;
-import com.ureca.filmeet.domain.review.service.query.ReviewCommandService;
+import com.ureca.filmeet.domain.review.service.command.ReviewCommandService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

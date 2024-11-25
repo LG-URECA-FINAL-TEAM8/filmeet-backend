@@ -1,4 +1,4 @@
-package com.ureca.filmeet.domain.review.service.query;
+package com.ureca.filmeet.domain.review.service.command;
 
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
