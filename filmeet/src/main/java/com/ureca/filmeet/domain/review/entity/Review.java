@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,16 +30,16 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal star;
-
     @Column(length = 1000)
     private String content;
 
-    private Integer likeCounts;
+    private Integer likeCounts = 0;
 
-    private Integer commentCounts;
+    private Integer commentCounts = 0;
 
-    private Boolean isVisible;
+    private BigDecimal star = BigDecimal.ZERO;
+
+    private Boolean isVisible = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
@@ -50,4 +51,11 @@ public class Review extends BaseEntity {
 
     @OneToMany(mappedBy = "review")
     private List<ReviewComment> reviewComments = new ArrayList<>();
+
+    @Builder
+    public Review(String content, Movie movie, User user) {
+        this.content = content;
+        this.movie = movie;
+        this.user = user;
+    }
 }

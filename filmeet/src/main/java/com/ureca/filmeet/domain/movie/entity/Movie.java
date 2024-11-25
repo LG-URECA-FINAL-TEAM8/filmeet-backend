@@ -66,6 +66,10 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie")
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
+    public void addReviewCounts() {
+        this.reviewCounts++;
+    }
+
     //===연관 관계 메서드===//
     public void addGalleries(Gallery gallery) {
         galleries.add(gallery);
