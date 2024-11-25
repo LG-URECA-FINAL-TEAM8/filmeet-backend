@@ -1,8 +1,6 @@
 package com.ureca.filmeet.domain.review.entity;
 
-import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.user.entity.User;
-import com.ureca.filmeet.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,43 +9,40 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review extends BaseEntity {
+public class ReviewComment {
 
     @Id
-    @Column(name = "review_id")
+    @Column(name = "review_comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private BigDecimal star;
 
     @Column(length = 1000)
     private String content;
 
-    private Integer likeCounts;
-
-    private Integer commentCounts;
-
-    private Boolean isVisible;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id")
-    private Movie movie;
+    @JoinColumn(name = "review_id")
+    private Review review;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private User user;
 
-    @OneToMany(mappedBy = "review")
-    private List<ReviewComment> reviewComments = new ArrayList<>();
+    public void setReview(Review review) {
+        // 기존 연관관계 제거
+        if (this.review != null) {
+            this.review.getReviewComments().remove(this);
+        }
+        
+        this.review = review;
+        if (review != null) {
+            review.getReviewComments().add(this);
+        }
+    }
 }
