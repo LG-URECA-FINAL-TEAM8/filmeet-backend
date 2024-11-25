@@ -4,6 +4,7 @@ import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
@@ -86,12 +87,6 @@ public class MovieQueryController {
         return ApiResponse.ok(SliceResponseDto.of(moviesSearchByGenreResponses));
     }
 
-    @GetMapping("/{movieId}")
-    public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(@PathVariable("movieId") Long movieId) {
-        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId);
-        return ApiResponse.ok(movieDetail);
-    }
-
     @GetMapping("/search/title")
     public ResponseEntity<ApiResponse<SliceResponseDto<MovieSearchByTitleResponse>>> searchMoviesByTitle(
             @RequestParam(value = "keyword") String keyword,
@@ -101,5 +96,22 @@ public class MovieQueryController {
         Slice<MovieSearchByTitleResponse> movieSearchByTitleResponses = moviesSearchService.searchMoviesByTitle(keyword,
                 page, size);
         return ApiResponse.ok(SliceResponseDto.of(movieSearchByTitleResponses));
+    }
+
+    @GetMapping("/{movieId}/users/{userId}")
+    public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(
+            @PathVariable("movieId") Long movieId,
+            @PathVariable("userId") Long userId) {
+        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId, userId);
+        return ApiResponse.ok(movieDetail);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<SliceResponseDto<MoviesResponse>>> getMoviesByGenre(
+            @RequestParam(value = "genreType", required = false) GenreType genreType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Slice<MoviesResponse> moviesByGenre = movieQueryService.getMoviesByGenre(genreType, page, size);
+        return ApiResponse.ok(SliceResponseDto.of(moviesByGenre));
     }
 }
