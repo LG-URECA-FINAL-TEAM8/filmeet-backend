@@ -1,4 +1,4 @@
-package com.ureca.filmeet.domain.review.controller.query;
+package com.ureca.filmeet.domain.review.controller.command;
 
 import com.ureca.filmeet.domain.review.dto.request.CreateReviewRequest;
 import com.ureca.filmeet.domain.review.dto.request.ModifyReviewRequest;
