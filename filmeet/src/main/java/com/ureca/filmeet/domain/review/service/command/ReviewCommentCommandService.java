@@ -1,7 +1,9 @@
 package com.ureca.filmeet.domain.review.service.command;
 
 import com.ureca.filmeet.domain.review.dto.request.CreateCommentRequest;
+import com.ureca.filmeet.domain.review.dto.request.ModifyCommentRequest;
 import com.ureca.filmeet.domain.review.dto.response.CreateCommentResponse;
+import com.ureca.filmeet.domain.review.dto.response.ModifyCommentResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.entity.ReviewComment;
 import com.ureca.filmeet.domain.review.repository.ReviewCommentRepository;
@@ -38,5 +40,15 @@ public class ReviewCommentCommandService {
         review.addCommentCounts();
 
         return CreateCommentResponse.of(savedReviewComment.getId());
+    }
+
+    @Transactional
+    public ModifyCommentResponse modifyComment(ModifyCommentRequest modifyCommentRequest) {
+        ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewId())
+                .orElseThrow(() -> new RuntimeException("no reviewComment"));
+
+        reviewComment.modifyReviewComment(modifyCommentRequest.content());
+
+        return ModifyCommentResponse.of(reviewComment.getId());
     }
 }
