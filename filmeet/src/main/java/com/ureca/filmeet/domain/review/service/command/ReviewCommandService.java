@@ -52,14 +52,12 @@ public class ReviewCommandService {
     }
 
     public void deleteReview(Long reviewId, Long movieId) {
-        Review review = reviewRepository.findReviewBy(reviewId)
+        Review review = reviewRepository.findReviewByMovieIdAndReviewId(reviewId, movieId)
                 .orElseThrow(() -> new RuntimeException("no review"));
-
-        Movie movie = movieRepository.findMovieBy(movieId)
-                .orElseThrow(() -> new RuntimeException("no movie"));
-
         review.delete();
 
+        Movie movie = movieRepository.findMovieByReviewIdAndMovieId(reviewId, movieId)
+                .orElseThrow(() -> new RuntimeException("no movie"));
         movie.decrementReviewCounts();
     }
 }

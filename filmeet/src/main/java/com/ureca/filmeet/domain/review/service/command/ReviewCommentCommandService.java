@@ -57,7 +57,7 @@ public class ReviewCommentCommandService {
         Review review = reviewRepository.findReviewByReviewIdAndCommentId(reviewId, commentId)
                 .orElseThrow(() -> new RuntimeException("no review"));
 
-        ReviewComment reviewComment = reviewCommentRepository.findReviewCommentBy(commentId)
+        ReviewComment reviewComment = reviewCommentRepository.findReviewCommentBy(reviewId, commentId)
                 .orElseThrow(() -> new RuntimeException("no reviewComment"));
 
         reviewComment.delete();

@@ -26,6 +26,18 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r " +
             "FROM Review r " +
+            "JOIN r.movie m " +
+            "WHERE r.id = :reviewId " +
+            "AND m.id = :movieId " +
+            "AND r.isDeleted = false " +
+            "AND r.isVisible = true ")
+    Optional<Review> findReviewByMovieIdAndReviewId(
+            @Param("reviewId") Long reviewId,
+            @Param("movieId") Long movieId
+    );
+
+    @Query("SELECT r " +
+            "FROM Review r " +
             "JOIN r.reviewComments rc " +
             "WHERE r.id = :reviewId " +
             "AND rc.id = :reviewCommentId " +
