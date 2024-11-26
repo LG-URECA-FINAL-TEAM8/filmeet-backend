@@ -42,4 +42,8 @@ public class MovieRatings extends BaseTimeEntity {
         this.movie = movie;
         this.user = user;
     }
+
+    public void modifyRatingScore(BigDecimal ratingScore) {
+        this.ratingScore = ratingScore;
+    }
 }

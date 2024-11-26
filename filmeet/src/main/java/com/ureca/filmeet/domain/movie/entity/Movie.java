@@ -108,7 +108,7 @@ public class Movie extends BaseEntity {
         movieGenre.changeMovie(this);
     }
 
-    public void updateMovieRating(BigDecimal ratingScore) {
+    public void evaluateMovieRating(BigDecimal ratingScore) {
         // 새로운 총합 계산
         BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts))
                 .add(ratingScore);
@@ -118,6 +118,16 @@ public class Movie extends BaseEntity {
 
         // 별점 개수 증가
         this.ratingCounts++;
+    }
+
+    public void modifyMovieRating(BigDecimal oldRatingScore, BigDecimal newRatingScore) {
+        // 기존 별점을 총합에서 뺀다
+        BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts))
+                .subtract(oldRatingScore)
+                .add(newRatingScore);
+
+        // 새로운 평균 계산
+        this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1, RoundingMode.HALF_UP);
     }
 
     @Builder

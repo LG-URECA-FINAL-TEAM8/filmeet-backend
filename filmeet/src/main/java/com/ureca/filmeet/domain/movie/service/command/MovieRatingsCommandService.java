@@ -1,7 +1,9 @@
 package com.ureca.filmeet.domain.movie.service.command;
 
 import com.ureca.filmeet.domain.movie.dto.request.EvaluateMovieRatingRequest;
+import com.ureca.filmeet.domain.movie.dto.request.ModifyMovieRatingRequest;
 import com.ureca.filmeet.domain.movie.dto.response.EvaluateMovieRatingResponse;
+import com.ureca.filmeet.domain.movie.dto.response.ModifyMovieRatingResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
@@ -44,8 +46,20 @@ public class MovieRatingsCommandService {
                 .build();
         MovieRatings savedMovieRatings = movieRatingsRepository.save(movieRatings);
 
-        movie.updateMovieRating(evaluateMovieRatingRequest.ratingScore());
+        movie.evaluateMovieRating(evaluateMovieRatingRequest.ratingScore());
 
         return EvaluateMovieRatingResponse.of(savedMovieRatings);
+    }
+
+    public ModifyMovieRatingResponse modifyMovieRating(ModifyMovieRatingRequest modifyMovieRatingRequest) {
+        MovieRatings movieRatings = movieRatingsRepository.findById(modifyMovieRatingRequest.movieRatingId())
+                .orElseThrow(() -> new RuntimeException("평가가 없습니다."));
+        movieRatings.modifyRatingScore(modifyMovieRatingRequest.newRatingScore());
+
+        Movie movie = movieRepository.findById(modifyMovieRatingRequest.movieId())
+                .orElseThrow(() -> new RuntimeException("no movie"));
+        movie.modifyMovieRating(modifyMovieRatingRequest.oldRatingScore(), modifyMovieRatingRequest.newRatingScore());
+
+        return ModifyMovieRatingResponse.of(movieRatings.getId());
     }
 }
