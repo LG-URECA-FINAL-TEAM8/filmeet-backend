@@ -12,7 +12,7 @@ public record MoviesRankingsResponse(
         LocalDate releaseDate,
         Integer runtime,
         Integer likeCounts,
-        Integer reviewCounts,
+        Integer ratingCounts,
         BigDecimal averageRating,
         FilmRatings filmRatings
 ) {
@@ -25,7 +25,7 @@ public record MoviesRankingsResponse(
                 movie.getReleaseDate(),
                 movie.getRuntime(),
                 movie.getLikeCounts() != null ? movie.getLikeCounts() : 0,
-                movie.getReviewCounts() != null ? movie.getReviewCounts() : 0,
+                movie.getRatingCounts() != null ? movie.getRatingCounts() : 0,
                 movie.getAverageRating() != null ? movie.getAverageRating() : BigDecimal.ZERO,
                 movie.getFilmRatings()
         );

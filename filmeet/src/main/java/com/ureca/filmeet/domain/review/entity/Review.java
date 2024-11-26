@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -36,8 +35,6 @@ public class Review extends BaseEntity {
     private Integer likeCounts = 0;
 
     private Integer commentCounts = 0;
-
-    private BigDecimal star = BigDecimal.ZERO;
 
     private Boolean isVisible = true;
 

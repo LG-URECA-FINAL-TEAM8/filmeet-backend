@@ -4,19 +4,23 @@ import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MyMovieRating;
+import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
 import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
-import com.ureca.filmeet.domain.movie.dto.response.ReviewInfo;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieCountriesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
+import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
+import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MovieQueryService {
 
     private final MovieRepository movieRepository;
+    private final ReviewRepository reviewRepository;
     private final MovieGenreRepository movieGenreRepository;
     private final MovieLikesRepository movieLikesRepository;
+    private final MovieRatingsRepository movieRatingsRepository;
     private final MovieCountriesRepository movieCountriesRepository;
-    private final ReviewRepository reviewRepository;
 
     public MovieDetailResponse getMovieDetailV1(Long movieId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
@@ -49,7 +54,7 @@ public class MovieQueryService {
 
         List<String> galleryImages = getGalleryImages(movie);
 
-        return MovieDetailResponse.from(movie, false, null, countries, genres, personnels, galleryImages);
+        return MovieDetailResponse.from(movie, false, null, null, countries, genres, personnels, galleryImages, null);
     }
 
     public MovieDetailResponse getMovieDetail(Long movieId, Long userId) {
@@ -58,9 +63,13 @@ public class MovieQueryService {
 
         boolean isLiked = movieLikesRepository.findMovieLikesBy(movieId, userId).isPresent();
 
-        ReviewInfo reviewInfo = reviewRepository.findReviewBy(movieId, userId)
-                .map(ReviewInfo::of)
-                .orElse(new ReviewInfo(null, null));
+        MyMovieReview myMovieReview = reviewRepository.findReviewBy(movieId, userId)
+                .map(MyMovieReview::of)
+                .orElse(new MyMovieReview(null));
+
+        MyMovieRating myMovieRating = movieRatingsRepository.findMovieRatingBy(movieId, userId)
+                .map(MyMovieRating::of)
+                .orElse(new MyMovieRating(null));
 
         List<String> countries = movieCountriesRepository.findMovieCountriesByMovieId(movieId)
                 .stream()
@@ -76,14 +85,20 @@ public class MovieQueryService {
 
         List<String> galleryImages = getGalleryImages(movie);
 
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "likeCounts");
+        Slice<GetMovieReviewsResponse> movieReviewsResponses = reviewRepository.findMovieReviewsWithLikes(movieId,
+                userId, pageable);
+
         return MovieDetailResponse.from(
                 movie,
                 isLiked,
-                reviewInfo,
+                myMovieReview,
+                myMovieRating,
                 countries,
                 genres,
                 personnels,
-                galleryImages
+                galleryImages,
+                movieReviewsResponses
         );
     }
 
@@ -94,7 +109,6 @@ public class MovieQueryService {
                 .toList();
     }
 
-    // 참여자 정보 리스트 변환
     private static List<PersonnelInfoResponse> getPersonnelInfoResponses(Movie movie) {
         return movie.getMoviePersonnels()
                 .stream()

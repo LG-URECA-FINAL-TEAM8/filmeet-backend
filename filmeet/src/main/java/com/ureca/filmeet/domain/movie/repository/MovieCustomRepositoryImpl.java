@@ -56,7 +56,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                         movie.releaseDate,
                         movie.runtime,
                         movie.likeCounts,
-                        movie.reviewCounts,
+                        movie.ratingCounts,
                         movie.averageRating,
                         movie.filmRatings,
                         genre.genreType
@@ -80,7 +80,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                             tuple.get(movie.releaseDate),
                             tuple.get(movie.runtime),
                             tuple.get(movie.likeCounts),
-                            tuple.get(movie.reviewCounts),
+                            tuple.get(movie.ratingCounts),
                             tuple.get(movie.averageRating),
                             tuple.get(movie.filmRatings),
                             new ArrayList<>()

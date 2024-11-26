@@ -36,8 +36,6 @@ public class ReviewCommandService {
                 .user(user)
                 .build();
 
-        movie.addReviewCounts();
-
         Review saveReview = reviewRepository.save(review);
         return CreateReviewResponse.of(saveReview.getId());
     }
@@ -55,9 +53,5 @@ public class ReviewCommandService {
         Review review = reviewRepository.findReviewByMovieIdAndReviewId(reviewId, movieId)
                 .orElseThrow(() -> new RuntimeException("no review"));
         review.delete();
-
-        Movie movie = movieRepository.findMovieByReviewIdAndMovieId(reviewId, movieId)
-                .orElseThrow(() -> new RuntimeException("no movie"));
-        movie.decrementReviewCounts();
     }
 }

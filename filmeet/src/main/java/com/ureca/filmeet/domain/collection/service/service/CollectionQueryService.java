@@ -59,7 +59,7 @@ public class CollectionQueryService {
                         cm.getMovie().getFilmRatings(),
                         cm.getMovie().getAverageRating(),
                         cm.getMovie().getLikeCounts(),
-                        cm.getMovie().getReviewCounts()
+                        cm.getMovie().getRatingCounts()
                 ))
                 .toList();
     }
@@ -90,7 +90,7 @@ public class CollectionQueryService {
                         cm.getMovie().getFilmRatings(),
                         cm.getMovie().getAverageRating(),
                         cm.getMovie().getLikeCounts(),
-                        cm.getMovie().getReviewCounts()
+                        cm.getMovie().getRatingCounts()
                 ))
                 .toList();
     }

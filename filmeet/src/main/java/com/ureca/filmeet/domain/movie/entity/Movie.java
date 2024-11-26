@@ -47,7 +47,7 @@ public class Movie extends BaseEntity {
 
     private Integer likeCounts;
 
-    private Integer reviewCounts;
+    private Integer ratingCounts;
 
     private BigDecimal averageRating;
 
@@ -66,13 +66,13 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie")
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
-    public void addReviewCounts() {
-        this.reviewCounts++;
+    public void addRatingCounts() {
+        this.ratingCounts++;
     }
 
-    public void decrementReviewCounts() {
-        if (this.reviewCounts > 0) {
-            this.reviewCounts--;
+    public void decrementRatingCounts() {
+        if (this.ratingCounts > 0) {
+            this.ratingCounts--;
         }
     }
 
@@ -108,16 +108,17 @@ public class Movie extends BaseEntity {
     }
 
     @Builder
-    public Movie(String title, String plot, LocalDate releaseDate, Integer runtime, String posterUrl,
-                 Integer likeCounts,
-                 Integer reviewCounts, BigDecimal averageRating, FilmRatings filmRatings) {
+    public Movie(String title, String plot, LocalDate releaseDate,
+                 Integer runtime, String posterUrl,
+                 Integer likeCounts, Integer ratingCounts,
+                 BigDecimal averageRating, FilmRatings filmRatings) {
         this.title = title;
         this.plot = plot;
         this.releaseDate = releaseDate;
         this.runtime = runtime;
         this.posterUrl = posterUrl;
         this.likeCounts = likeCounts;
-        this.reviewCounts = reviewCounts;
+        this.ratingCounts = ratingCounts;
         this.averageRating = averageRating;
         this.filmRatings = filmRatings;
     }

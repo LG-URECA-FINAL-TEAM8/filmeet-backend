@@ -95,7 +95,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query("SELECT m FROM Movie m " +
             "LEFT JOIN FETCH m.moviePersonnels mp " +
-            "JOIN FETCH mp.personnel p " +
+            "LEFT JOIN FETCH mp.personnel p " +
             "WHERE m.id = :movieId AND m.isDeleted = false ")
     Optional<Movie> findMovieDetailInfo(
             @Param("movieId") Long movieId

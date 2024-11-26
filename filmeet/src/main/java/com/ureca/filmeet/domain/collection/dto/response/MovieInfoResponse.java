@@ -13,6 +13,6 @@ public record MovieInfoResponse(
         FilmRatings filmRatings,
         BigDecimal averageRating,
         Integer likeCount,
-        Integer reviewCount
+        Integer ratingCounts
 ) {
 }
