@@ -52,7 +52,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "       r.star, u.nickname, u.profileImage, " +
             "       CASE WHEN (rl IS NOT NULL) THEN TRUE ELSE FALSE END) " +
             "FROM Review r " +
-            "LEFT JOIN r.user u " +
+            "JOIN r.user u " +
             "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId " +
             "WHERE r.movie.id = :movieId AND r.isDeleted = false AND r.isVisible = true ")
     Slice<GetMovieReviewsResponse> findMovieReviewsWithLikes(
