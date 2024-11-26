@@ -66,4 +66,8 @@ public class Review extends BaseEntity {
     public void addCommentCounts() {
         this.commentCounts++;
     }
+
+    public void decrementCommentCounts() {
+        this.commentCounts--;
+    }
 }

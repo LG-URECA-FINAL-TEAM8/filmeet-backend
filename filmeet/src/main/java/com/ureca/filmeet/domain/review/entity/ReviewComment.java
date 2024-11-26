@@ -1,7 +1,7 @@
 package com.ureca.filmeet.domain.review.entity;
 
 import com.ureca.filmeet.domain.user.entity.User;
-import com.ureca.filmeet.global.common.BaseTimeEntity;
+import com.ureca.filmeet.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewComment extends BaseTimeEntity {
+public class ReviewComment extends BaseEntity {
 
     @Id
     @Column(name = "review_comment_id")
