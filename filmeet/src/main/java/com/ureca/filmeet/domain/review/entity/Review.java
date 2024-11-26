@@ -68,6 +68,8 @@ public class Review extends BaseEntity {
     }
 
     public void decrementCommentCounts() {
-        this.commentCounts--;
+        if (this.commentCounts > 0) {
+            this.commentCounts--;
+        }
     }
 }

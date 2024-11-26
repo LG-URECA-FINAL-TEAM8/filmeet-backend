@@ -71,7 +71,9 @@ public class Movie extends BaseEntity {
     }
 
     public void decrementReviewCounts() {
-        this.reviewCounts--;
+        if (this.reviewCounts > 0) {
+            this.reviewCounts--;
+        }
     }
 
     //===연관 관계 메서드===//
