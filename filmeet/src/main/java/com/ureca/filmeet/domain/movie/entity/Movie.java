@@ -76,6 +76,10 @@ public class Movie extends BaseEntity {
         }
     }
 
+    public void addLikeCounts() {
+        this.likeCounts++;
+    }
+
     //===연관 관계 메서드===//
     public void addGalleries(Gallery gallery) {
         galleries.add(gallery);
