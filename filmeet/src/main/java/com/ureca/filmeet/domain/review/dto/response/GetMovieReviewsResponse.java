@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public record GetMovieReviewsResponse(
 
         Long reviewId,
+        Long userId,
         String content,
         int likeCounts,
         int commentCounts,

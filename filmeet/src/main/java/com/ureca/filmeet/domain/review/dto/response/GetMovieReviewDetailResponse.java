@@ -9,6 +9,8 @@ import java.util.List;
 public record GetMovieReviewDetailResponse(
 
         Long reviewId,
+        Long userId,
+        Long movieId,
         String content,
         int likeCounts,
         int commentCounts,
@@ -27,6 +29,8 @@ public record GetMovieReviewDetailResponse(
                                                     boolean existsReviewLikes) {
         return new GetMovieReviewDetailResponse(
                 review.getId(),
+                review.getUser().getId(),
+                review.getMovie().getId(),
                 review.getContent(),
                 review.getLikeCounts(),
                 review.getCommentCounts(),
