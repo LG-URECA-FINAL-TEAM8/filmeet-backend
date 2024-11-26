@@ -20,6 +20,18 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             @Param("movieIds") List<Long> movieIds
     );
 
+    @Query("SELECT m " +
+            "FROM Movie m " +
+            "JOIN Review r " +
+            "ON r.movie.id = m.id " +
+            "WHERE m.isDeleted = false " +
+            "AND m.id = :movieId " +
+            "AND r.id = :reviewId")
+    Optional<Movie> findMovieByReviewIdAndMovieId(
+            @Param("reviewId") Long reviewId,
+            @Param("movieId") Long movieId
+    );
+
     @Query("SELECT m FROM Movie m " +
             "WHERE m.isDeleted = false " +
             "AND m.releaseDate > :currentDate " +
