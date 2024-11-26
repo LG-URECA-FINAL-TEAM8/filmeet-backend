@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.movie.controller.command;
 
 import com.ureca.filmeet.domain.movie.service.command.MovieLikesCommandService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +21,13 @@ public class MovieLikesCommandController {
             @PathVariable("userId") Long userId
     ) {
         movieLikesCommandService.movieLikes(movieId, userId);
+    }
+
+    @DeleteMapping("/cancel/movies/{movieId}/users/{userId}")
+    public void movieLikesCancel(
+            @PathVariable("movieId") Long movieId,
+            @PathVariable("userId") Long userId
+    ) {
+        movieLikesCommandService.movieLikesCancel(movieId, userId);
     }
 }

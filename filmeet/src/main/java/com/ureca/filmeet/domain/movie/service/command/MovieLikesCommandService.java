@@ -38,6 +38,25 @@ public class MovieLikesCommandService {
                 .build();
         movieLikesRepository.save(movieLikes);
 
+        updateGenreScoresForUser(userId, movie, GenreScoreAction.LIKE);
+
+        movie.addLikeCounts();
+    }
+
+    public void movieLikesCancel(Long movieId, Long userId) {
+        Movie movie = movieRepository.findMovieWithGenreByMovieId(movieId)
+                .orElseThrow(() -> new RuntimeException("no movie"));
+
+        MovieLikes movieLikes = movieLikesRepository.findMovieLikesBy(movieId, userId)
+                .orElseThrow(() -> new RuntimeException("no movie likes"));
+        movieLikesRepository.delete(movieLikes);
+
+        updateGenreScoresForUser(userId, movie, GenreScoreAction.LIKE_CANCEL);
+
+        movie.decrementLikeCounts();
+    }
+
+    private void updateGenreScoresForUser(Long userId, Movie movie, GenreScoreAction genreScoreAction) {
         List<Long> genreIds = Optional.ofNullable(movie.getMovieGenres())
                 .orElse(Collections.emptyList())
                 .stream()
@@ -45,11 +64,9 @@ public class MovieLikesCommandService {
                 .toList();
 
         genreScoreRepository.bulkUpdateGenreScores(
-                GenreScoreAction.LIKE.getWeight(),
+                genreScoreAction.getWeight(),
                 genreIds,
                 userId
         );
-
-        movie.addLikeCounts();
     }
 }

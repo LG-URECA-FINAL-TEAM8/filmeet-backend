@@ -6,10 +6,13 @@ import lombok.Getter;
 public enum GenreScoreAction {
 
     PREFERRED_GENRE(20),
+    GAME_RESULT(3),
+
     LIKE(2),
-    STAR_RATING(3),
     COLLECTION(4),
-    GAME_RESULT(3);
+
+    LIKE_CANCEL(-2),
+    COLLECTION_DELETE(-4);
 
     private final int weight;
 
