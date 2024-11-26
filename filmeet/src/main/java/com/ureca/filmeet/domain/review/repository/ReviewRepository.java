@@ -24,6 +24,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findReviewBy(
             @Param("reviewId") Long reviewId);
 
+    @Query("SELECT r " +
+            "FROM Review r " +
+            "JOIN r.reviewComments rc " +
+            "WHERE r.id = :reviewId " +
+            "AND rc.id = :reviewCommentId " +
+            "AND r.isDeleted = false " +
+            "AND r.isVisible = true ")
+    Optional<Review> findReviewByReviewIdAndCommentId(
+            @Param("reviewId") Long reviewId,
+            @Param("reviewCommentId") Long reviewCommentId);
+
     @Query("SELECT new com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse( " +
             "       r.id, u.id, r.content, r.likeCounts, r.commentCounts, " +
             "       r.star, u.nickname, u.profileImage, " +
