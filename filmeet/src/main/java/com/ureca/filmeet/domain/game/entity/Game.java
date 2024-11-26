@@ -37,10 +37,10 @@ public class Game extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private GameStatus status;
+    private GameStatus status; // 게임 상태 (ACTIVE, INACTIVE)
 
     @Column(nullable = false)
-    private Integer totalRounds;
+    private Integer totalRounds; // 총 라운드 수
 
     @OneToMany(mappedBy = "game")
     private List<GameResult> gameResults = new ArrayList<>();
