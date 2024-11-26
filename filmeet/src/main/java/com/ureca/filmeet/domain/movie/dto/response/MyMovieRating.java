@@ -5,11 +5,13 @@ import java.math.BigDecimal;
 
 public record MyMovieRating(
 
-        BigDecimal starRating
+        Long movieRatingId,
+        BigDecimal ratingScore
 ) {
     public static MyMovieRating of(MovieRatings movieRatings) {
         return new MyMovieRating(
-                movieRatings.getStarRating()
+                movieRatings.getId(),
+                movieRatings.getRatingScore()
         );
     }
 }

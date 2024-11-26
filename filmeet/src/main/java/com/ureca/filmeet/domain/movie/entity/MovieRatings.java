@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +26,7 @@ public class MovieRatings extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal starRating = BigDecimal.ZERO;
+    private BigDecimal ratingScore = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
@@ -34,4 +35,11 @@ public class MovieRatings extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private User user;
+
+    @Builder
+    public MovieRatings(BigDecimal ratingScore, Movie movie, User user) {
+        this.ratingScore = ratingScore;
+        this.movie = movie;
+        this.user = user;
+    }
 }
