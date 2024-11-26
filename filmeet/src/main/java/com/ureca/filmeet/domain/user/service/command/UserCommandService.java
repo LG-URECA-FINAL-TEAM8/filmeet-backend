@@ -29,11 +29,12 @@ public class UserCommandService {
         return userRepository.save(newUser);
     }
 
-    public User createTemporaryUser(String providerId, String name, Provider provider) {
+    public User createTemporaryUser(String providerId, String name, Provider provider, String profileImage) {
         User tempUser = User.builder()
                 .username(providerId)
                 .provider(provider)
                 .nickname(name) // 이름
+                .profileImage(profileImage)
                 .role(Role.ROLE_USER)
                 .build();
         return userRepository.save(tempUser);

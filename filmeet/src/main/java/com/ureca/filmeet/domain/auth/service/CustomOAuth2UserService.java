@@ -1,17 +1,16 @@
 package com.ureca.filmeet.domain.auth.service;
 
+import com.ureca.filmeet.domain.auth.dto.CustomOAuth2User;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import com.ureca.filmeet.domain.user.service.command.UserCommandService;
-import com.ureca.filmeet.domain.user.service.query.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserQueryService userQueryService;
     private final UserRepository userRepository;
     private final UserCommandService userCommandService;
 
@@ -57,7 +55,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         User user = userRepository.findByUsername(providerId)
-                .orElseGet(() -> userCommandService.createTemporaryUser(providerId, name, Provider.NAVER));
+                .orElseGet(() -> userCommandService.createTemporaryUser(
+                        providerId, name, Provider.NAVER, profileImage));
 
 
         // 권한 설정
@@ -65,7 +64,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> copyAttributes = new HashMap<>(oAuth2User.getAttributes());
         copyAttributes.put("id", providerId);
 
-        // OAuth2User 반환
-        return new DefaultOAuth2User(authorities, copyAttributes, "id");
+        return new CustomOAuth2User(
+                oAuth2User.getAuthorities(),
+                copyAttributes,
+                "id",
+                providerId
+        );
     }
 }

@@ -23,4 +23,11 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
             @Param("collectionId") Long collectionId,
             @Param("userId") Long userId
     );
+
+    @Query("SELECT c " +
+            "FROM Collection c " +
+            "JOIN FETCH c.user u " +
+            "WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :titleKeyword, '%')) " +
+            "AND c.isDeleted = false")
+    Slice<Collection> findCollectionsByTitleKeyword(@Param("titleKeyword") String titleKeyword, Pageable pageable);
 }

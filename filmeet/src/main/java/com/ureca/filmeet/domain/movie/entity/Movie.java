@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -65,6 +66,16 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie")
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
+    public void addReviewCounts() {
+        this.reviewCounts++;
+    }
+
+    public void decrementReviewCounts() {
+        if (this.reviewCounts > 0) {
+            this.reviewCounts--;
+        }
+    }
+
     //===연관 관계 메서드===//
     public void addGalleries(Gallery gallery) {
         galleries.add(gallery);
@@ -84,5 +95,20 @@ public class Movie extends BaseEntity {
     public void addMovieGenres(MovieGenre movieGenre) {
         movieGenres.add(movieGenre);
         movieGenre.changeMovie(this);
+    }
+
+    @Builder
+    public Movie(String title, String plot, LocalDate releaseDate, Integer runtime, String posterUrl,
+                 Integer likeCounts,
+                 Integer reviewCounts, BigDecimal averageRating, FilmRatings filmRatings) {
+        this.title = title;
+        this.plot = plot;
+        this.releaseDate = releaseDate;
+        this.runtime = runtime;
+        this.posterUrl = posterUrl;
+        this.likeCounts = likeCounts;
+        this.reviewCounts = reviewCounts;
+        this.averageRating = averageRating;
+        this.filmRatings = filmRatings;
     }
 }

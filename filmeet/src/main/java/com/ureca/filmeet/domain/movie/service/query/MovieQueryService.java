@@ -3,15 +3,20 @@ package com.ureca.filmeet.domain.movie.service.query;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
-import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
+import com.ureca.filmeet.domain.movie.dto.response.ReviewInfo;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieCountriesRepository;
+import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
-import java.time.LocalDate;
+import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,25 +27,14 @@ public class MovieQueryService {
 
     private final MovieRepository movieRepository;
     private final MovieGenreRepository movieGenreRepository;
+    private final MovieLikesRepository movieLikesRepository;
     private final MovieCountriesRepository movieCountriesRepository;
-
-    public List<UpcomingMoviesResponse> getUpcomingMovies(int year, int month) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-
-        return movieRepository.findUpcomingMoviesByDateRange(currentDate,
-                        startDate, endDate)
-                .stream()
-                .map(UpcomingMoviesResponse::of)
-                .toList();
-    }
+    private final ReviewRepository reviewRepository;
 
     public MovieDetailResponse getMovieDetailV1(Long movieId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
                 .orElseThrow(() -> new RuntimeException("no movie"));
 
-        // 제작국가 리스트 변환
         List<String> countries = movie.getMovieCountries()
                 .stream()
                 .map(mc -> mc.getCountries().getNation())
@@ -51,29 +45,23 @@ public class MovieQueryService {
                 .map(movieGenre -> movieGenre.getGenre().getGenreType())
                 .toList();
 
-        // 참여자 정보 리스트 변환
-        List<PersonnelInfoResponse> personnels = movie.getMoviePersonnels()
-                .stream()
-                .map(mp -> new PersonnelInfoResponse(
-                        mp.getMoviePosition(),
-                        mp.getCharacterName(),
-                        mp.getPersonnel().getName(),
-                        mp.getPersonnel().getProfileImage()
-                ))
-                .toList();
+        List<PersonnelInfoResponse> personnels = getPersonnelInfoResponses(movie);
 
-        List<String> galleryImages = movie.getGalleries().stream()
-                .map(Gallery::getImageUrl)
-                .toList();
+        List<String> galleryImages = getGalleryImages(movie);
 
-        return MovieDetailResponse.from(movie, countries, genres, personnels, galleryImages);
+        return MovieDetailResponse.from(movie, false, null, countries, genres, personnels, galleryImages);
     }
 
-    public MovieDetailResponse getMovieDetail(Long movieId) {
+    public MovieDetailResponse getMovieDetail(Long movieId, Long userId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
                 .orElseThrow(() -> new RuntimeException("no movie"));
 
-        // 제작국가 리스트 변환
+        boolean isLiked = movieLikesRepository.findMovieLikesBy(movieId, userId).isPresent();
+
+        ReviewInfo reviewInfo = reviewRepository.findReviewBy(movieId, userId)
+                .map(ReviewInfo::of)
+                .orElse(new ReviewInfo(null, null));
+
         List<String> countries = movieCountriesRepository.findMovieCountriesByMovieId(movieId)
                 .stream()
                 .map(movieCountries -> movieCountries.getCountries().getNation())
@@ -84,8 +72,31 @@ public class MovieQueryService {
                 .map(movieGenre -> movieGenre.getGenre().getGenreType())
                 .toList();
 
-        // 참여자 정보 리스트 변환
-        List<PersonnelInfoResponse> personnels = movie.getMoviePersonnels()
+        List<PersonnelInfoResponse> personnels = getPersonnelInfoResponses(movie);
+
+        List<String> galleryImages = getGalleryImages(movie);
+
+        return MovieDetailResponse.from(
+                movie,
+                isLiked,
+                reviewInfo,
+                countries,
+                genres,
+                personnels,
+                galleryImages
+        );
+    }
+
+    private static List<String> getGalleryImages(Movie movie) {
+        return movie.getGalleries()
+                .stream()
+                .map(Gallery::getImageUrl)
+                .toList();
+    }
+
+    // 참여자 정보 리스트 변환
+    private static List<PersonnelInfoResponse> getPersonnelInfoResponses(Movie movie) {
+        return movie.getMoviePersonnels()
                 .stream()
                 .map(mp -> new PersonnelInfoResponse(
                         mp.getMoviePosition(),
@@ -94,12 +105,10 @@ public class MovieQueryService {
                         mp.getPersonnel().getProfileImage()
                 ))
                 .toList();
+    }
 
-        List<String> galleryImages = movie.getGalleries()
-                .stream()
-                .map(Gallery::getImageUrl)
-                .toList();
-
-        return MovieDetailResponse.from(movie, countries, genres, personnels, galleryImages);
+    public Slice<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return movieRepository.findMoviesByGenre(genreType, pageable);
     }
 }

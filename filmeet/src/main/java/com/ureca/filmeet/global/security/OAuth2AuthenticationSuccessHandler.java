@@ -1,13 +1,12 @@
 package com.ureca.filmeet.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ureca.filmeet.domain.auth.dto.CustomUser;
+import com.ureca.filmeet.domain.auth.dto.response.TokenResponse;
 import com.ureca.filmeet.domain.user.entity.Role;
-import com.ureca.filmeet.domain.user.entity.User;
-import com.ureca.filmeet.domain.user.service.command.UserCommandService;
-import com.ureca.filmeet.domain.user.service.query.UserQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.exception.ResponseCode;
-import com.ureca.filmeet.global.util.jwt.JwtTokenProvider;
+import com.ureca.filmeet.global.util.jwt.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,29 +23,27 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserQueryService userQueryService;
-    private final UserCommandService userCommandService;
+    private final TokenService tokenService;
     private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
 
         // 사용자 조회 또는 생성
-        String username = oAuth2User.getAttribute("sub");
+        String username = customUser.getProviderId();
         Role role = Role.ROLE_USER;
 
         // JWT 발급
-        Map<String, String> tokens = jwtTokenProvider.generateTokens(username, role);
+        TokenResponse tokens = tokenService.generateTokens(username, role);
 
         // JSON 응답 구성
         ApiResponse<Map<String, Object>> apiResponse = new ApiResponse<>(
                 ResponseCode.SUCCESS,
                 Map.of(
-                        "accessToken", tokens.get("accessToken"),
-                        "refreshToken", tokens.get("refreshToken")
+                        "accessToken", tokens.accessToken(),
+                        "refreshToken", tokens.refreshToken()
                 )
         );
 
