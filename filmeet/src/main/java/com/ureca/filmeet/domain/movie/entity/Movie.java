@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +46,11 @@ public class Movie extends BaseEntity {
     @Column(length = 200)
     private String posterUrl;
 
-    private Integer likeCounts;
+    private Integer likeCounts = 0;
 
-    private Integer ratingCounts;
+    private Integer ratingCounts = 0;
 
-    private BigDecimal averageRating;
+    private BigDecimal averageRating = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     private FilmRatings filmRatings;
@@ -105,6 +106,18 @@ public class Movie extends BaseEntity {
     public void addMovieGenres(MovieGenre movieGenre) {
         movieGenres.add(movieGenre);
         movieGenre.changeMovie(this);
+    }
+
+    public void updateMovieRating(BigDecimal ratingScore) {
+        // 새로운 총합 계산
+        BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts))
+                .add(ratingScore);
+
+        // 새로운 평균 계산
+        this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts + 1), 1, RoundingMode.HALF_UP);
+
+        // 별점 개수 증가
+        this.ratingCounts++;
     }
 
     @Builder
