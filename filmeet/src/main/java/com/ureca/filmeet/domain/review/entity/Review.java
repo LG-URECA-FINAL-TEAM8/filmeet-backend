@@ -62,4 +62,8 @@ public class Review extends BaseEntity {
     public void modifyReview(String content) {
         this.content = content;
     }
+
+    public void addCommentCounts() {
+        this.commentCounts++;
+    }
 }

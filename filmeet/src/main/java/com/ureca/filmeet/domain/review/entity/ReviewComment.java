@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,5 +46,12 @@ public class ReviewComment extends BaseTimeEntity {
         if (review != null) {
             review.getReviewComments().add(this);
         }
+    }
+
+    @Builder
+    public ReviewComment(String content, Review review, User user) {
+        this.content = content;
+        this.review = review;
+        this.user = user;
     }
 }
