@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.review.controller.query;
 
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewDetailResponse;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
+import com.ureca.filmeet.domain.review.dto.response.trending.ReviewTrendingResponse;
 import com.ureca.filmeet.domain.review.service.query.ReviewQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,5 +40,17 @@ public class ReviewQueryController {
     ) {
         GetMovieReviewDetailResponse movieReviewDetail = reviewQueryService.getMovieReviewDetail(reviewId, userId);
         return ApiResponse.ok(movieReviewDetail);
+    }
+
+    @GetMapping("/users/{userId}")
+    public Slice<ReviewTrendingResponse> getTrendingReviews(
+            @RequestParam("filter") String filter,
+            @PathVariable("userId") Long userId,
+            Pageable pageable
+    ) {
+        if (filter.equals("recent_reviews")) {
+            return reviewQueryService.getRecentReviews(userId, pageable);
+        }
+        return reviewQueryService.getTrendingReviews(userId, pageable);
     }
 }

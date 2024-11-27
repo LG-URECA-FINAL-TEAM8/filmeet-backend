@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.review.repository;
 
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
+import com.ureca.filmeet.domain.review.dto.response.trending.ReviewResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -69,4 +70,23 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "WHERE r.isDeleted = false AND r.isVisible = true AND r.id = :reviewId " +
             "ORDER BY rc.createdAt ASC")
     Optional<Review> findMovieReviewDetailBy(@Param("reviewId") Long reviewId);
+
+    @Query("SELECT new com.ureca.filmeet.domain.review.dto.response.trending.ReviewResponse( " +
+            "r.id, u.id, m.id, " +
+            "r.content, r.likeCounts, r.commentCounts, r.createdAt, " +
+            "u.nickname, u.profileImage, m.title, m.posterUrl, " +
+            "(SELECT mr.ratingScore " +
+            " FROM MovieRatings mr " +
+            " WHERE mr.movie.id = r.movie.id AND mr.user.id = u.id), " +
+            "CASE WHEN (rl IS NOT NULL) THEN TRUE ELSE FALSE END " +
+            ") " +
+            "FROM Review r " +
+            "JOIN r.movie m " +
+            "JOIN r.user u " +
+            "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId"
+    )
+    Slice<ReviewResponse> findTrendingReviewsBy(
+            @Param("userId") Long userId,
+            Pageable pageable
+    );
 }
