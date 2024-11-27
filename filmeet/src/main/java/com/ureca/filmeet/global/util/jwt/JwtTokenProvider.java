@@ -1,22 +1,22 @@
 package com.ureca.filmeet.global.util.jwt;
 
 import com.ureca.filmeet.domain.user.entity.Role;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     private final Key key;
@@ -35,13 +35,13 @@ public class JwtTokenProvider {
         return createToken(username, role, accessTokenValidity);
     }
 
-    public String createRefreshToken(String username) {
-        return createToken(username, null, refreshTokenValidity);
+    public String createRefreshToken(String username, Role role) {
+        return createToken(username, role, refreshTokenValidity);
     }
 
     public Map<String, String> generateTokens(String username, Role role) {
         String accessToken = createAccessToken(username, role);
-        String refreshToken = createRefreshToken(username);
+        String refreshToken = createRefreshToken(username, role);
 
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
@@ -53,7 +53,6 @@ public class JwtTokenProvider {
     private String createToken(String username, Role role, long validityMinutes) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiry = now.plusMinutes(validityMinutes);
-
         JwtBuilder builder = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(toDate(now))
@@ -69,8 +68,10 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw e;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
@@ -100,6 +101,6 @@ public class JwtTokenProvider {
     }
 
     private Date toDate(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.toInstant(ZoneOffset.UTC));
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }
