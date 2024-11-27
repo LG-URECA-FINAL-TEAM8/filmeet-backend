@@ -51,7 +51,7 @@ public class ReviewComment extends BaseEntity {
     @Builder
     public ReviewComment(String content, Review review, User user) {
         this.content = content;
-        this.review = review;
+        setReview(review);
         this.user = user;
     }
 

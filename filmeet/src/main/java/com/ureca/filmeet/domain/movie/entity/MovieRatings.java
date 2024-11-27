@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,12 +19,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MovieLikes extends BaseTimeEntity {
+public class MovieRatings extends BaseTimeEntity {
 
     @Id
-    @Column(name = "movie_likes_id")
+    @Column(name = "movie_ratings_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private BigDecimal ratingScore = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
@@ -34,8 +37,13 @@ public class MovieLikes extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public MovieLikes(Movie movie, User user) {
+    public MovieRatings(BigDecimal ratingScore, Movie movie, User user) {
+        this.ratingScore = ratingScore;
         this.movie = movie;
         this.user = user;
+    }
+
+    public void modifyRatingScore(BigDecimal ratingScore) {
+        this.ratingScore = ratingScore;
     }
 }

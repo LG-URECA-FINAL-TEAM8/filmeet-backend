@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,5 +38,12 @@ public class GenreScore extends BaseTimeEntity {
 
     public void addScore(int additionalScore) {
         this.score += additionalScore;
+    }
+
+    @Builder
+    public GenreScore(User user, Genre genre, Integer score) {
+        this.user = user;
+        this.genre = genre;
+        this.score = score;
     }
 }
