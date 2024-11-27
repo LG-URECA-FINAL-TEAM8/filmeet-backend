@@ -4,6 +4,7 @@ import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewDetailResponse
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.trending.ReviewTrendingResponse;
 import com.ureca.filmeet.domain.review.service.query.ReviewQueryService;
+import com.ureca.filmeet.domain.review.service.query.ReviewTrendingQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewQueryController {
 
     private final ReviewQueryService reviewQueryService;
+    private final ReviewTrendingQueryService reviewTrendingQueryService;
 
     @GetMapping("/movies/{movieId}/users/{userId}")
     public ResponseEntity<ApiResponse<SliceResponseDto<GetMovieReviewsResponse>>> getMovieReviews(
@@ -49,10 +51,10 @@ public class ReviewQueryController {
             Pageable pageable
     ) {
         if (filter.equals("recent_reviews")) {
-            Slice<ReviewTrendingResponse> recentReviews = reviewQueryService.getRecentReviews(userId, pageable);
+            Slice<ReviewTrendingResponse> recentReviews = reviewTrendingQueryService.getRecentReviews(userId, pageable);
             return ApiResponse.ok(SliceResponseDto.of(recentReviews));
         }
-        Slice<ReviewTrendingResponse> trendingReviews = reviewQueryService.getTrendingReviews(userId, pageable);
+        Slice<ReviewTrendingResponse> trendingReviews = reviewTrendingQueryService.getTrendingReviews(userId, pageable);
         return ApiResponse.ok(SliceResponseDto.of(trendingReviews));
     }
 }
