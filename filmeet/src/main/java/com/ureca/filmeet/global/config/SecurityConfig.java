@@ -3,7 +3,9 @@ package com.ureca.filmeet.global.config;
 import com.ureca.filmeet.domain.auth.service.CustomOAuth2UserService;
 import com.ureca.filmeet.domain.auth.service.CustomOidcUserService;
 import com.ureca.filmeet.global.filter.JwtAuthenticationFilter;
+import com.ureca.filmeet.global.security.CustomAccessDeniedHandler;
 import com.ureca.filmeet.global.security.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ureca.filmeet.global.security.JwtAuthenticationEntryPoint;
 import com.ureca.filmeet.global.security.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,6 +28,8 @@ public class SecurityConfig {
     private final CustomOidcUserService customOidcUserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
@@ -53,12 +57,15 @@ public class SecurityConfig {
                                 oAuth2AuthenticationSuccessHandler
                                         .onAuthenticationSuccess(request, response, authentication))
                 )
+                .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+                .exceptionHandling(handler -> handler
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/health").permitAll() // 먼저 선언
                         .requestMatchers("/**", "/images/**", "/users/signup", "/auth/**", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }

@@ -12,6 +12,10 @@ public enum ResponseCode {
     // Client Error Codes
     BAD_REQUEST(400, "Bad Request"),
     UNAUTHORIZED(401, "Unauthorized"),
+    INVALID_PASSWORD(401, "Invalid Password"),
+    INVALID_TOKEN(401, "Invalid Token"),
+    ACCESS_TOKEN_EXPIRED(401, "Access token has expired. Use refresh token to get a new access token."),
+    REFRESH_TOKEN_EXPIRED(401, "Refresh Token has expired. Login again"),
     FORBIDDEN(403, "Forbidden"),
     NOT_FOUND(404, "Not Found"),
 
@@ -23,7 +27,7 @@ public enum ResponseCode {
     S3_DOWNLOAD_FAILED(500, "[101002] File download failed");
 
 
-    private final int status;
+    private final Integer status;
     private final String message;
 
     ResponseCode(int status, String message) {
