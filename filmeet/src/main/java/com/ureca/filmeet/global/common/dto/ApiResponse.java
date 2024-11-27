@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ureca.filmeet.global.exception.ResponseCode;
+import org.springframework.http.ResponseEntity;
+
 import com.ureca.filmeet.infra.s3.dto.S3DownloadResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public record ApiResponse<T>(
         Integer code,
@@ -31,8 +34,12 @@ public record ApiResponse<T>(
     }
 
     // 커스텀 에러 메시지 생성자
-    public ApiResponse(Integer code, String message) {
-        this(code, message, null, LocalDateTime.now());
+    public ApiResponse(ResponseCode responseCode, String customMessage) {
+        this(responseCode.getStatus(), customMessage, null, LocalDateTime.now());
+    }
+
+    public ApiResponse(ResponseCode responseCode, String customMessage, T data) {
+        this(responseCode.getStatus(), customMessage, data, LocalDateTime.now());
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> created(String redirectUrl, T data) {
@@ -57,6 +64,28 @@ public record ApiResponse<T>(
     public static <T> ResponseEntity<ApiResponse<T>> unAuthorized() {
         return ResponseEntity.status(ResponseCode.UNAUTHORIZED.getStatus())
                 .body(new ApiResponse<>(ResponseCode.UNAUTHORIZED));
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> invalidToken(String customMessage) {
+        return ResponseEntity.status(ResponseCode.INVALID_TOKEN.getStatus())
+                .body(new ApiResponse<>(ResponseCode.INVALID_TOKEN));
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> invalidPassword() {
+        return ResponseEntity.status(ResponseCode.INVALID_PASSWORD.getStatus())
+                .body(new ApiResponse<>(ResponseCode.INVALID_PASSWORD));
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> accessTokenExpired() {
+        return ResponseEntity.status(ResponseCode.ACCESS_TOKEN_EXPIRED.getStatus())
+                .body((ApiResponse<T>) new ApiResponse<>(
+                        ResponseCode.ACCESS_TOKEN_EXPIRED,
+                        Map.of("request_url", "/auth/refresh")));
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> refreshTokenExpired() {
+        return ResponseEntity.status(ResponseCode.REFRESH_TOKEN_EXPIRED.getStatus())
+                .body(new ApiResponse<>(ResponseCode.REFRESH_TOKEN_EXPIRED));
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> notFound() {
