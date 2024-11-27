@@ -16,7 +16,12 @@ public enum ResponseCode {
     NOT_FOUND(404, "Not Found"),
 
     // Server Error Codes
-    INTERNAL_SERVER_ERROR(500, "Internal Server Error");
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
+
+    // S3 Error Codes
+    S3_UPLOAD_FAILED(500, "[101001] File upload failed"),
+    S3_DOWNLOAD_FAILED(500, "[101002] File download failed");
+
 
     private final int status;
     private final String message;
