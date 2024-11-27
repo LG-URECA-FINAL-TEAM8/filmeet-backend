@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 public record ModifyMovieRatingRequest(
 
         Long movieId,
+        Long userId,
         Long movieRatingId,
-        BigDecimal oldRatingScore,
         BigDecimal newRatingScore
 ) {
 }

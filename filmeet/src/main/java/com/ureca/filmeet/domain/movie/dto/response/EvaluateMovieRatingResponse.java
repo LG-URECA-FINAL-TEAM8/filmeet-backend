@@ -4,7 +4,7 @@ import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 
 public record EvaluateMovieRatingResponse(
 
-        Long movieRatingsId
+        Long movieRatingId
 ) {
 
     public static EvaluateMovieRatingResponse of(MovieRatings movieRatings) {

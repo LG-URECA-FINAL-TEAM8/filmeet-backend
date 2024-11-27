@@ -12,7 +12,11 @@ public enum GenreScoreAction {
     COLLECTION(4),
 
     LIKE_CANCEL(-2),
-    COLLECTION_DELETE(-4);
+    COLLECTION_DELETE(-4),
+
+    RATING(1),
+    RATING_UPDATE(1),
+    RATING_DELETE(-1);
 
     private final int weight;
 
