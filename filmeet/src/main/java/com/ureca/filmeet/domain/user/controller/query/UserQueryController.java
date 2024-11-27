@@ -1,5 +1,7 @@
 package com.ureca.filmeet.domain.user.controller.query;
 
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRatingResponse;
+import com.ureca.filmeet.domain.movie.service.query.MovieRatingQueryService;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.service.query.ReviewQueryService;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserQueryController {
 
     private final ReviewQueryService reviewQueryService;
+    private final MovieRatingQueryService movieRatingQueryService;
 
     @GetMapping("/test")
     public ResponseEntity<?> userInfo(@AuthenticationPrincipal User user) {
@@ -38,5 +41,15 @@ public class UserQueryController {
     ) {
         Slice<UserReviewsResponse> userReviews = reviewQueryService.getUserReviews(userId, pageable);
         return ApiResponse.ok(SliceResponseDto.of(userReviews));
+    }
+
+    @GetMapping("{userId}/movies/ratings")
+    public ResponseEntity<ApiResponse<SliceResponseDto<MoviesRatingResponse>>> getMoviesWithUserRatings(
+            @PathVariable("userId") Long userId,
+            Pageable pageable
+    ) {
+        Slice<MoviesRatingResponse> moviesWithUserRatings = movieRatingQueryService.getMoviesWithUserRatings(userId,
+                pageable);
+        return ApiResponse.ok(SliceResponseDto.of(moviesWithUserRatings));
     }
 }

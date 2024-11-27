@@ -4,7 +4,6 @@ import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
-import com.ureca.filmeet.domain.movie.dto.response.MoviesRatingResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
@@ -12,7 +11,6 @@ import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
 import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRankingsQueryService;
-import com.ureca.filmeet.domain.movie.service.query.MovieRatingQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
@@ -22,7 +20,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +39,6 @@ public class MovieQueryController {
     private final MovieUpcomingQueryService movieUpcomingQueryService;
     private final MovieRankingsQueryService movieRankingsQueryService;
     private final MovieRecommendationQueryService movieRecommendationQueryService;
-    private final MovieRatingQueryService movieRatingQueryService;
 
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<SliceResponseDto<UpcomingMoviesResponse>>> getUpcomingMovies(
@@ -117,15 +113,5 @@ public class MovieQueryController {
             @RequestParam(defaultValue = "10") int size) {
         Slice<MoviesResponse> moviesByGenre = movieQueryService.getMoviesByGenre(genreType, page, size);
         return ApiResponse.ok(SliceResponseDto.of(moviesByGenre));
-    }
-
-    @GetMapping("/ratings/users/{userId}")
-    public ResponseEntity<ApiResponse<SliceResponseDto<MoviesRatingResponse>>> getMoviesWithUserRatings(
-            @PathVariable("userId") Long userId,
-            Pageable pageable
-    ) {
-        Slice<MoviesRatingResponse> moviesWithUserRatings = movieRatingQueryService.getMoviesWithUserRatings(userId,
-                pageable);
-        return ApiResponse.ok(SliceResponseDto.of(moviesWithUserRatings));
     }
 }
