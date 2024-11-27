@@ -67,16 +67,6 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie")
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
-    public void addRatingCounts() {
-        this.ratingCounts++;
-    }
-
-    public void decrementRatingCounts() {
-        if (this.ratingCounts > 0) {
-            this.ratingCounts--;
-        }
-    }
-
     public void addLikeCounts() {
         this.likeCounts++;
     }
@@ -85,27 +75,6 @@ public class Movie extends BaseEntity {
         if (this.likeCounts > 0) {
             this.likeCounts--;
         }
-    }
-
-    //===연관 관계 메서드===//
-    public void addGalleries(Gallery gallery) {
-        galleries.add(gallery);
-        gallery.changeMovie(this);
-    }
-
-    public void addMovieCountries(MovieCountries movieCountry) {
-        movieCountries.add(movieCountry);
-        movieCountry.changeMovie(this);
-    }
-
-    public void addMoviePersonnels(MoviePersonnel moviePersonnel) {
-        moviePersonnels.add(moviePersonnel);
-        moviePersonnel.changeMovie(this);
-    }
-
-    public void addMovieGenres(MovieGenre movieGenre) {
-        movieGenres.add(movieGenre);
-        movieGenre.changeMovie(this);
     }
 
     public void evaluateMovieRating(BigDecimal ratingScore) {
@@ -128,6 +97,46 @@ public class Movie extends BaseEntity {
 
         // 새로운 평균 계산
         this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1, RoundingMode.HALF_UP);
+    }
+
+    public void updateAfterRatingDeletion(BigDecimal ratingScoreToDelete) {
+        if (this.ratingCounts > 0) {
+            this.ratingCounts--;
+
+            // 총합에서 삭제된 평점 제거
+            BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts + 1))
+                    .subtract(ratingScoreToDelete);
+
+            // 새로운 평균 계산
+            if (this.ratingCounts == 0) {
+                this.averageRating = BigDecimal.ZERO; // 남은 평점이 없으면 평균은 0
+            } else {
+                this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1, RoundingMode.HALF_UP);
+            }
+        } else {
+            throw new RuntimeException("별점 개수가 이미 0입니다.");
+        }
+    }
+
+    //===연관 관계 메서드===//
+    public void addGalleries(Gallery gallery) {
+        galleries.add(gallery);
+        gallery.changeMovie(this);
+    }
+
+    public void addMovieCountries(MovieCountries movieCountry) {
+        movieCountries.add(movieCountry);
+        movieCountry.changeMovie(this);
+    }
+
+    public void addMoviePersonnels(MoviePersonnel moviePersonnel) {
+        moviePersonnels.add(moviePersonnel);
+        moviePersonnel.changeMovie(this);
+    }
+
+    public void addMovieGenres(MovieGenre movieGenre) {
+        movieGenres.add(movieGenre);
+        movieGenre.changeMovie(this);
     }
 
     @Builder
