@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.review.repository;
 
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
+import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.trending.ReviewResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import java.util.Optional;
@@ -86,6 +87,26 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId"
     )
     Slice<ReviewResponse> findTrendingReviewsBy(
+            @Param("userId") Long userId,
+            Pageable pageable
+    );
+
+    @Query("SELECT new com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse( " +
+            "r.id, u.id, m.id, " +
+            "r.content, r.likeCounts, r.commentCounts, " +
+            "u.nickname, u.profileImage, m.title, m.posterUrl, m.releaseDate, " +
+            "(SELECT mr.ratingScore " +
+            " FROM MovieRatings mr " +
+            " WHERE mr.movie.id = r.movie.id AND mr.user.id = u.id), " +
+            "CASE WHEN (rl IS NOT NULL) THEN TRUE ELSE FALSE END " +
+            ") " +
+            "FROM Review r " +
+            "JOIN r.movie m " +
+            "JOIN r.user u " +
+            "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId " +
+            "WHERE u.id = :userId"
+    )
+    Slice<UserReviewsResponse> findUserReviews(
             @Param("userId") Long userId,
             Pageable pageable
     );
