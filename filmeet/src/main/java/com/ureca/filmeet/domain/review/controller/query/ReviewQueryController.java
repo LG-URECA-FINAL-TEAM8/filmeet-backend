@@ -43,14 +43,16 @@ public class ReviewQueryController {
     }
 
     @GetMapping("/users/{userId}")
-    public Slice<ReviewTrendingResponse> getTrendingReviews(
+    public ResponseEntity<ApiResponse<SliceResponseDto<ReviewTrendingResponse>>> getTrendingReviews(
             @RequestParam("filter") String filter,
             @PathVariable("userId") Long userId,
             Pageable pageable
     ) {
         if (filter.equals("recent_reviews")) {
-            return reviewQueryService.getRecentReviews(userId, pageable);
+            Slice<ReviewTrendingResponse> recentReviews = reviewQueryService.getRecentReviews(userId, pageable);
+            return ApiResponse.ok(SliceResponseDto.of(recentReviews));
         }
-        return reviewQueryService.getTrendingReviews(userId, pageable);
+        Slice<ReviewTrendingResponse> trendingReviews = reviewQueryService.getTrendingReviews(userId, pageable);
+        return ApiResponse.ok(SliceResponseDto.of(trendingReviews));
     }
 }
