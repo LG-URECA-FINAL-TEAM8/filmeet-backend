@@ -47,9 +47,9 @@ public class GlobalExceptionHandler {
     }
 
     // 모든 예외 처리 (fallback)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGlobalException(Exception ex) {
-
-        return ApiResponse.internalServerError();
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<?> handleGlobalException(Exception ex) {
+//
+//        return ApiResponse.internalServerError();
+//    }
 }

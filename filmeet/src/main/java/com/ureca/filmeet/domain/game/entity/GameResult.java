@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,4 +39,13 @@ public class GameResult extends BaseTimeEntity {
 
     @Column(name = "`rank`")
     private Integer rank; // 순위
+
+    @Builder
+    public GameResult(Long id, Game game, User user, Movie movie, Integer rank) {
+        this.id = id;
+        this.game = game;
+        this.user = user;
+        this.movie = movie;
+        this.rank = rank;
+    }
 }
