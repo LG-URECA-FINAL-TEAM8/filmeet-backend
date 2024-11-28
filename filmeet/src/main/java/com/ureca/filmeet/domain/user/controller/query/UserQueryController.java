@@ -14,7 +14,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,21 +33,22 @@ public class UserQueryController {
         ));
     }
 
-    @GetMapping("/{userId}/reviews")
+    @GetMapping("/reviews")
     public ResponseEntity<ApiResponse<SliceResponseDto<UserReviewsResponse>>> getUserReviews(
-            @PathVariable("userId") Long userId,
+            @AuthenticationPrincipal User user,
             Pageable pageable
     ) {
-        Slice<UserReviewsResponse> userReviews = reviewQueryService.getUserReviews(userId, pageable);
+        Slice<UserReviewsResponse> userReviews = reviewQueryService.getUserReviews(user.getId(), pageable);
         return ApiResponse.ok(SliceResponseDto.of(userReviews));
     }
 
-    @GetMapping("{userId}/movies/ratings")
+    @GetMapping("/movies/ratings")
     public ResponseEntity<ApiResponse<SliceResponseDto<MoviesRatingResponse>>> getMoviesWithUserRatings(
-            @PathVariable("userId") Long userId,
+            @AuthenticationPrincipal User user,
             Pageable pageable
     ) {
-        Slice<MoviesRatingResponse> moviesWithUserRatings = movieRatingQueryService.getMoviesWithUserRatings(userId,
+        Slice<MoviesRatingResponse> moviesWithUserRatings = movieRatingQueryService.getMoviesWithUserRatings(
+                user.getId(),
                 pageable);
         return ApiResponse.ok(SliceResponseDto.of(moviesWithUserRatings));
     }
