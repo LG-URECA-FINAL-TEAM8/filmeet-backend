@@ -3,6 +3,7 @@ package com.ureca.filmeet.domain.review.service.query;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewDetailResponse;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.ReviewCommentResponse;
+import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.repository.ReviewLikesRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
@@ -36,5 +37,10 @@ public class ReviewQueryService {
         boolean existsReviewLikes = reviewLikesRepository.existsByReviewIdAndUserId(reviewId, userId);
 
         return GetMovieReviewDetailResponse.from(review, reviewCommentResponse, existsReviewLikes);
+    }
+
+    public Slice<UserReviewsResponse> getUserReviews(Long userId, Pageable pageable) {
+
+        return reviewRepository.findUserReviews(userId, pageable);
     }
 }
