@@ -60,4 +60,10 @@ public class Collection extends BaseEntity {
     public void addCommentCounts() {
         this.commentCounts++;
     }
+
+    public void decrementCommentCounts() {
+        if (this.commentCounts > 0) {
+            this.commentCounts--;
+        }
+    }
 }
