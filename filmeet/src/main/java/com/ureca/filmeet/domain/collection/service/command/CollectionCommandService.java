@@ -6,11 +6,15 @@ import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieBulkRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
+import com.ureca.filmeet.domain.genre.entity.enums.GenreScoreAction;
+import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,13 +30,14 @@ public class CollectionCommandService {
     private final CollectionRepository collectionRepository;
     private final CollectionMovieRepository collectionMovieRepository;
     private final CollectionMovieBulkRepository collectionMovieBulkRepository;
+    private final GenreScoreRepository genreScoreRepository;
 
-    public Long createCollection(CollectionCreateRequest collectionCreateRequest) {
+    public Long createCollection(CollectionCreateRequest collectionCreateRequest, Long userId) {
 
-        User user = userRepository.findById(collectionCreateRequest.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("no user"));
 
-        List<Movie> movies = movieRepository.findMoviesByMovieIds(collectionCreateRequest.movieIds());
+        List<Movie> movies = movieRepository.findMoviesWithGenreByMovieIds(collectionCreateRequest.movieIds());
 
         if (movies.isEmpty()) {
             throw new RuntimeException("No movies found for the given IDs");
@@ -46,6 +51,8 @@ public class CollectionCommandService {
         Collection savedCollection = collectionRepository.save(collection);
 
         collectionMovieBulkRepository.saveAll(collection, movies);
+
+        updateGenreScoresForUser(user.getId(), movies);
 
         return savedCollection.getId();
     }
@@ -80,7 +87,7 @@ public class CollectionCommandService {
 
         // 7. 추가할 영화 처리
         if (!moviesToAdd.isEmpty()) {
-            List<Movie> movies = movieRepository.findMoviesByMovieIds(moviesToAdd);
+            List<Movie> movies = movieRepository.findMoviesWithGenreByMovieIds(moviesToAdd);
             collectionMovieBulkRepository.saveAll(collection, movies);
         }
 
@@ -92,5 +99,23 @@ public class CollectionCommandService {
                 .orElseThrow(() -> new RuntimeException("no collection"));
 
         collection.delete();
+    }
+
+    private void updateGenreScoresForUser(Long userId, List<Movie> movies) {
+        // 영화에 포함된 모든 장르 ID 추출
+        List<Long> genreIds = movies.stream()
+                .flatMap(movie -> Optional.ofNullable(movie.getMovieGenres())
+                        .orElse(Collections.emptyList())
+                        .stream()
+                        .map(movieGenre -> movieGenre.getGenre().getId()))
+                .distinct()
+                .toList();
+
+        // 장르 점수 업데이트
+        genreScoreRepository.bulkUpdateGenreScores(
+                GenreScoreAction.COLLECTION.getWeight(),
+                genreIds,
+                userId
+        );
     }
 }

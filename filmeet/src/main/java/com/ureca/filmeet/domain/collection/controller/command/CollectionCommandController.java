@@ -5,9 +5,11 @@ import com.ureca.filmeet.domain.collection.dto.request.CollectionModifyRequest;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionCreateResponse;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionModifyResponse;
 import com.ureca.filmeet.domain.collection.service.command.CollectionCommandService;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +27,10 @@ public class CollectionCommandController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CollectionCreateResponse>> createCollection(
-            @RequestBody CollectionCreateRequest collectionCreateRequest) {
-        Long collectionId = collectionCommandService.createCollection(collectionCreateRequest);
+            @RequestBody CollectionCreateRequest collectionCreateRequest,
+            @AuthenticationPrincipal User user
+    ) {
+        Long collectionId = collectionCommandService.createCollection(collectionCreateRequest, user.getId());
         CollectionCreateResponse collectionCreateResponse = new CollectionCreateResponse(collectionId);
         return ApiResponse.ok(collectionCreateResponse);
     }
