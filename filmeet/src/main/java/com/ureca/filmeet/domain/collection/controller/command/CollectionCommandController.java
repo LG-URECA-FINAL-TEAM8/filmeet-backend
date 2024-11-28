@@ -37,8 +37,10 @@ public class CollectionCommandController {
 
     @PatchMapping
     public ResponseEntity<ApiResponse<CollectionModifyResponse>> modifyCollection(
-            @RequestBody CollectionModifyRequest collectionModifyRequest) {
-        Long collectionId = collectionCommandService.modifyCollection(collectionModifyRequest);
+            @RequestBody CollectionModifyRequest collectionModifyRequest,
+            @AuthenticationPrincipal User user
+    ) {
+        Long collectionId = collectionCommandService.modifyCollection(collectionModifyRequest, user.getId());
         CollectionModifyResponse collectionCreateResponse = new CollectionModifyResponse(collectionId);
         return ApiResponse.ok(collectionCreateResponse);
     }

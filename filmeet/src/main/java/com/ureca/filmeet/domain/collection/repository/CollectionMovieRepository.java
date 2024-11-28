@@ -9,7 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface CollectionMovieRepository extends JpaRepository<CollectionMovie, Long> {
 
-    @Query("SELECT cm.movie.id FROM CollectionMovie cm WHERE cm.collection.id = :collectionId")
+    @Query("SELECT cm.movie.id " +
+            "FROM CollectionMovie cm " +
+            "WHERE cm.collection.id = :collectionId")
     List<Long> findMovieIdsByCollectionId(@Param("collectionId") Long collectionId);
 
     @Query("SELECT cm " +

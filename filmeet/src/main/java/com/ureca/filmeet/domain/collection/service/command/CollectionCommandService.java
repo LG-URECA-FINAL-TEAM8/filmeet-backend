@@ -33,7 +33,6 @@ public class CollectionCommandService {
     private final GenreScoreRepository genreScoreRepository;
 
     public Long createCollection(CollectionCreateRequest collectionCreateRequest, Long userId) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("no user"));
 
@@ -52,12 +51,12 @@ public class CollectionCommandService {
 
         collectionMovieBulkRepository.saveAll(collection, movies);
 
-        updateGenreScoresForUser(user.getId(), movies);
+        updateGenreScoresForUser(user.getId(), movies, GenreScoreAction.COLLECTION);
 
         return savedCollection.getId();
     }
 
-    public Long modifyCollection(CollectionModifyRequest modifyRequest) {
+    public Long modifyCollection(CollectionModifyRequest modifyRequest, Long userId) {
         // 1. 컬렉션 조회
         Collection collection = collectionRepository.findById(modifyRequest.collectionId())
                 .orElseThrow(() -> new RuntimeException("no collection"));
@@ -74,7 +73,7 @@ public class CollectionCommandService {
         // 5. 삭제할 영화와 추가할 영화 계산
         List<Long> moviesToRemove = existingMovieIds.stream()
                 .filter(movieId -> !newMovieIds.contains(movieId))
-                .collect(Collectors.toList());
+                .toList();
 
         List<Long> moviesToAdd = newMovieIds.stream()
                 .filter(movieId -> !existingMovieIds.contains(movieId))
@@ -83,12 +82,20 @@ public class CollectionCommandService {
         // 6. 삭제할 영화 처리
         if (!moviesToRemove.isEmpty()) {
             collectionMovieRepository.deleteByCollectionIdAndMovieIds(collection.getId(), moviesToRemove);
+
+            // 삭제된 영화의 장르 점수 업데이트 (점수 감소)
+            List<Movie> moviesToRemoveEntities = movieRepository.findMoviesWithGenreByMovieIds(moviesToRemove);
+            updateGenreScoresForUser(userId, moviesToRemoveEntities,
+                    GenreScoreAction.COLLECTION_DELETE);
         }
 
         // 7. 추가할 영화 처리
         if (!moviesToAdd.isEmpty()) {
             List<Movie> movies = movieRepository.findMoviesWithGenreByMovieIds(moviesToAdd);
             collectionMovieBulkRepository.saveAll(collection, movies);
+
+            // 추가된 영화의 장르 점수 업데이트 (점수 증가)
+            updateGenreScoresForUser(userId, movies, GenreScoreAction.COLLECTION);
         }
 
         return collection.getId();
@@ -101,7 +108,7 @@ public class CollectionCommandService {
         collection.delete();
     }
 
-    private void updateGenreScoresForUser(Long userId, List<Movie> movies) {
+    private void updateGenreScoresForUser(Long userId, List<Movie> movies, GenreScoreAction genreScoreAction) {
         // 영화에 포함된 모든 장르 ID 추출
         List<Long> genreIds = movies.stream()
                 .flatMap(movie -> Optional.ofNullable(movie.getMovieGenres())
@@ -113,7 +120,7 @@ public class CollectionCommandService {
 
         // 장르 점수 업데이트
         genreScoreRepository.bulkUpdateGenreScores(
-                GenreScoreAction.COLLECTION.getWeight(),
+                genreScoreAction.getWeight(),
                 genreIds,
                 userId
         );
