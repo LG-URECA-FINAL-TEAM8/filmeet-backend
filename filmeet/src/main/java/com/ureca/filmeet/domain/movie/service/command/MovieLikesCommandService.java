@@ -26,6 +26,11 @@ public class MovieLikesCommandService {
     private final GenreScoreRepository genreScoreRepository;
 
     public void movieLikes(Long movieId, Long userId) {
+        boolean isAlreadyLiked = movieLikesRepository.existsByMovieIdAndUserId(movieId, userId);
+        if (isAlreadyLiked) {
+            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+        }
+
         Movie movie = movieRepository.findMovieWithGenreByMovieId(movieId)
                 .orElseThrow(() -> new RuntimeException("no movie"));
 
