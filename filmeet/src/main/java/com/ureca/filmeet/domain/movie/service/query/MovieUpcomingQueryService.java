@@ -16,14 +16,9 @@ public class MovieUpcomingQueryService {
 
     private final MovieRepository movieRepository;
 
-    public Slice<UpcomingMoviesResponse> getUpcomingMovies(int year, int month, int page, int size) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-
+    public Slice<UpcomingMoviesResponse> getUpcomingMovies(int page, int size, LocalDate currentDate) {
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "releaseDate");
-
-        return movieRepository.findUpcomingMoviesByDateRange(currentDate, startDate, endDate, pageable)
+        return movieRepository.findUpcomingMoviesByDateRange(currentDate, pageable)
                 .map(UpcomingMoviesResponse::of);
     }
 }

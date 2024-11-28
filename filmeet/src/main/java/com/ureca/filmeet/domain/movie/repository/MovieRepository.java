@@ -46,12 +46,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query("SELECT m FROM Movie m " +
             "WHERE m.isDeleted = false " +
-            "AND m.releaseDate > :currentDate " +
-            "AND m.releaseDate BETWEEN :startDate AND :endDate ")
+            "AND m.releaseDate > :currentDate ")
     Slice<Movie> findUpcomingMoviesByDateRange(
             @Param("currentDate") LocalDate currentDate,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
 

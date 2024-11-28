@@ -42,17 +42,14 @@ public class MovieQueryController {
 
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<SliceResponseDto<UpcomingMoviesResponse>>> getUpcomingMovies(
-            @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "month", required = false) Integer month,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size
+    ) {
 
-        LocalDate now = LocalDate.now();
-        int defaultYear = year != null ? year : now.getYear();
-        int defaultMonth = month != null ? month : now.getMonthValue();
-
+        LocalDate currentDate = LocalDate.now();
         return ApiResponse.ok(SliceResponseDto.of(
-                movieUpcomingQueryService.getUpcomingMovies(defaultYear, defaultMonth, page, size)));
+                movieUpcomingQueryService.getUpcomingMovies(page, size, currentDate))
+        );
     }
 
     @GetMapping("/boxoffice")
