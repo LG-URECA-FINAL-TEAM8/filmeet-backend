@@ -40,4 +40,22 @@ public class CollectionCommentLikeService {
 
         collection.addLikeCounts();
     }
+
+    public void collectionLikesCancel(Long collectionId, Long userId) {
+        Collection collection = collectionRepository.findById(collectionId)
+                .orElseThrow(() -> new RuntimeException("해당 컬렉션이 존재하지 않습니다."));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        CollectionLikes collectionLikes = collectionLikeRepository.findCollectionLikesByCollectionIdAndUserId(
+                        collection.getId(),
+                        user.getId())
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("User ID %d는 Collection ID %d를 좋아요하지 않았습니다.", userId, collectionId)));
+
+        collectionLikeRepository.delete(collectionLikes);
+
+        collection.decrementLikesCounts();
+    }
 }
