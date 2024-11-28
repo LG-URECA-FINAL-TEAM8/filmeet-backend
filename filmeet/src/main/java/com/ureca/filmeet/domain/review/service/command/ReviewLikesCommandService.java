@@ -43,10 +43,8 @@ public class ReviewLikesCommandService {
     public void reviewLikesCancel(Long reviewId, Long userId) {
         ReviewLikes reviewLikes = reviewLikesRepository.findReviewLikesByReviewIdAndUserId(reviewId, userId)
                 .orElseThrow(() -> new RuntimeException("취소할 리뷰 좋아요가 없습니다."));
-        reviewLikesRepository.delete(reviewLikes);
-
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("no review"));
+        Review review = reviewLikes.getReview();
         review.decrementLikesCounts();
+        reviewLikesRepository.delete(reviewLikes);
     }
 }

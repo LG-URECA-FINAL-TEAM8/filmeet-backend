@@ -25,11 +25,11 @@ public class ReviewLikesCommandController {
         reviewLikesCommandService.reviewLikes(reviewId, user.getId());
     }
 
-    @DeleteMapping("/cancel/reviews/{reviewId}/users/{userId}")
+    @DeleteMapping("/cancel/reviews/{reviewId}")
     public void reviewLikesCancel(
             @PathVariable("reviewId") Long reviewId,
-            @PathVariable("userId") Long userId
+            @AuthenticationPrincipal User user
     ) {
-        reviewLikesCommandService.reviewLikesCancel(reviewId, userId);
+        reviewLikesCommandService.reviewLikesCancel(reviewId, user.getId());
     }
 }
