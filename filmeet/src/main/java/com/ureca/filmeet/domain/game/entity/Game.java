@@ -77,4 +77,10 @@ public class Game extends BaseTimeEntity {
                 .filter(match -> match.getRoundNumber() == 2)  // 결승전
                 .anyMatch(RoundMatch::hasWinner);
     }
+
+    public boolean isAbandoned() {
+        return LocalDateTime.now().isAfter(
+                this.getModifiedAt().plusMinutes(10)
+        );
+    }
 }

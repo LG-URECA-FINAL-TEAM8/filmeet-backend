@@ -5,6 +5,7 @@ import com.ureca.filmeet.domain.game.dto.request.GameCreateRequest;
 import com.ureca.filmeet.domain.game.dto.request.RoundMatchSelectionRequest;
 import com.ureca.filmeet.domain.game.entity.Game;
 import com.ureca.filmeet.domain.game.entity.GameResult;
+import com.ureca.filmeet.domain.game.entity.GameStatus;
 import com.ureca.filmeet.domain.game.entity.RoundMatch;
 import com.ureca.filmeet.domain.game.repository.GameRepository;
 import com.ureca.filmeet.domain.game.repository.GameResultRepository;
@@ -14,7 +15,9 @@ import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -49,10 +52,15 @@ public class GameCommandService {
         return game.getId();
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void selectWinner(Long matchId, RoundMatchSelectionRequest request, User user) {
         RoundMatch match = roundMatchRepository.findByIdAndUserId(matchId, user.getId())
                 .orElseThrow(() -> new NotFoundException("no match"));
+
+        Game game = match.getGame();
+        if (game.isAbandoned()) {
+            throw new RuntimeException("중단된 게임");
+        }
 
         Movie winner = movieRepository.findById(request.selectedMovieId())
                 .orElseThrow(() -> new NotFoundException("no movie"));
@@ -60,13 +68,33 @@ public class GameCommandService {
         match.selectWinner(winner);
 
         if (isRoundComplete(match.getGame(), match.getRoundNumber())) {
-            // TODO: 왜 2일 때 결승전인지 설명
             if (match.getRoundNumber() == 2) { // 결승전
                 finishGame(match.getGame());
             } else {
                 createNextRoundMatches(match.getGame(), match.getUser(), match.getRoundNumber());
             }
         }
+    }
+
+    @Transactional
+    public void deleteGame(Long gameId, User user) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("no game"));
+
+        // 게임 소유자 검증
+        if (!game.getMatches().get(0).getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("not owner");
+        }
+
+        // 이미 완료된 게임은 삭제 불가
+        if (game.getStatus() == GameStatus.INACTIVE) {
+            throw new RuntimeException("not owner");
+        }
+
+        // 게임과 관련된 모든 데이터 삭제
+        gameResultRepository.deleteByGameId(gameId);
+        roundMatchRepository.deleteByGameId(gameId);
+        gameRepository.delete(game);
     }
 
     private void createInitialMatches(Game game, User user, List<Movie> movies) {
@@ -81,6 +109,20 @@ public class GameCommandService {
 
             game.addMatch(match);
         }
+    }
+
+    // 게임을 시작하고 10분간 활동이 없는 게임을 삭제
+    @Scheduled(fixedRate = 600000) // 10분마다 실행
+    @Transactional
+    public void cleanupAbandonedGames() {
+        List<Game> activeGames = gameRepository.findByStatus(GameStatus.ACTIVE);
+
+        activeGames.stream()
+                .filter(Game::isAbandoned)
+                .filter(game -> !game.getMatches().isEmpty())
+                .forEach(game -> {
+                    deleteGame(game.getId(), game.getMatches().get(0).getUser());
+                });
     }
 
     private boolean isRoundComplete(Game game, int roundNumber) {

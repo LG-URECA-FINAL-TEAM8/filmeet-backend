@@ -18,4 +18,7 @@ public interface RoundMatchRepository extends JpaRepository<RoundMatch, Long> {
     @Query("SELECT rm FROM RoundMatch rm " +
             "WHERE rm.game.id = :gameId AND rm.roundNumber = :roundNumber")
     List<RoundMatch> findByGameIdAndRoundNumber(Long gameId, Integer roundNumber);
+
+    @Query("DELETE FROM RoundMatch rm WHERE rm.game.id = :gameId")
+    void deleteByGameId(Long gameId);
 }
