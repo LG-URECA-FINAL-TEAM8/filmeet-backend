@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.collection.service.command;
 
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCommentCreateRequest;
+import com.ureca.filmeet.domain.collection.dto.request.CollectionCommentModifyRequest;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionComment;
 import com.ureca.filmeet.domain.collection.repository.CollectionCommentRepository;
@@ -37,5 +38,15 @@ public class CollectionCommentCommandService {
         collection.addCommentCounts();
 
         return savedCollection.getId();
+    }
+
+    public Long modifyCollectionComment(CollectionCommentModifyRequest collectionCommentModifyRequest, Long userId) {
+        CollectionComment collectionComment = collectionCommentRepository.findCollectionCommentWrittenUserBy(
+                        userId, collectionCommentModifyRequest.collectionCommentId())
+                .orElseThrow(() -> new RuntimeException("사용자에 의해 작성된 수정할 댓글이 없습니다. "));
+
+        collectionComment.modifyCollectionComment(collectionCommentModifyRequest.commentContent());
+
+        return collectionComment.getId();
     }
 }

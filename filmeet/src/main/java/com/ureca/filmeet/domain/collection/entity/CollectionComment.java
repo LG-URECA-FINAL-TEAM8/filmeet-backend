@@ -42,6 +42,10 @@ public class CollectionComment extends BaseEntity {
         setCollection(collection);
     }
 
+    public void modifyCollectionComment(String content) {
+        this.content = content;
+    }
+
     public void setCollection(Collection collection) {
         // 기존 연관관계 제거
         if (this.collection != null) {
