@@ -10,46 +10,39 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Collection extends BaseEntity {
+public class CollectionComment extends BaseEntity {
 
     @Id
-    @Column(name = "collection_id")
+    @Column(name = "collection_comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 50)
-    private String title;
-
-    @Column(length = 100)
-    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private User user;
 
-    @OneToMany(mappedBy = "collection")
-    private List<CollectionComment> collectionComments = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collection_id")
+    private Collection collection;
 
-    @Builder
-    public Collection(String title, String content, User user) {
-        this.title = title;
-        this.content = content;
-        this.user = user;
-    }
+    private String content;
 
-    public void modifyCollection(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public void setCollection(Collection collection) {
+        // 기존 연관관계 제거
+        if (this.collection != null) {
+            this.collection.getCollectionComments().remove(this);
+        }
+
+        this.collection = collection;
+        if (collection != null) {
+            collection.getCollectionComments().add(this);
+        }
     }
 }
