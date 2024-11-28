@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ReviewCommentCommandService {
 
@@ -22,7 +23,6 @@ public class ReviewCommentCommandService {
     private final ReviewRepository reviewRepository;
     private final ReviewCommentRepository reviewCommentRepository;
 
-    @Transactional
     public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest) {
         Review review = reviewRepository.findReviewBy(createCommentRequest.reviewId())
                 .orElseThrow(() -> new RuntimeException("no review"));
@@ -42,7 +42,6 @@ public class ReviewCommentCommandService {
         return CreateCommentResponse.of(savedReviewComment.getId());
     }
 
-    @Transactional
     public ModifyCommentResponse modifyComment(ModifyCommentRequest modifyCommentRequest) {
         ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewId())
                 .orElseThrow(() -> new RuntimeException("no reviewComment"));
@@ -52,7 +51,6 @@ public class ReviewCommentCommandService {
         return ModifyCommentResponse.of(reviewComment.getId());
     }
 
-    @Transactional
     public void deleteComment(Long reviewId, Long commentId) {
         Review review = reviewRepository.findReviewByReviewIdAndCommentId(reviewId, commentId)
                 .orElseThrow(() -> new RuntimeException("no review"));

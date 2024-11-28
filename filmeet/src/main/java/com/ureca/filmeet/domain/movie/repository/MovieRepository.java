@@ -22,6 +22,16 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query("SELECT m " +
             "FROM Movie m " +
+            "JOIN FETCH m.movieGenres mg " +
+            "JOIN FETCH mg.genre g " +
+            "WHERE m.id = :movieId " +
+            "AND m.isDeleted = false")
+    Optional<Movie> findMovieWithGenreByMovieId(
+            @Param("movieId") Long movieId
+    );
+
+    @Query("SELECT m " +
+            "FROM Movie m " +
             "JOIN Review r " +
             "ON r.movie.id = m.id " +
             "WHERE m.isDeleted = false " +
@@ -79,11 +89,15 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             "JOIN FETCH mg.genre genre " +
             "LEFT JOIN FETCH m.galleries g " +
             "WHERE m.id = :movieId AND m.isDeleted = false ")
-    Optional<Movie> findMovieDetailInfoV1(@Param("movieId") Long movieId);
+    Optional<Movie> findMovieDetailInfoV1(
+            @Param("movieId") Long movieId
+    );
 
     @Query("SELECT m FROM Movie m " +
             "LEFT JOIN FETCH m.moviePersonnels mp " +
-            "JOIN FETCH mp.personnel p " +
+            "LEFT JOIN FETCH mp.personnel p " +
             "WHERE m.id = :movieId AND m.isDeleted = false ")
-    Optional<Movie> findMovieDetailInfo(@Param("movieId") Long movieId);
+    Optional<Movie> findMovieDetailInfo(
+            @Param("movieId") Long movieId
+    );
 }

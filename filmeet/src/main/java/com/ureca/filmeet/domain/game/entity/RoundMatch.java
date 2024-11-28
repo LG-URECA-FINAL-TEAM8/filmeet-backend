@@ -45,5 +45,5 @@ public class RoundMatch extends BaseTimeEntity {
     private Movie winner;
 
     @Column(nullable = false)
-    private Integer roundNumber;
+    private Integer roundNumber; // 현재 라운드
 }

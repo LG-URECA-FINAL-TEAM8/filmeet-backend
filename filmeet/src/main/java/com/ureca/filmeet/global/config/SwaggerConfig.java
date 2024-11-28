@@ -5,8 +5,11 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
@@ -16,6 +19,10 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme()))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .servers(List.of(
+                        new Server().url("http://localhost:8080").description("Local Server"),
+                        new Server().url("http://filmeet-alb-1547575166.ap-northeast-2.elb.amazonaws.com").description("Production Server")
+                ))
                 .info(apiInfo());
     }
 

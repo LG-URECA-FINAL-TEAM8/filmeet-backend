@@ -49,7 +49,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT new com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse( " +
             "       r.id, u.id, r.content, r.likeCounts, r.commentCounts, " +
-            "       r.star, u.nickname, u.profileImage, " +
+            "       u.nickname, u.profileImage, " +
             "       CASE WHEN (rl IS NOT NULL) THEN TRUE ELSE FALSE END) " +
             "FROM Review r " +
             "JOIN r.user u " +

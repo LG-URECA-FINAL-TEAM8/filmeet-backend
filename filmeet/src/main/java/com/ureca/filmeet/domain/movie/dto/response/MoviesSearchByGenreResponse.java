@@ -15,7 +15,7 @@ public record MoviesSearchByGenreResponse(
         LocalDate releaseDate,
         Integer runtime,
         Integer likeCounts,
-        Integer reviewCounts,
+        Integer ratingCounts,
         BigDecimal averageRating,
         FilmRatings filmRatings,
         List<GenreType> genreTypes

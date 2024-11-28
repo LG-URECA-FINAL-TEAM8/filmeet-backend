@@ -2,7 +2,7 @@ package com.ureca.filmeet.global.util.jwt;
 
 import com.ureca.filmeet.domain.auth.dto.response.TokenResponse;
 import com.ureca.filmeet.domain.user.entity.Role;
-import com.ureca.filmeet.global.exception.AuthenticationException;
+import com.ureca.filmeet.global.exception.InvalidRefreshTokenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -31,7 +31,7 @@ public class TokenService {
 
         // Access/Refresh Token 생성
         String accessToken = jwtTokenProvider.createAccessToken(username, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(username);
+        String refreshToken = jwtTokenProvider.createRefreshToken(username, role);
 
         // Refresh Token Redis 저장
         redisTemplate.opsForValue().set(
@@ -48,7 +48,7 @@ public class TokenService {
 
         // Access/Refresh Token 생성
         String accessToken = jwtTokenProvider.createAccessToken(username, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(username);
+        String refreshToken = jwtTokenProvider.createRefreshToken(username, role);
 
         // Refresh Token Redis 저장
         redisTemplate.opsForValue().set(
@@ -63,9 +63,12 @@ public class TokenService {
 
     public TokenResponse refreshAccessToken(String refreshToken) {
         // Refresh Token 유효성 검증
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new AuthenticationException("Invalid Refresh Token");
+        try {
+            jwtTokenProvider.validateToken(refreshToken);
+        } catch (Exception e) {
+            throw new InvalidRefreshTokenException(e.getMessage());
         }
+
 
         // 사용자 이름 추출
         String username = jwtTokenProvider.getUsername(refreshToken);
@@ -73,13 +76,13 @@ public class TokenService {
         // Redis에서 저장된 Refresh Token 가져오기
         String storedToken = redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + username);
         if (storedToken == null || !storedToken.equals(refreshToken)) {
-            throw new AuthenticationException("Refresh Token mismatch");
+            throw new InvalidRefreshTokenException("Refresh Token mismatch");
         }
 
         // 새로운 Access Token 및 Refresh Token 생성
         Role role = jwtTokenProvider.getRole(refreshToken);
         String newAccessToken = jwtTokenProvider.createAccessToken(username, role);
-        String newRefreshToken = jwtTokenProvider.createRefreshToken(username);
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(username, role);
 
         // Redis에 새로운 Refresh Token 저장 (기존 Token 대체)
         redisTemplate.opsForValue().set(

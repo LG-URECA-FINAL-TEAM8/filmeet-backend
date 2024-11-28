@@ -37,5 +37,5 @@ public class GameResult extends BaseTimeEntity {
     private Movie movie;
 
     @Column(name = "`rank`")
-    private Integer rank;
+    private Integer rank; // 순위
 }

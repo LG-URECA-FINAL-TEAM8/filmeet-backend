@@ -1,7 +1,6 @@
 package com.ureca.filmeet.domain.review.dto.response;
 
 import com.ureca.filmeet.domain.review.entity.Review;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +13,6 @@ public record GetMovieReviewDetailResponse(
         String content,
         int likeCounts,
         int commentCounts,
-        BigDecimal star,
         LocalDateTime createdAt,
         String nickName,
         String profileImage,
@@ -34,7 +32,6 @@ public record GetMovieReviewDetailResponse(
                 review.getContent(),
                 review.getLikeCounts(),
                 review.getCommentCounts(),
-                review.getStar(),
                 review.getCreatedAt(),
                 review.getUser().getNickname(),
                 review.getUser().getProfileImage(),
