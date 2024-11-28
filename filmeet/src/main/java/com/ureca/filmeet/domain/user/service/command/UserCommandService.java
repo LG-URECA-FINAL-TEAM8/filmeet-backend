@@ -5,15 +5,17 @@ import com.ureca.filmeet.domain.genre.entity.GenreScore;
 import com.ureca.filmeet.domain.genre.repository.GenreRepository;
 import com.ureca.filmeet.domain.genre.repository.GenreScoreBulkRepository;
 import com.ureca.filmeet.domain.user.dto.request.UserSignUpRequest;
+import com.ureca.filmeet.domain.user.dto.response.UserDetailResponse;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,7 +26,7 @@ public class UserCommandService {
     private final GenreRepository genreRepository;
     private final GenreScoreBulkRepository genreScoreBulkRepository;
 
-    public User signUp(UserSignUpRequest request) {
+    public UserDetailResponse signUp(UserSignUpRequest request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new IllegalArgumentException("Username is already in use");
         }
@@ -38,8 +40,13 @@ public class UserCommandService {
         User savedUser = userRepository.save(newUser);
 
         initializeGenreScores(savedUser);
-
-        return savedUser;
+        return new UserDetailResponse(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getRole(),
+                savedUser.getNickname(),
+                savedUser.getProfileImage()
+        );
     }
 
     public User createTemporaryUser(String providerId, String name, Provider provider, String profileImage) {

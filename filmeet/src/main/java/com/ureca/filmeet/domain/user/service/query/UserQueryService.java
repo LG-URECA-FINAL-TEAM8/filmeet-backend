@@ -15,4 +15,8 @@ public class UserQueryService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + username));
     }
+
+    public Boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
 }
