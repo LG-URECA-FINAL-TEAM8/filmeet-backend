@@ -6,7 +6,6 @@ public record ModifyMovieRatingRequest(
 
         Long movieId,
         Long userId,
-        Long movieRatingId,
         BigDecimal newRatingScore
 ) {
 }
