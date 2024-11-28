@@ -45,7 +45,7 @@ public class CollectionCommandController {
         return ApiResponse.ok(collectionCreateResponse);
     }
 
-    @DeleteMapping("/{collectionId}")
+    @DeleteMapping
     public void deleteCollection(
             @RequestBody CollectionDeleteRequest collectionDeleteRequest,
             @AuthenticationPrincipal User user
