@@ -1,6 +1,7 @@
 package com.ureca.filmeet.global.exception;
 
 import com.ureca.filmeet.global.common.dto.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     // 인증 실패 예외 처리
@@ -49,7 +51,8 @@ public class GlobalExceptionHandler {
     // 모든 예외 처리 (fallback)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex) {
-
+        log.error("ex.getMessage(): {}", ex.getMessage());
+        log.error("ex.getCause(): {}", ex.getCause());
         return ApiResponse.internalServerError();
     }
 }
