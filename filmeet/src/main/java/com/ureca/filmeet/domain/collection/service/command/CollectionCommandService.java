@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.collection.service.command;
 
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCreateRequest;
+import com.ureca.filmeet.domain.collection.dto.request.CollectionDeleteRequest;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionModifyRequest;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieBulkRepository;
@@ -101,11 +102,14 @@ public class CollectionCommandService {
         return collection.getId();
     }
 
-    public void deleteCollection(Long collectionId) {
-        Collection collection = collectionRepository.findById(collectionId)
+    public void deleteCollection(CollectionDeleteRequest collectionDeleteRequest, Long userId) {
+        Collection collection = collectionRepository.findById(collectionDeleteRequest.collectionId())
                 .orElseThrow(() -> new RuntimeException("no collection"));
-
         collection.delete();
+
+        List<Movie> movies = movieRepository.findMoviesWithGenreByMovieIds(collectionDeleteRequest.movieIds());
+
+        updateGenreScoresForUser(userId, movies, GenreScoreAction.COLLECTION_DELETE);
     }
 
     private void updateGenreScoresForUser(Long userId, List<Movie> movies, GenreScoreAction genreScoreAction) {

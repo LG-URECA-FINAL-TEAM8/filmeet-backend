@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.collection.controller.command;
 
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCreateRequest;
+import com.ureca.filmeet.domain.collection.dto.request.CollectionDeleteRequest;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionModifyRequest;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionCreateResponse;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionModifyResponse;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +46,10 @@ public class CollectionCommandController {
     }
 
     @DeleteMapping("/{collectionId}")
-    public void deleteCollection(@PathVariable("collectionId") Long collectionId) {
-        collectionCommandService.deleteCollection(collectionId);
+    public void deleteCollection(
+            @RequestBody CollectionDeleteRequest collectionDeleteRequest,
+            @AuthenticationPrincipal User user
+    ) {
+        collectionCommandService.deleteCollection(collectionDeleteRequest, user.getId());
     }
 }
