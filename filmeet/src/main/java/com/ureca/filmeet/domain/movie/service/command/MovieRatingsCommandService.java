@@ -33,13 +33,10 @@ public class MovieRatingsCommandService {
     private final GenreScoreRepository genreScoreRepository;
 
     public EvaluateMovieRatingResponse evaluateMovieRating(EvaluateMovieRatingRequest evaluateMovieRatingRequest) {
-        boolean isRatingExist = movieRatingsRepository.findMovieRatingBy(
-                evaluateMovieRatingRequest.movieId(),
-                evaluateMovieRatingRequest.userId()
-        ).isPresent();
-
-        if (isRatingExist) {
-            throw new IllegalArgumentException("생성된 평가는 또 생성할 수 없습니다.");
+        boolean isAlreadyRating = movieRatingsRepository.existsByMovieIdAndUserId(evaluateMovieRatingRequest.movieId(),
+                evaluateMovieRatingRequest.userId());
+        if (isAlreadyRating) {
+            throw new RuntimeException("이미 평가를 했습니다.");
         }
 
         User user = userRepository.findById(evaluateMovieRatingRequest.userId())

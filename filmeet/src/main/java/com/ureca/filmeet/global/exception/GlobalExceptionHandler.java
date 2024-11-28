@@ -51,9 +51,7 @@ public class GlobalExceptionHandler {
     // 모든 예외 처리 (fallback)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex) {
-
-        log.error("ex.getMessage(): {}", ex.getMessage());
-        log.error("ex.getCause(): {}", ex.getCause());
+        log.error("Unhandled exception occurred: ", ex);
         return ApiResponse.internalServerError();
     }
 }

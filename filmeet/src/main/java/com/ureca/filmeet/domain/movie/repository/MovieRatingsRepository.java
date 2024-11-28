@@ -27,4 +27,6 @@ public interface MovieRatingsRepository extends JpaRepository<MovieRatings, Long
     Slice<MovieRatings> findMoviesWithRatingBy(
             @Param("userId") Long userId,
             Pageable pageable);
+
+    boolean existsByMovieIdAndUserId(Long movieId, Long userId);
 }
