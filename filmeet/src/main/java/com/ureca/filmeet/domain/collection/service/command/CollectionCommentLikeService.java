@@ -20,17 +20,16 @@ public class CollectionCommentLikeService {
     private final CollectionLikeRepository collectionLikeRepository;
 
     public void collectionLikes(Long collectionId, Long userId) {
+        boolean isAlreadyLiked = collectionLikeRepository.existsByCollectionIdAndUserId(collectionId, userId);
+        if (isAlreadyLiked) {
+            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+        }
+
         Collection collection = collectionRepository.findById(collectionId)
                 .orElseThrow(() -> new RuntimeException("no collection"));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("no user"));
-
-        boolean isAlreadyLiked = collectionLikeRepository.existsByCollectionIdAndUserId(collectionId, userId);
-        if (isAlreadyLiked) {
-            throw new RuntimeException(
-                    String.format("Collection ID %d에 대해 User ID %d는 이미 좋아요를 눌렀습니다.", collectionId, userId));
-        }
 
         CollectionLikes collectionLikes = CollectionLikes.builder()
                 .collection(collection)
