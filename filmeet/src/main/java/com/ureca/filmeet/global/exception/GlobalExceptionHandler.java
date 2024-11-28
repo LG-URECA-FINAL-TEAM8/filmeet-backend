@@ -8,8 +8,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     // 인증 실패 예외 처리
@@ -51,6 +51,7 @@ public class GlobalExceptionHandler {
     // 모든 예외 처리 (fallback)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex) {
+
         log.error("ex.getMessage(): {}", ex.getMessage());
         log.error("ex.getCause(): {}", ex.getCause());
         return ApiResponse.internalServerError();
