@@ -66,4 +66,8 @@ public class Collection extends BaseEntity {
             this.commentCounts--;
         }
     }
+
+    public void addLikeCounts() {
+        this.likeCounts++;
+    }
 }
