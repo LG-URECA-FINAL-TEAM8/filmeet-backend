@@ -110,4 +110,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             @Param("userId") Long userId,
             Pageable pageable
     );
+
+    boolean existsByUserIdAndMovieId(Long userId, Long movieId);
 }
