@@ -2,16 +2,21 @@ package com.ureca.filmeet.domain.review.controller.query;
 
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewDetailResponse;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
+import com.ureca.filmeet.domain.review.dto.response.trending.ReviewTrendingResponse;
 import com.ureca.filmeet.domain.review.service.query.ReviewQueryService;
+import com.ureca.filmeet.domain.review.service.query.ReviewTrendingQueryService;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewQueryController {
 
     private final ReviewQueryService reviewQueryService;
+    private final ReviewTrendingQueryService reviewTrendingQueryService;
 
     @GetMapping("/movies/{movieId}/users/{userId}")
     public ResponseEntity<ApiResponse<SliceResponseDto<GetMovieReviewsResponse>>> getMovieReviews(
@@ -38,5 +44,21 @@ public class ReviewQueryController {
     ) {
         GetMovieReviewDetailResponse movieReviewDetail = reviewQueryService.getMovieReviewDetail(reviewId, userId);
         return ApiResponse.ok(movieReviewDetail);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<ApiResponse<SliceResponseDto<ReviewTrendingResponse>>> getTrendingReviews(
+            @RequestParam("filter") String filter,
+            @AuthenticationPrincipal User user,
+            Pageable pageable
+    ) {
+        if (filter.equals("recent_reviews")) {
+            Slice<ReviewTrendingResponse> recentReviews = reviewTrendingQueryService.getRecentReviews(user.getId(),
+                    pageable);
+            return ApiResponse.ok(SliceResponseDto.of(recentReviews));
+        }
+        Slice<ReviewTrendingResponse> trendingReviews = reviewTrendingQueryService.getTrendingReviews(user.getId(),
+                pageable);
+        return ApiResponse.ok(SliceResponseDto.of(trendingReviews));
     }
 }
