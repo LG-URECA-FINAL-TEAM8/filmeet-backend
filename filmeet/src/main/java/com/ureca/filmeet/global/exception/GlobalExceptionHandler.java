@@ -1,12 +1,14 @@
 package com.ureca.filmeet.global.exception;
 
 import com.ureca.filmeet.global.common.dto.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -50,6 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex) {
 
+        log.info("Unhandled exception occurred:: ", ex);
         return ApiResponse.internalServerError();
     }
 }
