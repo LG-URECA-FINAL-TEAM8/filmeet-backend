@@ -1,7 +1,9 @@
 package com.ureca.filmeet.domain.review.controller.command;
 
 import com.ureca.filmeet.domain.review.service.command.ReviewLikesCommandService;
+import com.ureca.filmeet.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +17,12 @@ public class ReviewLikesCommandController {
 
     private final ReviewLikesCommandService reviewLikesCommandService;
 
-    @PostMapping("/reviews/{reviewId}/users/{userId}")
+    @PostMapping("/reviews/{reviewId}")
     public void reviewLikes(
             @PathVariable("reviewId") Long reviewId,
-            @PathVariable("userId") Long userId
+            @AuthenticationPrincipal User user
     ) {
-        reviewLikesCommandService.reviewLikes(reviewId, userId);
+        reviewLikesCommandService.reviewLikes(reviewId, user.getId());
     }
 
     @DeleteMapping("/cancel/reviews/{reviewId}/users/{userId}")
