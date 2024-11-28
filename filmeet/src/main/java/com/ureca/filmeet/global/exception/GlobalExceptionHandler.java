@@ -52,7 +52,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex) {
 
-        log.info("Unhandled exception occurred:: ", ex);
+        log.error("ex.getMessage(): {}", ex.getMessage());
+        log.error("ex.getCause(): {}", ex.getCause());
         return ApiResponse.internalServerError();
     }
 }
