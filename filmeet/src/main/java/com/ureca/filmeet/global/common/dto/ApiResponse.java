@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -41,6 +42,11 @@ public record ApiResponse<T>(
 
     public static <T> ResponseEntity<ApiResponse<T>> created(T data) {
         return ResponseEntity.status(ResponseCode.CREATED.getStatus())
+                .body(new ApiResponse<>(ResponseCode.CREATED, data));
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> created(String redirectUrl, T data) {
+        return ResponseEntity.created(URI.create(redirectUrl))
                 .body(new ApiResponse<>(ResponseCode.CREATED, data));
     }
 
