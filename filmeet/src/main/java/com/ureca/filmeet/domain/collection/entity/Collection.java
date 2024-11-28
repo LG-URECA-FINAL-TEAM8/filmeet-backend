@@ -10,6 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,9 +34,16 @@ public class Collection extends BaseEntity {
     @Column(length = 100)
     private String content;
 
+    private Integer likeCounts = 0;
+
+    private Integer commentCounts = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private User user;
+
+    @OneToMany(mappedBy = "collection")
+    private List<CollectionComment> collectionComments = new ArrayList<>();
 
     @Builder
     public Collection(String title, String content, User user) {
@@ -45,5 +55,25 @@ public class Collection extends BaseEntity {
     public void modifyCollection(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void addCommentCounts() {
+        this.commentCounts++;
+    }
+
+    public void decrementCommentCounts() {
+        if (this.commentCounts > 0) {
+            this.commentCounts--;
+        }
+    }
+
+    public void addLikeCounts() {
+        this.likeCounts++;
+    }
+
+    public void decrementLikesCounts() {
+        if (this.likeCounts > 0) {
+            this.likeCounts--;
+        }
     }
 }
