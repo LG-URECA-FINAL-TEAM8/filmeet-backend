@@ -34,6 +34,10 @@ public class Collection extends BaseEntity {
     @Column(length = 100)
     private String content;
 
+    private Integer likeCounts = 0;
+
+    private Integer commentCounts = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private User user;
@@ -51,5 +55,9 @@ public class Collection extends BaseEntity {
     public void modifyCollection(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void addCommentCounts() {
+        this.commentCounts++;
     }
 }

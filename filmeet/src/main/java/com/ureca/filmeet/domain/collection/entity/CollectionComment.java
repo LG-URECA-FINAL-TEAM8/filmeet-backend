@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,13 @@ public class CollectionComment extends BaseEntity {
     private Collection collection;
 
     private String content;
+
+    @Builder
+    public CollectionComment(String content, User user, Collection collection) {
+        this.content = content;
+        this.user = user;
+        setCollection(collection);
+    }
 
     public void setCollection(Collection collection) {
         // 기존 연관관계 제거
