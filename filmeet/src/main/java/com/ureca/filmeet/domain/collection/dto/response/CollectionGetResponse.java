@@ -7,8 +7,10 @@ public record CollectionGetResponse(
         Long collectionId,
         String collectionTitle,
         String collectionContent,
-        String userName,
+        String nickname,
         String userProfileImage,
+        Integer likeCounts,
+        Integer commentCounts,
         List<MovieInfoResponse> movies
 ) {
 
@@ -17,8 +19,10 @@ public record CollectionGetResponse(
                 collection.getId(),
                 collection.getTitle(),
                 collection.getContent(),
-                collection.getUser().getUsername(),
+                collection.getUser().getNickname(),
                 collection.getUser().getProfileImage(),
+                collection.getLikeCounts(),
+                collection.getCommentCounts(),
                 movies
         );
     }
