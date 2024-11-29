@@ -1,25 +1,26 @@
 package com.ureca.filmeet.domain.collection.dto.response;
 
 import com.ureca.filmeet.domain.collection.entity.Collection;
-import java.util.List;
 
-public record CollectionGetResponse(
+public record CollectionDetailResponse(
         Long collectionId,
         String collectionTitle,
         String collectionContent,
-        String userName,
+        String nickname,
         String userProfileImage,
-        List<MovieInfoResponse> movies
+        Integer likeCounts,
+        Integer commentCounts
 ) {
 
-    public static CollectionGetResponse from(Collection collection, List<MovieInfoResponse> movies) {
-        return new CollectionGetResponse(
+    public static CollectionDetailResponse of(Collection collection) {
+        return new CollectionDetailResponse(
                 collection.getId(),
                 collection.getTitle(),
                 collection.getContent(),
-                collection.getUser().getUsername(),
+                collection.getUser().getNickname(),
                 collection.getUser().getProfileImage(),
-                movies
+                collection.getLikeCounts(),
+                collection.getCommentCounts()
         );
     }
 }

@@ -1,23 +1,24 @@
 package com.ureca.filmeet.domain.movie.repository;
 
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustomRepository {
 
     @Query("SELECT m " +
             "FROM Movie m " +
+            "JOIN FETCH m.movieGenres mg " +
+            "JOIN FETCH mg.genre g " +
             "WHERE m.id IN :movieIds " +
             "AND m.isDeleted = false")
-    List<Movie> findMoviesByMovieIds(
+    List<Movie> findMoviesWithGenreByMovieIds(
             @Param("movieIds") List<Long> movieIds
     );
 
@@ -45,12 +46,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query("SELECT m FROM Movie m " +
             "WHERE m.isDeleted = false " +
-            "AND m.releaseDate > :currentDate " +
-            "AND m.releaseDate BETWEEN :startDate AND :endDate ")
+            "AND m.releaseDate > :currentDate ")
     Slice<Movie> findUpcomingMoviesByDateRange(
             @Param("currentDate") LocalDate currentDate,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
 

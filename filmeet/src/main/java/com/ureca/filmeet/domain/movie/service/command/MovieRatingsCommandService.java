@@ -33,13 +33,10 @@ public class MovieRatingsCommandService {
     private final GenreScoreRepository genreScoreRepository;
 
     public EvaluateMovieRatingResponse evaluateMovieRating(EvaluateMovieRatingRequest evaluateMovieRatingRequest) {
-        boolean isRatingExist = movieRatingsRepository.findMovieRatingBy(
-                evaluateMovieRatingRequest.movieId(),
-                evaluateMovieRatingRequest.userId()
-        ).isPresent();
-
-        if (isRatingExist) {
-            throw new IllegalArgumentException("생성된 평가는 또 생성할 수 없습니다.");
+        boolean isAlreadyRating = movieRatingsRepository.existsByMovieIdAndUserId(evaluateMovieRatingRequest.movieId(),
+                evaluateMovieRatingRequest.userId());
+        if (isAlreadyRating) {
+            throw new RuntimeException("이미 평가를 했습니다.");
         }
 
         User user = userRepository.findById(evaluateMovieRatingRequest.userId())
@@ -67,8 +64,11 @@ public class MovieRatingsCommandService {
     }
 
     public ModifyMovieRatingResponse modifyMovieRating(ModifyMovieRatingRequest modifyMovieRatingRequest) {
-        MovieRatings movieRatings = movieRatingsRepository.findById(modifyMovieRatingRequest.movieRatingId())
-                .orElseThrow(() -> new RuntimeException("평가가 없습니다."));
+        MovieRatings movieRatings = movieRatingsRepository.findMovieRatingBy(
+                        modifyMovieRatingRequest.movieId(),
+                        modifyMovieRatingRequest.userId()
+                )
+                .orElseThrow(() -> new RuntimeException("수정할 평가가 없습니다."));
         BigDecimal oldRatingScore = movieRatings.getRatingScore();
         BigDecimal newRatingScore = modifyMovieRatingRequest.newRatingScore();
         movieRatings.modifyRatingScore(newRatingScore);
@@ -88,7 +88,10 @@ public class MovieRatingsCommandService {
     }
 
     public void deleteMovieRating(DeleteMovieRatingRequest deleteMovieRatingRequest) {
-        MovieRatings movieRatings = movieRatingsRepository.findById(deleteMovieRatingRequest.movieRatingId())
+        MovieRatings movieRatings = movieRatingsRepository.findMovieRatingBy(
+                        deleteMovieRatingRequest.movieId(),
+                        deleteMovieRatingRequest.userId()
+                )
                 .orElseThrow(() -> new RuntimeException("삭제할 평가가 없습니다."));
         BigDecimal ratingScoreToDelete = movieRatings.getRatingScore();
         movieRatingsRepository.delete(movieRatings);

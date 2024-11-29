@@ -24,6 +24,12 @@ public class ReviewCommandService {
     private final ReviewRepository reviewRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest createReviewRequest) {
+        boolean isAlreadyReview = reviewRepository.existsByUserIdAndMovieId(createReviewRequest.userId(),
+                createReviewRequest.movieId());
+        if (isAlreadyReview) {
+            throw new RuntimeException("이미 리뷰를 작성 했습니다.");
+        }
+
         User user = userRepository.findById(createReviewRequest.userId())
                 .orElseThrow(() -> new RuntimeException("no user"));
 

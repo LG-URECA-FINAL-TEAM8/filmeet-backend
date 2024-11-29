@@ -43,7 +43,7 @@ public class ReviewCommentCommandService {
     }
 
     public ModifyCommentResponse modifyComment(ModifyCommentRequest modifyCommentRequest) {
-        ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewId())
+        ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewCommentId())
                 .orElseThrow(() -> new RuntimeException("no reviewComment"));
 
         reviewComment.modifyReviewComment(modifyCommentRequest.content());

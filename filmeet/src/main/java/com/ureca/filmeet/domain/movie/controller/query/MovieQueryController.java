@@ -14,6 +14,7 @@ import com.ureca.filmeet.domain.movie.service.query.MovieRankingsQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,17 +44,14 @@ public class MovieQueryController {
 
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<SliceResponseDto<UpcomingMoviesResponse>>> getUpcomingMovies(
-            @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "month", required = false) Integer month,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size
+    ) {
 
-        LocalDate now = LocalDate.now();
-        int defaultYear = year != null ? year : now.getYear();
-        int defaultMonth = month != null ? month : now.getMonthValue();
-
+        LocalDate currentDate = LocalDate.now();
         return ApiResponse.ok(SliceResponseDto.of(
-                movieUpcomingQueryService.getUpcomingMovies(defaultYear, defaultMonth, page, size)));
+                movieUpcomingQueryService.getUpcomingMovies(page, size, currentDate))
+        );
     }
 
     @GetMapping("/boxoffice")
@@ -98,11 +97,12 @@ public class MovieQueryController {
         return ApiResponse.ok(SliceResponseDto.of(movieSearchByTitleResponses));
     }
 
-    @GetMapping("/{movieId}/users/{userId}")
+    @GetMapping("/{movieId}")
     public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(
             @PathVariable("movieId") Long movieId,
-            @PathVariable("userId") Long userId) {
-        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId, userId);
+            @AuthenticationPrincipal User user
+    ) {
+        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId, user.getId());
         return ApiResponse.ok(movieDetail);
     }
 

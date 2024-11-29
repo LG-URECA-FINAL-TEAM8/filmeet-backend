@@ -20,6 +20,11 @@ public class ReviewLikesCommandService {
     private final ReviewLikesRepository reviewLikesRepository;
 
     public void reviewLikes(Long reviewId, Long userId) {
+        boolean isAlreadyLiked = reviewLikesRepository.existsByReviewIdAndUserId(reviewId, userId);
+        if (isAlreadyLiked) {
+            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+        }
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("no review"));
 
@@ -38,10 +43,8 @@ public class ReviewLikesCommandService {
     public void reviewLikesCancel(Long reviewId, Long userId) {
         ReviewLikes reviewLikes = reviewLikesRepository.findReviewLikesByReviewIdAndUserId(reviewId, userId)
                 .orElseThrow(() -> new RuntimeException("취소할 리뷰 좋아요가 없습니다."));
-        reviewLikesRepository.delete(reviewLikes);
-        
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("no review"));
+        Review review = reviewLikes.getReview();
         review.decrementLikesCounts();
+        reviewLikesRepository.delete(reviewLikes);
     }
 }

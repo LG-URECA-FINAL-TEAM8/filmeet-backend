@@ -3,10 +3,10 @@ package com.ureca.filmeet.domain.movie.dto.response;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
+import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.data.domain.Slice;
 
 public record MovieDetailResponse(
         Long movieId,
@@ -25,7 +25,7 @@ public record MovieDetailResponse(
         List<GenreType> genres,
         List<PersonnelInfoResponse> personnels,
         List<String> galleryImages,
-        Slice<GetMovieReviewsResponse> movieReviewsResponses
+        SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses
 ) {
 
     public static MovieDetailResponse from(Movie movie, boolean isLiked, MyMovieReview myMovieReview,
@@ -33,7 +33,7 @@ public record MovieDetailResponse(
                                            List<String> countries, List<GenreType> genres,
                                            List<PersonnelInfoResponse> personnels,
                                            List<String> galleryImages,
-                                           Slice<GetMovieReviewsResponse> movieReviewsResponses) {
+                                           SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses) {
 
         return new MovieDetailResponse(
                 movie.getId(),

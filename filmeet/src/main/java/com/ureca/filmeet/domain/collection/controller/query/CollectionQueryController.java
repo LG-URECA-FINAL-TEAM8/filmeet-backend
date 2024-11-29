@@ -1,13 +1,19 @@
 package com.ureca.filmeet.domain.collection.controller.query;
 
-import com.ureca.filmeet.domain.collection.dto.response.CollectionGetResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionCommentsResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionDetailResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionMovieInfoResponse;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionSearchByTitleResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionsResponse;
 import com.ureca.filmeet.domain.collection.service.service.CollectionQueryService;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,22 +28,47 @@ public class CollectionQueryController {
     private final CollectionQueryService collectionQueryService;
 
     @GetMapping("/list/users/{userId}")
-    public ResponseEntity<ApiResponse<Slice<CollectionGetResponse>>> getCollections(@PathVariable("userId") Long userId,
-                                                                                    @RequestParam(defaultValue = "0") int page,
-                                                                                    @RequestParam(defaultValue = "10") int size) {
-
-        Slice<CollectionGetResponse> collectionGetResponses = collectionQueryService.getCollections(userId, page, size);
-        return ApiResponse.ok(collectionGetResponses);
-    }
-
-    @GetMapping("/{collectionId}/users/{userId}")
-    public ResponseEntity<ApiResponse<CollectionGetResponse>> getCollection(
-            @PathVariable("collectionId") Long collectionId,
-            @PathVariable("userId") Long userId
+    public ResponseEntity<ApiResponse<SliceResponseDto<CollectionsResponse>>> getCollections(
+            @PathVariable("userId") Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
 
-        CollectionGetResponse collectionGetResponse = collectionQueryService.getCollection(collectionId, userId);
-        return ApiResponse.ok(collectionGetResponse);
+        Slice<CollectionsResponse> collectionGetResponses = collectionQueryService.getCollections(userId, page, size);
+        return ApiResponse.ok(SliceResponseDto.of(collectionGetResponses));
+    }
+
+    @GetMapping("/{collectionId}")
+    public ResponseEntity<ApiResponse<CollectionDetailResponse>> getCollection(
+            @PathVariable("collectionId") Long collectionId,
+            @AuthenticationPrincipal User user
+    ) {
+
+        CollectionDetailResponse collectionsResponse = collectionQueryService.getCollection(collectionId, user.getId());
+        return ApiResponse.ok(collectionsResponse);
+    }
+
+    @GetMapping("/{collectionId}/movies")
+    public ResponseEntity<ApiResponse<SliceResponseDto<CollectionMovieInfoResponse>>> getCollectionMovies(
+            @PathVariable("collectionId") Long collectionId,
+            Pageable pageable
+    ) {
+
+        Slice<CollectionMovieInfoResponse> collectionMovies = collectionQueryService.getCollectionMovies(collectionId,
+                pageable);
+        return ApiResponse.ok(SliceResponseDto.of(collectionMovies));
+    }
+
+    @GetMapping("/{collectionId}/comments")
+    public ResponseEntity<ApiResponse<SliceResponseDto<CollectionCommentsResponse>>> getCollectionComments(
+            @PathVariable("collectionId") Long collectionId,
+            Pageable pageable
+    ) {
+
+        Slice<CollectionCommentsResponse> collectionComments = collectionQueryService.getCollectionComments(
+                collectionId,
+                pageable);
+        return ApiResponse.ok(SliceResponseDto.of(collectionComments));
     }
 
     @GetMapping("/search/title")
