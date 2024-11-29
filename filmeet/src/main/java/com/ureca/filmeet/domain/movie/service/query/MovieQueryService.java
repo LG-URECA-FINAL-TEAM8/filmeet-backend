@@ -15,6 +15,7 @@ import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
+import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -86,8 +87,9 @@ public class MovieQueryService {
         List<String> galleryImages = getGalleryImages(movie);
 
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "likeCounts");
-        Slice<GetMovieReviewsResponse> movieReviewsResponses = reviewRepository.findMovieReviewsWithLikes(movieId,
-                userId, pageable);
+        SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses = SliceResponseDto.of(
+                reviewRepository.findMovieReviewsWithLikes(movieId,
+                        userId, pageable));
 
         return MovieDetailResponse.from(
                 movie,
