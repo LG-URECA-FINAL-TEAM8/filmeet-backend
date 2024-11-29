@@ -27,22 +27,24 @@ public class ReviewQueryController {
     private final ReviewQueryService reviewQueryService;
     private final ReviewTrendingQueryService reviewTrendingQueryService;
 
-    @GetMapping("/movies/{movieId}/users/{userId}")
+    @GetMapping("/movies/{movieId}")
     public ResponseEntity<ApiResponse<SliceResponseDto<GetMovieReviewsResponse>>> getMovieReviews(
             @PathVariable("movieId") Long movieId,
-            @PathVariable("userId") Long userId,
+            @AuthenticationPrincipal User user,
             Pageable pageable
     ) {
-        Slice<GetMovieReviewsResponse> movieReviews = reviewQueryService.getMovieReviews(movieId, userId, pageable);
+        Slice<GetMovieReviewsResponse> movieReviews = reviewQueryService.getMovieReviews(movieId, user.getId(),
+                pageable);
         return ApiResponse.ok(SliceResponseDto.of(movieReviews));
     }
 
-    @GetMapping("/{reviewId}/users/{userId}")
+    @GetMapping("/{reviewId}")
     public ResponseEntity<ApiResponse<GetMovieReviewDetailResponse>> getMovieReviewDetail(
             @PathVariable("reviewId") Long reviewId,
-            @PathVariable("userId") Long userId
+            @AuthenticationPrincipal User user
     ) {
-        GetMovieReviewDetailResponse movieReviewDetail = reviewQueryService.getMovieReviewDetail(reviewId, userId);
+        GetMovieReviewDetailResponse movieReviewDetail = reviewQueryService.getMovieReviewDetail(reviewId,
+                user.getId());
         return ApiResponse.ok(movieReviewDetail);
     }
 

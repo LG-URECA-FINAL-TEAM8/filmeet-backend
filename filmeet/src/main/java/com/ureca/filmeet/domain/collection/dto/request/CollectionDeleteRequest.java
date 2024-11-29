@@ -2,9 +2,9 @@ package com.ureca.filmeet.domain.collection.dto.request;
 
 import java.util.List;
 
-public record CollectionCreateRequest(
-        String title,
-        String content,
+public record CollectionDeleteRequest(
+
+        Long collectionId,
         List<Long> movieIds
 ) {
 }
