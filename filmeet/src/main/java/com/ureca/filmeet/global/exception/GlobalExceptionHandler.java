@@ -1,7 +1,9 @@
 package com.ureca.filmeet.global.exception;
 
+import com.ureca.filmeet.domain.review.exception.ReviewException;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -46,6 +48,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<?> handleInvalidPasswordException(InvalidPasswordException ex) {
         return ApiResponse.invalidPassword();
+    }
+
+    // 리뷰 도메인쪽 예외 처리
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity<ApiResponse<?>> reviewAlreadyExistsExceptionHandler(ReviewException e) {
+        log.error("ReviewAlreadyExistsException occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
     }
 
     // 모든 예외 처리 (fallback)
