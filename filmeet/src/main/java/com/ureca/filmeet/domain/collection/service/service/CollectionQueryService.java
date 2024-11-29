@@ -7,6 +7,8 @@ import com.ureca.filmeet.domain.collection.dto.response.CollectionSearchByTitleR
 import com.ureca.filmeet.domain.collection.dto.response.CollectionsResponse;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
+import com.ureca.filmeet.domain.collection.exception.CollectionNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionUserNotFoundException;
 import com.ureca.filmeet.domain.collection.repository.CollectionCommentRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
@@ -31,7 +33,7 @@ public class CollectionQueryService {
 
     public Slice<CollectionsResponse> getCollections(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(CollectionUserNotFoundException::new);
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
         Slice<Collection> collections = collectionRepository.findCollectionsByUserId(user.getId(), pageable);
@@ -70,7 +72,7 @@ public class CollectionQueryService {
 
     public CollectionDetailResponse getCollection(Long collectionId, Long userId) {
         Collection collection = collectionRepository.findCollectionByCollectionIdAndUserId(collectionId, userId)
-                .orElseThrow(() -> new RuntimeException("no collection"));
+                .orElseThrow(CollectionNotFoundException::new);
 
         return CollectionDetailResponse.of(collection);
     }

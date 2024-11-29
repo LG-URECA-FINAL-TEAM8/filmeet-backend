@@ -43,6 +43,13 @@ public enum ResponseCode {
     MOVIE_RATING_ALREADY_EXISTS(20205, "이미 영화에 별점을 남겼습니다."),
     MOVIE_RATING_NOT_FOUND(20206, "기존 영화 별점이 없습니다."),
 
+    // Collection domain Error Codes
+    COLLECTION_USER_NOT_FOUND(30201, "컬렉션과 관련한 유저가 존재하지 않습니다."),
+    COLLECTION_NOT_FOUND(30202, "등록된 컬렉션이 존재하지 않습니다."),
+    COLLECTION_COMMENT_NOT_FOUND(30203, "컬렉션과 관련한 댓글이 존재하지 않습니다."),
+    COLLECTION_LIKE_ALREADY_EXISTS(20204, "이미 컬렉션에 좋아요를 눌렀습니다."),
+    COLLECTION_LIKE_NOT_FOUND(20205, "취소할 컬렉션 좋아요가 없습니다."),
+    COLLECTION_MOVIES_NOT_FOUND(20206, "컬렉션과 관련한 영화 목록이 존재하지 않습니다."),
 
     // User domain Error Codes
     NOT_FOUND_USER2(3, "");

@@ -4,6 +4,9 @@ import com.ureca.filmeet.domain.collection.dto.request.CollectionCreateRequest;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionDeleteRequest;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionModifyRequest;
 import com.ureca.filmeet.domain.collection.entity.Collection;
+import com.ureca.filmeet.domain.collection.exception.CollectionMoviesNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionUserNotFoundException;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieBulkRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
@@ -35,12 +38,11 @@ public class CollectionCommandService {
 
     public Long createCollection(CollectionCreateRequest collectionCreateRequest, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(CollectionUserNotFoundException::new);
 
         List<Movie> movies = movieRepository.findMoviesWithGenreByMovieIds(collectionCreateRequest.movieIds());
-
         if (movies.isEmpty()) {
-            throw new RuntimeException("No movies found for the given IDs");
+            throw new CollectionMoviesNotFoundException();
         }
 
         Collection collection = Collection.builder()
@@ -60,7 +62,7 @@ public class CollectionCommandService {
     public Long modifyCollection(CollectionModifyRequest modifyRequest, Long userId) {
         // 1. 컬렉션 조회
         Collection collection = collectionRepository.findById(modifyRequest.collectionId())
-                .orElseThrow(() -> new RuntimeException("no collection"));
+                .orElseThrow(CollectionNotFoundException::new);
 
         // 2. 컬렉션 제목과 내용 수정
         collection.modifyCollection(modifyRequest.title(), modifyRequest.content());
@@ -104,7 +106,7 @@ public class CollectionCommandService {
 
     public void deleteCollection(CollectionDeleteRequest collectionDeleteRequest, Long userId) {
         Collection collection = collectionRepository.findById(collectionDeleteRequest.collectionId())
-                .orElseThrow(() -> new RuntimeException("no collection"));
+                .orElseThrow(CollectionNotFoundException::new);
         collection.delete();
 
         List<Movie> movies = movieRepository.findMoviesWithGenreByMovieIds(collectionDeleteRequest.movieIds());

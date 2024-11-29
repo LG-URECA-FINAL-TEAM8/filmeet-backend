@@ -5,6 +5,9 @@ import com.ureca.filmeet.domain.collection.dto.request.CollectionCommentDeleteRe
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCommentModifyRequest;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionComment;
+import com.ureca.filmeet.domain.collection.exception.CollectionCommentNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionUserNotFoundException;
 import com.ureca.filmeet.domain.collection.repository.CollectionCommentRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -24,10 +27,10 @@ public class CollectionCommentCommandService {
 
     public Long createCollectionComment(CollectionCommentCreateRequest collectionCommentCreateRequest, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(CollectionUserNotFoundException::new);
 
         Collection collection = collectionRepository.findById(collectionCommentCreateRequest.collectionId())
-                .orElseThrow(() -> new RuntimeException("no collection"));
+                .orElseThrow(CollectionNotFoundException::new);
 
         CollectionComment collectionComment = CollectionComment.builder()
                 .user(user)
@@ -44,7 +47,7 @@ public class CollectionCommentCommandService {
     public Long modifyCollectionComment(CollectionCommentModifyRequest collectionCommentModifyRequest, Long userId) {
         CollectionComment collectionComment = collectionCommentRepository.findCollectionCommentWrittenUserBy(
                         userId, collectionCommentModifyRequest.collectionCommentId())
-                .orElseThrow(() -> new RuntimeException("사용자에 의해 작성된 수정할 댓글이 없습니다. "));
+                .orElseThrow(CollectionCommentNotFoundException::new);
 
         collectionComment.modifyCollectionComment(collectionCommentModifyRequest.commentContent());
 
@@ -54,11 +57,11 @@ public class CollectionCommentCommandService {
     public void deleteCollectionComment(CollectionCommentDeleteRequest collectionCommentDeleteRequest, Long userId) {
         CollectionComment collectionComment = collectionCommentRepository.findCollectionCommentWrittenUserBy(
                         userId, collectionCommentDeleteRequest.collectionCommentId())
-                .orElseThrow(() -> new RuntimeException("사용자에 의해 작성된 삭제할 댓글이 없습니다. "));
+                .orElseThrow(CollectionCommentNotFoundException::new);
         collectionComment.delete();
 
         Collection collection = collectionRepository.findById(collectionCommentDeleteRequest.collectionId())
-                .orElseThrow(() -> new RuntimeException("컬렉션이 없습니다."));
+                .orElseThrow(CollectionNotFoundException::new);
         collection.decrementCommentCounts();
     }
 }

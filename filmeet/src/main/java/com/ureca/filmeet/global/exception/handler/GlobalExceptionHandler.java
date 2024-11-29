@@ -1,5 +1,6 @@
 package com.ureca.filmeet.global.exception.handler;
 
+import com.ureca.filmeet.domain.collection.exception.CollectionException;
 import com.ureca.filmeet.domain.movie.exception.MovieException;
 import com.ureca.filmeet.domain.review.exception.ReviewException;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
@@ -60,7 +61,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> reviewDomainExceptionHandler(ReviewException e) {
         log.error("review domain exception occurred: {}", e.getMessage(), e);
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
     }
 
@@ -69,7 +70,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> movieDomainExceptionHandler(MovieException e) {
         log.error("movie domain exception occurred: {}", e.getMessage(), e);
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
+    }
+
+    // 컬렉션 도메인쪽 예외 처리
+    @ExceptionHandler(CollectionException.class)
+    public ResponseEntity<ApiResponse<?>> collectionDomainExceptionHandler(CollectionException e) {
+        log.error("collection domain exception occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
     }
 
