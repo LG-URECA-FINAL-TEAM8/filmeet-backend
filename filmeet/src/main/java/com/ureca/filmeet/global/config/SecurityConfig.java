@@ -7,7 +7,6 @@ import com.ureca.filmeet.global.security.CustomAccessDeniedHandler;
 import com.ureca.filmeet.global.security.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.ureca.filmeet.global.security.JwtAuthenticationEntryPoint;
 import com.ureca.filmeet.global.security.OAuth2AuthenticationSuccessHandler;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +20,8 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -80,10 +81,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // React 앱의 주소
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
-        configuration.setAllowedHeaders(List.of("*")); // 허용할 헤더
-        configuration.setAllowCredentials(true); // 자격 증명 허용 (예: 쿠키)
+        configuration.setAllowCredentials(true); // 쿠키를 받을건지
+        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
+        configuration.addAllowedHeader("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
