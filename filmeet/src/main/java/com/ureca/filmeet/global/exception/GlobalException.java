@@ -1,5 +1,6 @@
 package com.ureca.filmeet.global.exception;
 
+import com.ureca.filmeet.global.exception.code.ResponseCode;
 import lombok.Getter;
 
 @Getter

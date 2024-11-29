@@ -1,4 +1,4 @@
-package com.ureca.filmeet.global.exception;
+package com.ureca.filmeet.global.exception.code;
 
 import lombok.Getter;
 

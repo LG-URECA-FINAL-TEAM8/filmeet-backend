@@ -1,6 +1,6 @@
 package com.ureca.filmeet.domain.review.exception;
 
-import com.ureca.filmeet.global.exception.ResponseCode;
+import com.ureca.filmeet.global.exception.code.ResponseCode;
 
 public class ReviewCommentNotFoundException extends ReviewException {
 

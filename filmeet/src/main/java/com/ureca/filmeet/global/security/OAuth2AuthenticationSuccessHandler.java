@@ -5,19 +5,17 @@ import com.ureca.filmeet.domain.auth.dto.CustomUser;
 import com.ureca.filmeet.domain.auth.dto.response.TokenResponse;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
-import com.ureca.filmeet.global.exception.ResponseCode;
+import com.ureca.filmeet.global.exception.code.ResponseCode;
 import com.ureca.filmeet.global.util.jwt.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +25,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final ObjectMapper objectMapper;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication)
             throws IOException, ServletException {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
 

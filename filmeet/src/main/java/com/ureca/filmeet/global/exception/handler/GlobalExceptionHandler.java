@@ -1,7 +1,11 @@
-package com.ureca.filmeet.global.exception;
+package com.ureca.filmeet.global.exception.handler;
 
 import com.ureca.filmeet.domain.review.exception.ReviewException;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
+import com.ureca.filmeet.global.exception.AccessTokenExpiredException;
+import com.ureca.filmeet.global.exception.InvalidPasswordException;
+import com.ureca.filmeet.global.exception.InvalidRefreshTokenException;
+import com.ureca.filmeet.global.exception.JwtAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
