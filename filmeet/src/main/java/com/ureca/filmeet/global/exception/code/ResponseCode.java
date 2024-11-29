@@ -28,14 +28,21 @@ public enum ResponseCode {
 
     // Review domain Error Codes
     REVIEW_ALREADY_EXISTS(10201, "이미 리뷰를 작성했습니다."),
-    REVIEW_MOVIE_NOT_FOUND(10202, "리뷰를 작성할 영화가 존재하지 않습니다"),
-    REVIEW_USER_NOT_FOUND(10203, "리뷰를 작성할 사용자가 존재하지 않습니다"),
+    REVIEW_MOVIE_NOT_FOUND(10202, "리뷰와 관련한 영화가 존재하지 않습니다"),
+    REVIEW_USER_NOT_FOUND(10203, "리뷰와 관련한 사용자가 존재하지 않습니다"),
     REVIEW_NOT_FOUND(10204, "등록된 리뷰가 존재하지 않습니다"),
     REVIEW_COMMENT_NOT_FOUND(10205, "리뷰에 등록된 댓글이 존재하지 않습니다"),
     REVIEW_LIKE_ALREADY_EXISTS(10206, "이미 리뷰에 좋아요를 눌렀습니다."),
     REVIEW_LIKE_NOT_FOUND(10207, "취소할 리뷰 좋아요가 없습니다."),
 
     // Movie domain Error Codes
+    MOVIE_LIKE_ALREADY_EXISTS(20201, "이미 영화에 좋아요를 눌렀습니다."),
+    MOVIE_NOT_FOUND(20202, "등록된 영화가 존재하지 않습니다."),
+    MOVIE_USER_NOT_FOUND(20203, "영화와 관련한 유저가 존재하지 않습니다."),
+    MOVIE_LIKE_NOT_FOUND(20204, "취소할 영화 좋아요가 없습니다."),
+    MOVIE_RATING_ALREADY_EXISTS(20205, "이미 영화에 별점을 남겼습니다."),
+    MOVIE_RATING_NOT_FOUND(20206, "기존 영화 별점이 없습니다."),
+
 
     // User domain Error Codes
     NOT_FOUND_USER2(3, "");

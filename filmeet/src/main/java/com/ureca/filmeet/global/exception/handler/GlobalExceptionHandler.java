@@ -1,5 +1,6 @@
 package com.ureca.filmeet.global.exception.handler;
 
+import com.ureca.filmeet.domain.movie.exception.MovieException;
 import com.ureca.filmeet.domain.review.exception.ReviewException;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.exception.AccessTokenExpiredException;
@@ -56,8 +57,17 @@ public class GlobalExceptionHandler {
 
     // 리뷰 도메인쪽 예외 처리
     @ExceptionHandler(ReviewException.class)
-    public ResponseEntity<ApiResponse<?>> reviewAlreadyExistsExceptionHandler(ReviewException e) {
-        log.error("ReviewAlreadyExistsException occurred: {}", e.getMessage(), e);
+    public ResponseEntity<ApiResponse<?>> reviewDomainExceptionHandler(ReviewException e) {
+        log.error("review domain exception occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
+    }
+
+    // 영화 도메인쪽 예외 처리
+    @ExceptionHandler(MovieException.class)
+    public ResponseEntity<ApiResponse<?>> movieDomainExceptionHandler(MovieException e) {
+        log.error("movie domain exception occurred: {}", e.getMessage(), e);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
