@@ -1,8 +1,8 @@
 package com.ureca.filmeet.domain.collection.service.service;
 
-import com.ureca.filmeet.domain.collection.dto.response.CollectionGetResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionMovieInfoResponse;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionSearchByTitleResponse;
-import com.ureca.filmeet.domain.collection.dto.response.MovieInfoResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionsResponse;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieRepository;
@@ -26,7 +26,7 @@ public class CollectionQueryService {
     private final CollectionRepository collectionRepository;
     private final CollectionMovieRepository collectionMovieRepository;
 
-    public Slice<CollectionGetResponse> getCollections(Long userId, int page, int size) {
+    public Slice<CollectionsResponse> getCollections(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("no user"));
 
@@ -42,15 +42,16 @@ public class CollectionQueryService {
 
         return collections.map(collection -> {
             // 각 컬렉션의 영화 데이터를 가져오기
-            List<MovieInfoResponse> movies = getMoviesForCollection(collection.getId(), collectionMovies);
-            return CollectionGetResponse.from(collection, movies);
+            List<CollectionMovieInfoResponse> movies = getMoviesForCollection(collection.getId(), collectionMovies);
+            return CollectionsResponse.from(collection, movies);
         });
     }
 
-    private List<MovieInfoResponse> getMoviesForCollection(Long collectionId, List<CollectionMovie> collectionMovies) {
+    private List<CollectionMovieInfoResponse> getMoviesForCollection(Long collectionId,
+                                                                     List<CollectionMovie> collectionMovies) {
         return collectionMovies.stream()
                 .filter(cm -> cm.getCollection().getId().equals(collectionId))
-                .map(cm -> new MovieInfoResponse(
+                .map(cm -> new CollectionMovieInfoResponse(
                         cm.getMovie().getId(),
                         cm.getMovie().getTitle(),
                         cm.getMovie().getPosterUrl(),
@@ -64,7 +65,7 @@ public class CollectionQueryService {
                 .toList();
     }
 
-    public CollectionGetResponse getCollection(Long collectionId, Long userId) {
+    public CollectionsResponse getCollection(Long collectionId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("no user"));
 
@@ -72,16 +73,17 @@ public class CollectionQueryService {
                 .orElseThrow(() -> new RuntimeException("no collection"));
 
         List<CollectionMovie> collectionMovies = collectionMovieRepository.findMoviesByCollectionId(
-                collection.getId());
+                collection.getId()
+        );
 
-        List<MovieInfoResponse> movies = getMoviesForCollection(collectionMovies);
-        return CollectionGetResponse.from(collection, movies);
+        List<CollectionMovieInfoResponse> movies = getMoviesForCollection(collectionMovies);
+        return CollectionsResponse.from(collection, movies);
     }
 
-    private List<MovieInfoResponse> getMoviesForCollection(List<CollectionMovie> collectionMovies) {
+    private List<CollectionMovieInfoResponse> getMoviesForCollection(List<CollectionMovie> collectionMovies) {
         return collectionMovies.stream()
                 .sorted(Comparator.comparing(CollectionMovie::getId).reversed())
-                .map(cm -> new MovieInfoResponse(
+                .map(cm -> new CollectionMovieInfoResponse(
                         cm.getMovie().getId(),
                         cm.getMovie().getTitle(),
                         cm.getMovie().getPosterUrl(),

@@ -4,7 +4,7 @@ import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record MovieInfoResponse(
+public record CollectionMovieInfoResponse(
         Long movieId,
         String title,
         String posterImage,

@@ -1,7 +1,7 @@
 package com.ureca.filmeet.domain.collection.controller.query;
 
-import com.ureca.filmeet.domain.collection.dto.response.CollectionGetResponse;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionSearchByTitleResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionsResponse;
 import com.ureca.filmeet.domain.collection.service.service.CollectionQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
@@ -22,24 +22,24 @@ public class CollectionQueryController {
     private final CollectionQueryService collectionQueryService;
 
     @GetMapping("/list/users/{userId}")
-    public ResponseEntity<ApiResponse<SliceResponseDto<CollectionGetResponse>>> getCollections(
+    public ResponseEntity<ApiResponse<SliceResponseDto<CollectionsResponse>>> getCollections(
             @PathVariable("userId") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
 
-        Slice<CollectionGetResponse> collectionGetResponses = collectionQueryService.getCollections(userId, page, size);
+        Slice<CollectionsResponse> collectionGetResponses = collectionQueryService.getCollections(userId, page, size);
         return ApiResponse.ok(SliceResponseDto.of(collectionGetResponses));
     }
 
     @GetMapping("/{collectionId}/users/{userId}")
-    public ResponseEntity<ApiResponse<CollectionGetResponse>> getCollection(
+    public ResponseEntity<ApiResponse<CollectionsResponse>> getCollection(
             @PathVariable("collectionId") Long collectionId,
             @PathVariable("userId") Long userId
     ) {
 
-        CollectionGetResponse collectionGetResponse = collectionQueryService.getCollection(collectionId, userId);
-        return ApiResponse.ok(collectionGetResponse);
+        CollectionsResponse collectionsResponse = collectionQueryService.getCollection(collectionId, userId);
+        return ApiResponse.ok(collectionsResponse);
     }
 
     @GetMapping("/search/title")

@@ -3,7 +3,7 @@ package com.ureca.filmeet.domain.collection.dto.response;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import java.util.List;
 
-public record CollectionGetResponse(
+public record CollectionsResponse(
         Long collectionId,
         String collectionTitle,
         String collectionContent,
@@ -11,11 +11,11 @@ public record CollectionGetResponse(
         String userProfileImage,
         Integer likeCounts,
         Integer commentCounts,
-        List<MovieInfoResponse> movies
+        List<CollectionMovieInfoResponse> movies
 ) {
 
-    public static CollectionGetResponse from(Collection collection, List<MovieInfoResponse> movies) {
-        return new CollectionGetResponse(
+    public static CollectionsResponse from(Collection collection, List<CollectionMovieInfoResponse> movies) {
+        return new CollectionsResponse(
                 collection.getId(),
                 collection.getTitle(),
                 collection.getContent(),
