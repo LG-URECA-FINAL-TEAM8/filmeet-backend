@@ -1,13 +1,16 @@
 package com.ureca.filmeet.infra.s3.controller.query;
 
 import com.ureca.filmeet.global.common.dto.ApiResponse;
-import com.ureca.filmeet.global.exception.ResponseCode;
+import com.ureca.filmeet.global.exception.code.ResponseCode;
 import com.ureca.filmeet.infra.s3.dto.S3DownloadResponse;
 import com.ureca.filmeet.infra.s3.dto.S3ListResponse;
 import com.ureca.filmeet.infra.s3.service.query.S3QueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ContentDisposition;
@@ -18,9 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/s3")

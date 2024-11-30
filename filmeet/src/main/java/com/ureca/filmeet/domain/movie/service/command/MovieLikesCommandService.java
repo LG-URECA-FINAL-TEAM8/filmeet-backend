@@ -4,6 +4,10 @@ import com.ureca.filmeet.domain.genre.entity.enums.GenreScoreAction;
 import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieLikes;
+import com.ureca.filmeet.domain.movie.exception.MovieLikeAlreadyExistsException;
+import com.ureca.filmeet.domain.movie.exception.MovieLikeNotFoundException;
+import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
+import com.ureca.filmeet.domain.movie.exception.MovieUserNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -28,14 +32,14 @@ public class MovieLikesCommandService {
     public void movieLikes(Long movieId, Long userId) {
         boolean isAlreadyLiked = movieLikesRepository.existsByMovieIdAndUserId(movieId, userId);
         if (isAlreadyLiked) {
-            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+            throw new MovieLikeAlreadyExistsException();
         }
 
         Movie movie = movieRepository.findMovieWithGenreByMovieId(movieId)
-                .orElseThrow(() -> new RuntimeException("no movie"));
+                .orElseThrow(MovieNotFoundException::new);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(MovieUserNotFoundException::new);
 
         MovieLikes movieLikes = MovieLikes.builder()
                 .movie(movie)
@@ -50,10 +54,10 @@ public class MovieLikesCommandService {
 
     public void movieLikesCancel(Long movieId, Long userId) {
         Movie movie = movieRepository.findMovieWithGenreByMovieId(movieId)
-                .orElseThrow(() -> new RuntimeException("no movie"));
+                .orElseThrow(MovieNotFoundException::new);
 
         MovieLikes movieLikes = movieLikesRepository.findMovieLikesBy(movieId, userId)
-                .orElseThrow(() -> new RuntimeException("no movie likes"));
+                .orElseThrow(MovieLikeNotFoundException::new);
         movieLikesRepository.delete(movieLikes);
 
         updateGenreScoresForUser(userId, movie, GenreScoreAction.LIKE_CANCEL);

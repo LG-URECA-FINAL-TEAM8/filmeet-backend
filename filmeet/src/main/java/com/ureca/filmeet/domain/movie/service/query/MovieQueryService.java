@@ -9,6 +9,7 @@ import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
 import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.MovieCountriesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
@@ -60,7 +61,7 @@ public class MovieQueryService {
 
     public MovieDetailResponse getMovieDetail(Long movieId, Long userId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
-                .orElseThrow(() -> new RuntimeException("no movie"));
+                .orElseThrow(MovieNotFoundException::new);
 
         boolean isLiked = movieLikesRepository.findMovieLikesBy(movieId, userId).isPresent();
 
