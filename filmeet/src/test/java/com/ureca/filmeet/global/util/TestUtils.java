@@ -1,6 +1,7 @@
 package com.ureca.filmeet.global.util;
 
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.entity.ReviewComment;
@@ -8,6 +9,7 @@ import com.ureca.filmeet.domain.review.entity.ReviewLikes;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public abstract class TestUtils {
@@ -58,6 +60,14 @@ public abstract class TestUtils {
         return ReviewLikes.builder()
                 .review(review)
                 .user(user)
+                .build();
+    }
+
+    public static MovieRatings createMovieRatings(Movie movie, User user, BigDecimal ratingScore) {
+        return MovieRatings.builder()
+                .movie(movie)
+                .user(user)
+                .ratingScore(ratingScore)
                 .build();
     }
 }
