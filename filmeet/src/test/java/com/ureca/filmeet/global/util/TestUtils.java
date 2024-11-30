@@ -4,6 +4,7 @@ import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.entity.ReviewComment;
+import com.ureca.filmeet.domain.review.entity.ReviewLikes;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -48,6 +49,13 @@ public abstract class TestUtils {
     public static ReviewComment createReviewComment(String content, Review review, User user) {
         return ReviewComment.builder()
                 .content(content)
+                .review(review)
+                .user(user)
+                .build();
+    }
+
+    public static ReviewLikes createReviewLikes(Review review, User user) {
+        return ReviewLikes.builder()
                 .review(review)
                 .user(user)
                 .build();
