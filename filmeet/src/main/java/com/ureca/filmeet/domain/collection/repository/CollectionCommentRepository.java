@@ -12,7 +12,7 @@ public interface CollectionCommentRepository extends JpaRepository<CollectionCom
 
     @Query("SELECT cc " +
             "FROM CollectionComment cc " +
-            "WHERE cc.id = :collectionCommentId AND cc.user.id = :userId")
+            "WHERE cc.id = :collectionCommentId AND cc.user.id = :userId AND cc.isDeleted = false ")
     Optional<CollectionComment> findCollectionCommentWrittenUserBy(
             @Param("userId") Long userId,
             @Param("collectionCommentId") Long collectionCommentId
@@ -23,7 +23,7 @@ public interface CollectionCommentRepository extends JpaRepository<CollectionCom
             FROM CollectionComment cc
             JOIN FETCH cc.user u
             JOIN cc.collection c
-            WHERE c.id = :collectionId
+            WHERE c.id = :collectionId AND c.isDeleted = false AND cc.isDeleted = false
             """)
     Slice<CollectionComment> findCommentsBy(
             @Param("collectionId") Long collectionId,
