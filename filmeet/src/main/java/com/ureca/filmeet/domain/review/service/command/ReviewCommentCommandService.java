@@ -54,7 +54,7 @@ public class ReviewCommentCommandService {
         return ModifyCommentResponse.of(reviewComment.getId());
     }
 
-    public void deleteComment(Long reviewId, Long commentId) {
+    public void deleteCommentV1(Long reviewId, Long commentId) {
         Review review = reviewRepository.findReviewByReviewIdAndCommentId(reviewId, commentId)
                 .orElseThrow(ReviewNotFoundException::new);
 
@@ -62,6 +62,15 @@ public class ReviewCommentCommandService {
                 .orElseThrow(ReviewCommentNotFoundException::new);
 
         reviewComment.delete();
+        review.decrementCommentCounts();
+    }
+
+    public void deleteComment(Long reviewId, Long commentId) {
+        ReviewComment reviewComment = reviewCommentRepository.findReviewCommentWithReview(reviewId, commentId)
+                .orElseThrow(ReviewCommentNotFoundException::new);
+        reviewComment.delete();
+
+        Review review = reviewComment.getReview();
         review.decrementCommentCounts();
     }
 }
