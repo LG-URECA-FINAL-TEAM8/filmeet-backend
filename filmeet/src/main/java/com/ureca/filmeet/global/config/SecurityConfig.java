@@ -17,6 +17,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -43,6 +48,7 @@ public class SecurityConfig {
     ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -63,10 +69,25 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/health").permitAll() // 먼저 선언
-                        .requestMatchers("/**", "/images/**", "/users/signup", "/auth/**", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/images/**", "/users/signup", "/auth/**", "/swagger",
+                                "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true); // 쿠키를 받을건지
+        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
+        configuration.addAllowedHeader("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

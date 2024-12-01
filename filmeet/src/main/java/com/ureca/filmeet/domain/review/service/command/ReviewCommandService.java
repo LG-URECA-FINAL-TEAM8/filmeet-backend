@@ -7,6 +7,10 @@ import com.ureca.filmeet.domain.review.dto.request.ModifyReviewRequest;
 import com.ureca.filmeet.domain.review.dto.response.CreateReviewResponse;
 import com.ureca.filmeet.domain.review.dto.response.ModifyReviewResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
+import com.ureca.filmeet.domain.review.exception.ReviewAlreadyExistsException;
+import com.ureca.filmeet.domain.review.exception.ReviewMovieNotFoundException;
+import com.ureca.filmeet.domain.review.exception.ReviewNotFoundException;
+import com.ureca.filmeet.domain.review.exception.ReviewUserNotFoundException;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
@@ -24,11 +28,17 @@ public class ReviewCommandService {
     private final ReviewRepository reviewRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest createReviewRequest) {
+        boolean isAlreadyReview = reviewRepository.existsByUserIdAndMovieId(createReviewRequest.userId(),
+                createReviewRequest.movieId());
+        if (isAlreadyReview) {
+            throw new ReviewAlreadyExistsException();
+        }
+
         User user = userRepository.findById(createReviewRequest.userId())
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(ReviewUserNotFoundException::new);
 
         Movie movie = movieRepository.findById(createReviewRequest.movieId())
-                .orElseThrow(() -> new RuntimeException("no movie"));
+                .orElseThrow(ReviewMovieNotFoundException::new);
 
         Review review = Review.builder()
                 .content(createReviewRequest.content())
@@ -42,7 +52,7 @@ public class ReviewCommandService {
 
     public ModifyReviewResponse modifyReview(ModifyReviewRequest modifyReviewRequest) {
         Review review = reviewRepository.findReviewBy(modifyReviewRequest.reviewId())
-                .orElseThrow(() -> new RuntimeException("no review"));
+                .orElseThrow(ReviewNotFoundException::new);
 
         review.modifyReview(modifyReviewRequest.content());
 
@@ -51,7 +61,7 @@ public class ReviewCommandService {
 
     public void deleteReview(Long reviewId, Long movieId) {
         Review review = reviewRepository.findReviewByMovieIdAndReviewId(reviewId, movieId)
-                .orElseThrow(() -> new RuntimeException("no review"));
+                .orElseThrow(ReviewNotFoundException::new);
         review.delete();
     }
 }

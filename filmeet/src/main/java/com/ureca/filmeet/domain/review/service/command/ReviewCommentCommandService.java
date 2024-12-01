@@ -6,6 +6,9 @@ import com.ureca.filmeet.domain.review.dto.response.CreateCommentResponse;
 import com.ureca.filmeet.domain.review.dto.response.ModifyCommentResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.entity.ReviewComment;
+import com.ureca.filmeet.domain.review.exception.ReviewCommentNotFoundException;
+import com.ureca.filmeet.domain.review.exception.ReviewNotFoundException;
+import com.ureca.filmeet.domain.review.exception.ReviewUserNotFoundException;
 import com.ureca.filmeet.domain.review.repository.ReviewCommentRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -25,10 +28,10 @@ public class ReviewCommentCommandService {
 
     public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest) {
         Review review = reviewRepository.findReviewBy(createCommentRequest.reviewId())
-                .orElseThrow(() -> new RuntimeException("no review"));
+                .orElseThrow(ReviewNotFoundException::new);
 
         User user = userRepository.findById(createCommentRequest.userId())
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(ReviewUserNotFoundException::new);
 
         ReviewComment reviewComment = ReviewComment.builder()
                 .review(review)
@@ -43,8 +46,8 @@ public class ReviewCommentCommandService {
     }
 
     public ModifyCommentResponse modifyComment(ModifyCommentRequest modifyCommentRequest) {
-        ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewId())
-                .orElseThrow(() -> new RuntimeException("no reviewComment"));
+        ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewCommentId())
+                .orElseThrow(ReviewCommentNotFoundException::new);
 
         reviewComment.modifyReviewComment(modifyCommentRequest.content());
 
@@ -53,10 +56,10 @@ public class ReviewCommentCommandService {
 
     public void deleteComment(Long reviewId, Long commentId) {
         Review review = reviewRepository.findReviewByReviewIdAndCommentId(reviewId, commentId)
-                .orElseThrow(() -> new RuntimeException("no review"));
+                .orElseThrow(ReviewNotFoundException::new);
 
         ReviewComment reviewComment = reviewCommentRepository.findReviewCommentBy(reviewId, commentId)
-                .orElseThrow(() -> new RuntimeException("no reviewComment"));
+                .orElseThrow(ReviewCommentNotFoundException::new);
 
         reviewComment.delete();
         review.decrementCommentCounts();

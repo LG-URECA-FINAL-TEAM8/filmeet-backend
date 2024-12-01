@@ -5,7 +5,6 @@ import java.util.List;
 public record CollectionCreateRequest(
         String title,
         String content,
-        Long userId,
         List<Long> movieIds
 ) {
 }

@@ -4,15 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.ureca.filmeet.global.exception.ResponseCode;
+import com.ureca.filmeet.global.exception.code.ResponseCode;
 import com.ureca.filmeet.infra.s3.dto.S3DownloadResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Map;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 public record ApiResponse<T>(
         Integer code,
@@ -56,6 +55,10 @@ public record ApiResponse<T>(
 
     public static <T> ResponseEntity<ApiResponse<T>> okWithoutData() {
         return ResponseEntity.ok(new ApiResponse<>(ResponseCode.SUCCESS));
+    }
+
+    public static <T> ApiResponse<T> error(ResponseCode code) {
+        return new ApiResponse<>(code, code.getMessage());
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> badRequest() {

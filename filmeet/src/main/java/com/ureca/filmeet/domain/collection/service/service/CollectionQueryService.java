@@ -1,15 +1,19 @@
 package com.ureca.filmeet.domain.collection.service.service;
 
-import com.ureca.filmeet.domain.collection.dto.response.CollectionGetResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionCommentsResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionDetailResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionMovieInfoResponse;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionSearchByTitleResponse;
-import com.ureca.filmeet.domain.collection.dto.response.MovieInfoResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionsResponse;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
+import com.ureca.filmeet.domain.collection.exception.CollectionNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionUserNotFoundException;
+import com.ureca.filmeet.domain.collection.repository.CollectionCommentRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -25,10 +29,11 @@ public class CollectionQueryService {
     private final UserRepository userRepository;
     private final CollectionRepository collectionRepository;
     private final CollectionMovieRepository collectionMovieRepository;
+    private final CollectionCommentRepository collectionCommentRepository;
 
-    public Slice<CollectionGetResponse> getCollections(Long userId, int page, int size) {
+    public Slice<CollectionsResponse> getCollections(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(CollectionUserNotFoundException::new);
 
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
         Slice<Collection> collections = collectionRepository.findCollectionsByUserId(user.getId(), pageable);
@@ -42,15 +47,16 @@ public class CollectionQueryService {
 
         return collections.map(collection -> {
             // 각 컬렉션의 영화 데이터를 가져오기
-            List<MovieInfoResponse> movies = getMoviesForCollection(collection.getId(), collectionMovies);
-            return CollectionGetResponse.from(collection, movies);
+            List<CollectionMovieInfoResponse> movies = getCollectionMovies(collection.getId(), collectionMovies);
+            return CollectionsResponse.from(collection, movies);
         });
     }
 
-    private List<MovieInfoResponse> getMoviesForCollection(Long collectionId, List<CollectionMovie> collectionMovies) {
+    private List<CollectionMovieInfoResponse> getCollectionMovies(Long collectionId,
+                                                                  List<CollectionMovie> collectionMovies) {
         return collectionMovies.stream()
                 .filter(cm -> cm.getCollection().getId().equals(collectionId))
-                .map(cm -> new MovieInfoResponse(
+                .map(cm -> new CollectionMovieInfoResponse(
                         cm.getMovie().getId(),
                         cm.getMovie().getTitle(),
                         cm.getMovie().getPosterUrl(),
@@ -64,35 +70,21 @@ public class CollectionQueryService {
                 .toList();
     }
 
-    public CollectionGetResponse getCollection(Long collectionId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+    public CollectionDetailResponse getCollection(Long collectionId, Long userId) {
+        Collection collection = collectionRepository.findCollectionByCollectionIdAndUserId(collectionId, userId)
+                .orElseThrow(CollectionNotFoundException::new);
 
-        Collection collection = collectionRepository.findCollectionByCollectionIdAndUserId(collectionId, user.getId())
-                .orElseThrow(() -> new RuntimeException("no collection"));
-
-        List<CollectionMovie> collectionMovies = collectionMovieRepository.findMoviesByCollectionId(
-                collection.getId());
-
-        List<MovieInfoResponse> movies = getMoviesForCollection(collectionMovies);
-        return CollectionGetResponse.from(collection, movies);
+        return CollectionDetailResponse.of(collection);
     }
 
-    private List<MovieInfoResponse> getMoviesForCollection(List<CollectionMovie> collectionMovies) {
-        return collectionMovies.stream()
-                .sorted(Comparator.comparing(CollectionMovie::getId).reversed())
-                .map(cm -> new MovieInfoResponse(
-                        cm.getMovie().getId(),
-                        cm.getMovie().getTitle(),
-                        cm.getMovie().getPosterUrl(),
-                        cm.getMovie().getReleaseDate(),
-                        cm.getMovie().getRuntime(),
-                        cm.getMovie().getFilmRatings(),
-                        cm.getMovie().getAverageRating(),
-                        cm.getMovie().getLikeCounts(),
-                        cm.getMovie().getRatingCounts()
-                ))
-                .toList();
+    public Slice<CollectionMovieInfoResponse> getCollectionMovies(Long collectionId, Pageable pageable) {
+        return collectionMovieRepository.findMoviesBy(collectionId, pageable)
+                .map(CollectionMovieInfoResponse::of);
+    }
+
+    public Slice<CollectionCommentsResponse> getCollectionComments(Long collectionId, Pageable pageable) {
+        return collectionCommentRepository.findCommentsBy(collectionId, pageable)
+                .map(CollectionCommentsResponse::of);
     }
 
     public Slice<CollectionSearchByTitleResponse> searchCollectionByTitle(String titleKeyword, int page, int size) {

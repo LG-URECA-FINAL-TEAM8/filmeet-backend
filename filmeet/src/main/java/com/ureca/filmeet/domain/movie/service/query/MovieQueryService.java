@@ -9,12 +9,14 @@ import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
 import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.MovieCountriesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
+import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +61,7 @@ public class MovieQueryService {
 
     public MovieDetailResponse getMovieDetail(Long movieId, Long userId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
-                .orElseThrow(() -> new RuntimeException("no movie"));
+                .orElseThrow(MovieNotFoundException::new);
 
         boolean isLiked = movieLikesRepository.findMovieLikesBy(movieId, userId).isPresent();
 
@@ -86,8 +88,9 @@ public class MovieQueryService {
         List<String> galleryImages = getGalleryImages(movie);
 
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "likeCounts");
-        Slice<GetMovieReviewsResponse> movieReviewsResponses = reviewRepository.findMovieReviewsWithLikes(movieId,
-                userId, pageable);
+        SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses = SliceResponseDto.of(
+                reviewRepository.findMovieReviewsWithLikes(movieId,
+                        userId, pageable));
 
         return MovieDetailResponse.from(
                 movie,

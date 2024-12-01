@@ -12,6 +12,7 @@ public interface ReviewLikesRepository extends JpaRepository<ReviewLikes, Long> 
 
     @Query("SELECT rl " +
             "FROM ReviewLikes rl " +
+            "JOIN FETCH rl.review r " +
             "WHERE rl.review.id = :reviewId AND rl.user.id = :userId")
     Optional<ReviewLikes> findReviewLikesByReviewIdAndUserId(
             @Param("reviewId") Long reviewId,

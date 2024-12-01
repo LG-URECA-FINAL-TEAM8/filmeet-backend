@@ -2,6 +2,10 @@ package com.ureca.filmeet.domain.review.service.command;
 
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.entity.ReviewLikes;
+import com.ureca.filmeet.domain.review.exception.ReviewLikeAlreadyExistsException;
+import com.ureca.filmeet.domain.review.exception.ReviewLikeNotFoundException;
+import com.ureca.filmeet.domain.review.exception.ReviewNotFoundException;
+import com.ureca.filmeet.domain.review.exception.ReviewUserNotFoundException;
 import com.ureca.filmeet.domain.review.repository.ReviewLikesRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -20,11 +24,16 @@ public class ReviewLikesCommandService {
     private final ReviewLikesRepository reviewLikesRepository;
 
     public void reviewLikes(Long reviewId, Long userId) {
+        boolean isAlreadyLiked = reviewLikesRepository.existsByReviewIdAndUserId(reviewId, userId);
+        if (isAlreadyLiked) {
+            throw new ReviewLikeAlreadyExistsException();
+        }
+
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("no review"));
+                .orElseThrow(ReviewNotFoundException::new);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(ReviewUserNotFoundException::new);
 
         ReviewLikes reviewLikes = ReviewLikes.builder()
                 .review(review)
@@ -37,11 +46,9 @@ public class ReviewLikesCommandService {
 
     public void reviewLikesCancel(Long reviewId, Long userId) {
         ReviewLikes reviewLikes = reviewLikesRepository.findReviewLikesByReviewIdAndUserId(reviewId, userId)
-                .orElseThrow(() -> new RuntimeException("취소할 리뷰 좋아요가 없습니다."));
-        reviewLikesRepository.delete(reviewLikes);
-        
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("no review"));
+                .orElseThrow(ReviewLikeNotFoundException::new);
+        Review review = reviewLikes.getReview();
         review.decrementLikesCounts();
+        reviewLikesRepository.delete(reviewLikes);
     }
 }

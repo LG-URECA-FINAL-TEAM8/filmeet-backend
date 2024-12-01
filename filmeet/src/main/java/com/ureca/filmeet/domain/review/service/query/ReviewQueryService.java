@@ -5,6 +5,7 @@ import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.ReviewCommentResponse;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
+import com.ureca.filmeet.domain.review.exception.ReviewNotFoundException;
 import com.ureca.filmeet.domain.review.repository.ReviewLikesRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ReviewQueryService {
 
     public GetMovieReviewDetailResponse getMovieReviewDetail(Long reviewId, Long userId) {
         Review review = reviewRepository.findMovieReviewDetailBy(reviewId)
-                .orElseThrow(() -> new RuntimeException("no review"));
+                .orElseThrow(ReviewNotFoundException::new);
 
         List<ReviewCommentResponse> reviewCommentResponse = review.getReviewComments()
                 .stream()
