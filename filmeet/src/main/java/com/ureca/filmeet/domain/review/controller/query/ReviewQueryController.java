@@ -8,6 +8,7 @@ import com.ureca.filmeet.domain.review.service.query.ReviewTrendingQueryService;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -59,8 +60,9 @@ public class ReviewQueryController {
                     pageable);
             return ApiResponse.ok(SliceResponseDto.of(recentReviews));
         }
+        LocalDateTime currentTime = LocalDateTime.now();
         Slice<ReviewTrendingResponse> trendingReviews = reviewTrendingQueryService.getTrendingReviews(user.getId(),
-                pageable);
+                pageable, currentTime);
         return ApiResponse.ok(SliceResponseDto.of(trendingReviews));
     }
 }

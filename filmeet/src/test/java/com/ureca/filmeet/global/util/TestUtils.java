@@ -48,6 +48,17 @@ public abstract class TestUtils {
                 .build();
     }
 
+    public static Review createReview(String content, Movie movie, User user, Integer likeCounts,
+                                      Integer commentCounts) {
+        return Review.builder()
+                .content(content)
+                .movie(movie)
+                .user(user)
+                .likeCounts(likeCounts)
+                .commentCounts(commentCounts)
+                .build();
+    }
+
     public static ReviewComment createReviewComment(String content, Review review, User user) {
         return ReviewComment.builder()
                 .content(content)
