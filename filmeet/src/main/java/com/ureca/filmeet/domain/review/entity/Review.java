@@ -50,10 +50,12 @@ public class Review extends BaseEntity {
     private List<ReviewComment> reviewComments = new ArrayList<>();
 
     @Builder
-    public Review(String content, Movie movie, User user) {
+    public Review(String content, Movie movie, User user, Integer likeCounts, Integer commentCounts) {
         this.content = content;
         this.movie = movie;
         this.user = user;
+        this.likeCounts = (likeCounts != null) ? likeCounts : 0;
+        this.commentCounts = (commentCounts != null) ? commentCounts : 0;
     }
 
     public void modifyReview(String content) {

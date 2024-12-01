@@ -21,12 +21,12 @@ public class ReviewTrendingQueryService {
 
     private final ReviewRepository reviewRepository;
 
-    public Slice<ReviewTrendingResponse> getTrendingReviews(Long userId, Pageable pageable) {
+    public Slice<ReviewTrendingResponse> getTrendingReviews(Long userId, Pageable pageable, LocalDateTime currentTime) {
         Slice<ReviewResponse> reviews = reviewRepository.findTrendingReviewsBy(userId, pageable);
         List<ReviewTrendingResponse> reviewTrendingResponses = reviews.getContent()
                 .stream()
                 .map(review -> {
-                    double popularityScore = calculatePopularityScore(review);
+                    double popularityScore = calculatePopularityScore(review, currentTime);
                     return ReviewTrendingResponse.from(review, popularityScore);
                 })
                 .sorted(Comparator.comparingDouble(ReviewTrendingResponse::popularityScore).reversed())
@@ -35,9 +35,9 @@ public class ReviewTrendingQueryService {
         return new SliceImpl<>(reviewTrendingResponses, pageable, reviews.hasNext());
     }
 
-    private double calculatePopularityScore(ReviewResponse review) {
+    private double calculatePopularityScore(ReviewResponse review, LocalDateTime currentTime) {
         long maxDays = (long) PopularityWeight.MAX_DAYS.getWeight();
-        long daysSinceReview = ChronoUnit.DAYS.between(review.createdAt(), LocalDateTime.now());
+        long daysSinceReview = ChronoUnit.DAYS.between(review.createdAt(), currentTime);
         long boundedDays = Math.min(daysSinceReview, maxDays); // 최대 50일까지 감소 반영
 
         double popularityScore = (review.likeCounts() * PopularityWeight.LIKE.getWeight()) +
