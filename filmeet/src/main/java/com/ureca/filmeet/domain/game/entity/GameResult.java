@@ -37,7 +37,7 @@ public class GameResult extends BaseTimeEntity {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @Column(name = "`rank`")
+    @Column(name = "game_rank")
     private Integer rank; // 순위
 
     @Builder
