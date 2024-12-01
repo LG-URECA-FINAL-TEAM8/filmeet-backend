@@ -13,21 +13,23 @@ public interface CollectionMovieRepository extends JpaRepository<CollectionMovie
 
     @Query("SELECT cm.movie.id " +
             "FROM CollectionMovie cm " +
-            "WHERE cm.collection.id = :collectionId")
+            "WHERE cm.collection.id = :collectionId AND cm.collection.isDeleted = false AND cm.movie.isDeleted = false ")
     List<Long> findMovieIdsByCollectionId(@Param("collectionId") Long collectionId);
 
     @Query("SELECT cm " +
             "FROM CollectionMovie cm " +
             "JOIN FETCH cm.movie m " +
-            "WHERE cm.collection.id IN :collectionIds "
+            "WHERE cm.collection.id IN :collectionIds AND cm.collection.isDeleted = false "
     )
-    List<CollectionMovie> findMoviesByCollectionIds(@Param("collectionIds") List<Long> collectionIds);
+    List<CollectionMovie> findMoviesByCollectionIds(
+            @Param("collectionIds") List<Long> collectionIds
+    );
 
     @Query(""" 
             SELECT cm
             FROM CollectionMovie cm
             JOIN FETCH cm.movie m
-            WHERE cm.collection.id = :collectionId
+            WHERE cm.collection.id = :collectionId AND cm.collection.isDeleted = false
             """)
     Slice<CollectionMovie> findMoviesBy(
             @Param("collectionId") Long collectionId,
@@ -37,6 +39,8 @@ public interface CollectionMovieRepository extends JpaRepository<CollectionMovie
     @Modifying
     @Query("DELETE FROM CollectionMovie cm " +
             "WHERE cm.collection.id = :collectionId AND cm.movie.id IN :movieIds")
-    void deleteByCollectionIdAndMovieIds(@Param("collectionId") Long collectionId,
-                                         @Param("movieIds") List<Long> movieIds);
+    void deleteByCollectionIdAndMovieIds(
+            @Param("collectionId") Long collectionId,
+            @Param("movieIds") List<Long> movieIds
+    );
 }

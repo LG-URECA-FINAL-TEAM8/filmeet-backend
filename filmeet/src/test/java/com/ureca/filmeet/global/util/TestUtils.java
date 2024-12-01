@@ -3,6 +3,7 @@ package com.ureca.filmeet.global.util;
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionComment;
 import com.ureca.filmeet.domain.collection.entity.CollectionLikes;
+import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
@@ -104,6 +105,13 @@ public abstract class TestUtils {
     public static CollectionLikes createCollectionLikes(User user, Collection collection) {
         return CollectionLikes.builder()
                 .user(user)
+                .collection(collection)
+                .build();
+    }
+
+    public static CollectionMovie createCollectionMovie(Movie movie, Collection collection) {
+        return CollectionMovie.builder()
+                .movie(movie)
                 .collection(collection)
                 .build();
     }
