@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,4 +26,9 @@ public class Genre extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private GenreType genreType;
+
+    @Builder
+    public Genre(GenreType genreType) {
+        this.genreType = genreType;
+    }
 }

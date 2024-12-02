@@ -9,9 +9,9 @@ public enum GenreScoreAction {
     GAME_RESULT(3),
 
     LIKE(2),
-    COLLECTION(4),
-
     LIKE_CANCEL(-2),
+
+    COLLECTION(4),
     COLLECTION_DELETE(-4),
 
     RATING(1),
