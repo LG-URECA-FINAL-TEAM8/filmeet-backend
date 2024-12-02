@@ -42,6 +42,21 @@ public abstract class TestUtils {
                 .build();
     }
 
+    public static Movie createMovie(String title, String plot,
+                                    LocalDate releaseDate,
+                                    Integer runtime, String posterUrl,
+                                    FilmRatings filmRatings, Integer ratingCounts) {
+        return Movie.builder()
+                .title(title)
+                .plot(plot)
+                .releaseDate(releaseDate)
+                .runtime(runtime)
+                .posterUrl(posterUrl)
+                .filmRatings(filmRatings)
+                .ratingCounts(ratingCounts)
+                .build();
+    }
+
     public static User createUser(String username, String password, Role role,
                                   Provider provider, String nickname, String profileImage) {
         return User.builder()
