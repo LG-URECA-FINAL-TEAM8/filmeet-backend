@@ -45,7 +45,8 @@ public abstract class TestUtils {
     public static Movie createMovie(String title, String plot,
                                     LocalDate releaseDate,
                                     Integer runtime, String posterUrl,
-                                    FilmRatings filmRatings, Integer ratingCounts) {
+                                    FilmRatings filmRatings, BigDecimal averageRating, Integer ratingCounts,
+                                    Integer likeCounts) {
         return Movie.builder()
                 .title(title)
                 .plot(plot)
@@ -53,6 +54,8 @@ public abstract class TestUtils {
                 .runtime(runtime)
                 .posterUrl(posterUrl)
                 .filmRatings(filmRatings)
+                .averageRating(averageRating)
+                .likeCounts(likeCounts)
                 .ratingCounts(ratingCounts)
                 .build();
     }

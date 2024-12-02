@@ -234,7 +234,8 @@ class MovieRatingsCommandServiceTest {
     void deleteMovieRating_whenValidRequest_deletesRatingAndUpdatesScores() {
         // given
         User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname", "profile.url");
-        Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://poster1.url", FilmRatings.ALL, 1);
+        Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://poster1.url", FilmRatings.ALL,
+                BigDecimal.valueOf(0.0), 1, 0);
         Genre genre1 = createGenre(GenreType.ACTION);
         Genre genre2 = createGenre(GenreType.COMEDY);
         MovieGenre movieGenre1 = createMovieGenre(movie1, genre1);
