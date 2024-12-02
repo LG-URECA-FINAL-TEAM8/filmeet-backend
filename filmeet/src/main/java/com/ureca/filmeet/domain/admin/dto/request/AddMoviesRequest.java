@@ -1,11 +1,13 @@
-package com.ureca.filmeet.infra.kmdb.dto;
+package com.ureca.filmeet.domain.admin.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ureca.filmeet.infra.kmdb.dto.KmdbPlot;
+import com.ureca.filmeet.infra.kmdb.dto.KmdbStaff;
 
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record KmdbApiResponse(
+public record AddMoviesRequest(
         String title,              // 영화 제목
         String titleEng,           // 영어 제목
         String repRlsDate,           // 제작 연도
@@ -16,4 +18,5 @@ public record KmdbApiResponse(
         String rating,             // 관람 등급
         String genre,              // 장르
         List<String> posters       // 포스터 이미지 URL 목록
-) {}
+) {
+}

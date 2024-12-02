@@ -1,15 +1,16 @@
 package com.ureca.filmeet.domain.movie.repository;
 
-import com.ureca.filmeet.domain.movie.entity.MovieCountries;
-import java.util.List;
+import com.ureca.filmeet.domain.movie.entity.MovieCountry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface MovieCountriesRepository extends JpaRepository<MovieCountries, Long> {
+import java.util.List;
 
-    @Query("SELECT mc FROM MovieCountries mc " +
-            "JOIN FETCH mc.countries c " +
+public interface MovieCountriesRepository extends JpaRepository<MovieCountry, Long> {
+
+    @Query("SELECT mc FROM MovieCountry mc " +
+            "JOIN FETCH mc.country c " +
             "WHERE mc.movie.id = :movieId")
-    List<MovieCountries> findMovieCountriesByMovieId(@Param("movieId") Long movieId);
+    List<MovieCountry> findMovieCountriesByMovieId(@Param("movieId") Long movieId);
 }
