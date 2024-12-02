@@ -10,7 +10,7 @@ public abstract class ReviewException extends GlobalException {
     private final ResponseCode errorExceptionCode;
 
     public ReviewException(ResponseCode errorExceptionCode) {
-        super(errorExceptionCode.getMessage());
+        super(errorExceptionCode);
         this.errorExceptionCode = errorExceptionCode;
     }
 }
