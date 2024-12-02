@@ -1,8 +1,8 @@
 package com.ureca.filmeet.domain.game.service.query;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.ureca.filmeet.domain.game.dto.response.GameDetailResponse;
 import com.ureca.filmeet.domain.game.dto.response.GameResponse;
+import com.ureca.filmeet.domain.game.exception.GameNotFoundException;
 import com.ureca.filmeet.domain.game.repository.GameRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class GameQueryService {
     public GameResponse getGame(Long gameId) {
         return gameRepository.findById(gameId)
                 .map(GameResponse::from)
-                .orElseThrow(() -> new NotFoundException("game not found"));  // 또는 적절한 예외
+                .orElseThrow(GameNotFoundException::new);  // 또는 적절한 예외
     }
 
     public GameDetailResponse getGameDetail(Long gameId, User user) {
@@ -29,7 +29,7 @@ public class GameQueryService {
         return gameRepository.findByIdWithMatches(gameId)
                 .filter(game -> game.getMatches().get(0).getUser().getId().equals(userId))
                 .map(GameDetailResponse::from)
-                .orElseThrow(() -> new NotFoundException("game not found"));  // 또는 적절한 예외
+                .orElseThrow(GameNotFoundException::new);  // 또는 적절한 예외
     }
 
     public Slice<GameResponse> getMyGames(Long userId, Pageable pageable) {

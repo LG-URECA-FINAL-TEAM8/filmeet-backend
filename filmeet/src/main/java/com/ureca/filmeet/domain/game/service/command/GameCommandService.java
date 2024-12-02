@@ -1,17 +1,22 @@
 package com.ureca.filmeet.domain.game.service.command;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.ureca.filmeet.domain.game.dto.request.GameCreateRequest;
 import com.ureca.filmeet.domain.game.dto.request.RoundMatchSelectionRequest;
 import com.ureca.filmeet.domain.game.entity.Game;
 import com.ureca.filmeet.domain.game.entity.GameResult;
 import com.ureca.filmeet.domain.game.entity.GameStatus;
 import com.ureca.filmeet.domain.game.entity.RoundMatch;
+import com.ureca.filmeet.domain.game.exception.GameAbandonedException;
+import com.ureca.filmeet.domain.game.exception.GameAlreadyCompletedException;
+import com.ureca.filmeet.domain.game.exception.GameInvalidWinnerSelectionException;
+import com.ureca.filmeet.domain.game.exception.GameNotFoundException;
+import com.ureca.filmeet.domain.game.exception.GameNotOwnerException;
 import com.ureca.filmeet.domain.game.repository.GameRepository;
 import com.ureca.filmeet.domain.game.repository.GameResultRepository;
 import com.ureca.filmeet.domain.game.repository.RoundMatchRepository;
 import com.ureca.filmeet.domain.genre.service.GenreScoreService;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -77,15 +82,15 @@ public class GameCommandService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void selectWinner(Long matchId, RoundMatchSelectionRequest request, User user) {
         RoundMatch match = roundMatchRepository.findByIdAndUserId(matchId, user.getId())
-                .orElseThrow(() -> new NotFoundException("no match"));
+                .orElseThrow(GameNotFoundException::new);
 
         Game game = match.getGame();
         if (game.isAbandoned()) {
-            throw new RuntimeException("중단된 게임");
+            throw new GameAbandonedException();
         }
 
         Movie winner = movieRepository.findById(request.selectedMovieId())
-                .orElseThrow(() -> new NotFoundException("no movie"));
+                .orElseThrow(GameInvalidWinnerSelectionException::new);
 
         match.selectWinner(winner);
 
@@ -101,16 +106,16 @@ public class GameCommandService {
     @Transactional
     public void deleteGame(Long gameId, User user) {
         Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new NotFoundException("no game"));
+                .orElseThrow(GameNotFoundException::new);
 
         // 게임 소유자 검증
         if (!game.getMatches().get(0).getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("not owner");
+            throw new GameNotOwnerException();
         }
 
         // 이미 완료된 게임은 삭제 불가
         if (game.getStatus() == GameStatus.INACTIVE) {
-            throw new RuntimeException("not owner");
+            throw new GameAlreadyCompletedException();
         }
 
         // 게임과 관련된 모든 데이터 삭제
@@ -188,7 +193,7 @@ public class GameCommandService {
 
         movieRankMap.forEach((movieId, rank) -> {
             Movie movie = movieRepository.findById(movieId)
-                    .orElseThrow(() -> new NotFoundException("no movie"));
+                    .orElseThrow(MovieNotFoundException::new);
 
             GameResult result = GameResult.builder()
                     .game(game)
