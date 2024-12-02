@@ -71,7 +71,7 @@ class MovieLikesCommandServiceTest {
     private EntityManager em;
 
     @Test
-    @DisplayName("사용자가 영화를 좋아요하면 좋아요가 성공적으로 저장되고 장르 점수가 업데이트된다.")
+    @DisplayName("영화에 좋아요가 성공적으로 저장되고 영화의 장르에 따라 사용자의 장르 점수가 업데이트된다.")
     void movieLikes_whenNotAlreadyLiked_shouldSaveLikeAndUpdateScores() {
         // given
         User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
@@ -136,7 +136,7 @@ class MovieLikesCommandServiceTest {
     }
 
     @Test
-    @DisplayName("좋아요를 취소하면 좋아요가 삭제되고 장르 점수가 감소한다.")
+    @DisplayName("좋아요를 취소하면 좋아요가 삭제되고 해당 영화의 장르에 따라 사용자의 장르 점수가 감소한다.")
     void movieLikesCancel_whenLiked_shouldRemoveLikeAndUpdateScores() {
         // given
         User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
