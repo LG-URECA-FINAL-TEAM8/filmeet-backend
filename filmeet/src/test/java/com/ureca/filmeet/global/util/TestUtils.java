@@ -8,7 +8,9 @@ import com.ureca.filmeet.domain.genre.entity.Genre;
 import com.ureca.filmeet.domain.genre.entity.GenreScore;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
+import com.ureca.filmeet.domain.movie.entity.Countries;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.entity.MovieCountries;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.review.entity.Review;
@@ -138,6 +140,19 @@ public abstract class TestUtils {
         return MovieGenre.builder()
                 .movie(movie)
                 .genre(genre)
+                .build();
+    }
+
+    public static Countries createCountries(String nation) {
+        return Countries.builder()
+                .nation(nation)
+                .build();
+    }
+
+    public static MovieCountries createMovieCountry(Movie movie, Countries countries) {
+        return MovieCountries.builder()
+                .movie(movie)
+                .countries(countries)
                 .build();
     }
 }

@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,5 +34,11 @@ public class MovieCountries extends BaseTimeEntity {
 
     public void changeMovie(Movie movie) {
         this.movie = movie;
+    }
+
+    @Builder
+    public MovieCountries(Movie movie, Countries countries) {
+        this.movie = movie;
+        this.countries = countries;
     }
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,4 +23,9 @@ public class Countries extends BaseTimeEntity {
 
     @Column(length = 50, nullable = false)
     private String nation;
+
+    @Builder
+    public Countries(String nation) {
+        this.nation = nation;
+    }
 }
