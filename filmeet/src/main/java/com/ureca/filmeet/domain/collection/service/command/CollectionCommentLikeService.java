@@ -2,6 +2,10 @@ package com.ureca.filmeet.domain.collection.service.command;
 
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionLikes;
+import com.ureca.filmeet.domain.collection.exception.CollectionLikeAlreadyExistsException;
+import com.ureca.filmeet.domain.collection.exception.CollectionLikeNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionNotFoundException;
+import com.ureca.filmeet.domain.collection.exception.CollectionUserNotFoundException;
 import com.ureca.filmeet.domain.collection.repository.CollectionLikeRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -22,14 +26,14 @@ public class CollectionCommentLikeService {
     public void collectionLikes(Long collectionId, Long userId) {
         boolean isAlreadyLiked = collectionLikeRepository.existsByCollectionIdAndUserId(collectionId, userId);
         if (isAlreadyLiked) {
-            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+            throw new CollectionLikeAlreadyExistsException();
         }
 
         Collection collection = collectionRepository.findById(collectionId)
-                .orElseThrow(() -> new RuntimeException("no collection"));
+                .orElseThrow(CollectionNotFoundException::new);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("no user"));
+                .orElseThrow(CollectionUserNotFoundException::new);
 
         CollectionLikes collectionLikes = CollectionLikes.builder()
                 .collection(collection)
@@ -42,16 +46,15 @@ public class CollectionCommentLikeService {
 
     public void collectionLikesCancel(Long collectionId, Long userId) {
         Collection collection = collectionRepository.findById(collectionId)
-                .orElseThrow(() -> new RuntimeException("해당 컬렉션이 존재하지 않습니다."));
+                .orElseThrow(CollectionNotFoundException::new);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(CollectionUserNotFoundException::new);
 
         CollectionLikes collectionLikes = collectionLikeRepository.findCollectionLikesByCollectionIdAndUserId(
                         collection.getId(),
                         user.getId())
-                .orElseThrow(() -> new RuntimeException(
-                        String.format("User ID %d는 Collection ID %d를 좋아요하지 않았습니다.", userId, collectionId)));
+                .orElseThrow(CollectionLikeNotFoundException::new);
 
         collectionLikeRepository.delete(collectionLikes);
 

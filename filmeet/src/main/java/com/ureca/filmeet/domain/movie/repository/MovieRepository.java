@@ -1,14 +1,15 @@
 package com.ureca.filmeet.domain.movie.repository;
 
 import com.ureca.filmeet.domain.movie.entity.Movie;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustomRepository {
 
@@ -101,10 +102,16 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     );
 
     @Query(value =
-            "SELECT * FROM movie m " +
-                    "WHERE m.movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(m2.movie_id) FROM movie m2))) " +
-                    "ORDER BY m.movie_id " +
+            "SELECT * FROM movie " +
+                    "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) " +
+                    "ORDER BY movie_id " +
                     "LIMIT :totalRounds",
             nativeQuery = true)
     List<Movie> findRandomMovies(@Param("totalRounds") Integer totalRounds);
+
+    @Query("SELECT DISTINCT m FROM Movie m " +
+            "LEFT JOIN FETCH m.movieGenres mg " +
+            "LEFT JOIN FETCH mg.genre " +
+            "WHERE m IN :movies")
+    List<Movie> findMoviesWithGenres(@Param("movies") List<Movie> movies);
 }

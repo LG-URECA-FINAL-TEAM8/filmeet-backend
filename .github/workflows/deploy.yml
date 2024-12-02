@@ -50,12 +50,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1  # ECR에 로그인하여 인증 토큰 획득
 
-      # 5️⃣ application.yml 생성
-      - name: application.yml 생성
-        run: |
-          cat > src/main/resources/application.yml <<EOL
-          $(cat src/main/resources/application.yml)
-          EOL
+#      # 5️⃣ application.yml 생성
+#      - name: application.yml 생성
+#        run: |
+#          cat > src/main/resources/application.yml <<EOL
+#          $(cat src/main/resources/application.yml)
+#          EOL
 
       # 6️⃣ Docker 이미지 빌드 및 푸시
       - name: Docker 이미지 빌드 및 푸시

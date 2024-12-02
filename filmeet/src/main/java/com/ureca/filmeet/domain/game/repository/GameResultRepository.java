@@ -13,4 +13,7 @@ public interface GameResultRepository extends JpaRepository<GameResult, Long> {
     @Query("SELECT gr FROM GameResult gr " +
             "WHERE gr.game.id = :gameId AND gr.user.id = :userId")
     List<GameResult> findByGameIdAndUserId(Long gameId, Long userId);
+
+    @Query("DELETE FROM GameResult gr WHERE gr.game.id = :gameId")
+    void deleteByGameId(Long gameId);
 }
