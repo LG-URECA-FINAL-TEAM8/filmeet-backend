@@ -12,8 +12,11 @@ import com.ureca.filmeet.domain.movie.entity.Countries;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieCountries;
 import com.ureca.filmeet.domain.movie.entity.MovieLikes;
+import com.ureca.filmeet.domain.movie.entity.MoviePersonnel;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
+import com.ureca.filmeet.domain.movie.entity.Personnel;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
+import com.ureca.filmeet.domain.movie.entity.enums.MoviePosition;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.entity.ReviewComment;
 import com.ureca.filmeet.domain.review.entity.ReviewLikes;
@@ -161,6 +164,23 @@ public abstract class TestUtils {
         return MovieLikes.builder()
                 .movie(movie)
                 .user(user)
+                .build();
+    }
+
+    public static MoviePersonnel createMoviePersonnel(Personnel personnel, Movie movie, MoviePosition moviePosition,
+                                                      String characterName) {
+        return MoviePersonnel.builder()
+                .personnel(personnel)
+                .movie(movie)
+                .moviePosition(moviePosition)
+                .characterName(characterName)
+                .build();
+    }
+
+    public static Personnel createPersonnel(String name, String profileImage) {
+        return Personnel.builder()
+                .name(name)
+                .profileImage(profileImage)
                 .build();
     }
 }

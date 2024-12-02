@@ -88,15 +88,22 @@ public class Movie extends BaseEntity {
     }
 
     public void modifyMovieRating(BigDecimal oldRatingScore, BigDecimal newRatingScore) {
+        // 현재 총 점수 계산
         BigDecimal currentTotalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts));
 
         // 기존 별점을 총합에서 빼고 새로운 별점을 추가
         BigDecimal updatedTotalScore = currentTotalScore
-                .subtract(oldRatingScore)
-                .add(newRatingScore);
+                .subtract(oldRatingScore != null ? oldRatingScore : BigDecimal.ZERO)
+                .add(newRatingScore != null ? newRatingScore : BigDecimal.ZERO);
 
-        // 새로운 평균 계산
-        this.averageRating = updatedTotalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1, RoundingMode.HALF_UP);
+        // ratingCounts가 0인 경우 평균 평점을 0으로 설정
+        if (this.ratingCounts == 0) {
+            this.averageRating = BigDecimal.ZERO;
+        } else {
+            // 새로운 평균 계산
+            this.averageRating = updatedTotalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1,
+                    RoundingMode.HALF_UP);
+        }
     }
 
     public void updateAfterRatingDeletion(BigDecimal ratingScoreToDelete) {
@@ -149,9 +156,9 @@ public class Movie extends BaseEntity {
         this.releaseDate = releaseDate;
         this.runtime = runtime;
         this.posterUrl = posterUrl;
-        this.likeCounts = likeCounts;
-        this.ratingCounts = ratingCounts;
-        this.averageRating = averageRating;
+        this.likeCounts = likeCounts != null ? likeCounts : 0;
+        this.ratingCounts = ratingCounts != null ? ratingCounts : 0;
+        this.averageRating = averageRating != null ? averageRating : BigDecimal.ZERO;
         this.filmRatings = filmRatings;
     }
 }
