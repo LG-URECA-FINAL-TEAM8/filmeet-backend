@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,5 +35,11 @@ public class MovieGenre extends BaseTimeEntity {
 
     public void changeMovie(Movie movie) {
         this.movie = movie;
+    }
+
+    @Builder
+    public MovieGenre(Movie movie, Genre genre) {
+        this.movie = movie;
+        this.genre = genre;
     }
 }

@@ -2,6 +2,12 @@ package com.ureca.filmeet.global.util;
 
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionComment;
+import com.ureca.filmeet.domain.collection.entity.CollectionLikes;
+import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
+import com.ureca.filmeet.domain.genre.entity.Genre;
+import com.ureca.filmeet.domain.genre.entity.GenreScore;
+import com.ureca.filmeet.domain.genre.entity.MovieGenre;
+import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
@@ -97,6 +103,41 @@ public abstract class TestUtils {
                 .content(content)
                 .user(user)
                 .collection(collection)
+                .build();
+    }
+
+    public static CollectionLikes createCollectionLikes(User user, Collection collection) {
+        return CollectionLikes.builder()
+                .user(user)
+                .collection(collection)
+                .build();
+    }
+
+    public static CollectionMovie createCollectionMovie(Movie movie, Collection collection) {
+        return CollectionMovie.builder()
+                .movie(movie)
+                .collection(collection)
+                .build();
+    }
+
+    public static GenreScore createGenreScore(User user, Genre genre, Integer score) {
+        return GenreScore.builder()
+                .user(user)
+                .genre(genre)
+                .score(score)
+                .build();
+    }
+
+    public static Genre createGenre(GenreType genreType) {
+        return Genre.builder()
+                .genreType(genreType)
+                .build();
+    }
+
+    public static MovieGenre createMovieGenre(Movie movie, Genre genre) {
+        return MovieGenre.builder()
+                .movie(movie)
+                .genre(genre)
                 .build();
     }
 }

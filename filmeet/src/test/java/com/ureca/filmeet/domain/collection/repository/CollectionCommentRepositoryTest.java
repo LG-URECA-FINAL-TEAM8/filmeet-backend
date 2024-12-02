@@ -223,6 +223,23 @@ class CollectionCommentRepositoryTest {
                 .containsExactlyInAnyOrder("댓글 내용 10", "댓글 내용 11", "댓글 내용 12", "댓글 내용 13", "댓글 내용 14");
     }
 
+    @DisplayName("댓글 작성자가 없는 댓글은 조회되지 않는다.")
+    @Test
+    void findCommentsBy_whenCommentWithoutUser_returnsEmpty() {
+        // given
+        Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", null);
+        CollectionComment comment = createCollectionComment("댓글 내용", null, collection);
+
+        // when
+        collectionRepository.save(collection);
+        collectionCommentRepository.save(comment);
+        Pageable pageable = PageRequest.of(0, 10);
+        Slice<CollectionComment> result = collectionCommentRepository.findCommentsBy(collection.getId(), pageable);
+
+        // then
+        assertThat(result.getContent()).isEmpty();
+    }
+
     @DisplayName("삭제된 컬렉션의 댓글은 조회되지 않는다.")
     @Test
     void findCommentsBy_whenCollectionDeleted_returnsEmpty() {
@@ -267,20 +284,42 @@ class CollectionCommentRepositoryTest {
         assertThat(result.getContent()).isEmpty();
     }
 
-    @DisplayName("댓글 작성자가 없는 댓글은 조회되지 않는다.")
+    @DisplayName("컬렉션 댓글 중 일부가 삭제된 경우 남아있는 댓글만 조회된다.")
     @Test
-    void findCommentsBy_whenCommentWithoutUser_returnsEmpty() {
+    void findCommentsBy_whenSomeCollectionCommentsDeleted_returnsRemainingComments() {
         // given
-        Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", null);
-        CollectionComment comment = createCollectionComment("댓글 내용", null, collection);
+        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+                "https://example.com/profile.jpg");
+        Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
+        CollectionComment comment1 = createCollectionComment("댓글 내용1", user, collection);
+        CollectionComment comment2 = createCollectionComment("댓글 내용2", user, collection);
+        CollectionComment comment3 = createCollectionComment("댓글 내용3", user, collection);
+        CollectionComment comment4 = createCollectionComment("댓글 내용4", user, collection);
 
         // when
+        userRepository.save(user);
         collectionRepository.save(collection);
-        collectionCommentRepository.save(comment);
+        collectionCommentRepository.save(comment1);
+        collectionCommentRepository.save(comment2);
+        collectionCommentRepository.save(comment3);
+        collectionCommentRepository.save(comment4);
+        comment1.delete();
+        comment2.delete();
+
         Pageable pageable = PageRequest.of(0, 10);
         Slice<CollectionComment> result = collectionCommentRepository.findCommentsBy(collection.getId(), pageable);
 
         // then
-        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getContent())
+                .hasSize(2)
+                .extracting("id", "user", "collection", "content")
+                .containsExactlyInAnyOrder(
+                        tuple(
+                                comment3.getId(), user, collection, comment3.getContent()
+                        ),
+                        tuple(
+                                comment4.getId(), user, collection, comment4.getContent()
+                        )
+                );
     }
 }
