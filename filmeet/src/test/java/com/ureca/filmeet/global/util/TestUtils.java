@@ -11,6 +11,7 @@ import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.entity.Countries;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieCountries;
+import com.ureca.filmeet.domain.movie.entity.MovieLikes;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.review.entity.Review;
@@ -153,6 +154,13 @@ public abstract class TestUtils {
         return MovieCountries.builder()
                 .movie(movie)
                 .countries(countries)
+                .build();
+    }
+
+    public static MovieLikes createMovieLikes(Movie movie, User user) {
+        return MovieLikes.builder()
+                .movie(movie)
+                .user(user)
                 .build();
     }
 }
