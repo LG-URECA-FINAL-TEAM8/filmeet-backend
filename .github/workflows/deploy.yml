@@ -50,14 +50,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1  # ECR에 로그인하여 인증 토큰 획득
 
-#      # 5️⃣ application.yml 생성
-#      - name: application.yml 생성
-#        run: |
-#          cat > src/main/resources/application.yml <<EOL
-#          $(cat src/main/resources/application.yml)
-#          EOL
-
-      # 6️⃣ Docker 이미지 빌드 및 푸시
+      # 5️⃣ Docker 이미지 빌드 및 푸시
       - name: Docker 이미지 빌드 및 푸시
         run: ./gradlew jib --no-build-cache
         env:
@@ -77,7 +70,7 @@ jobs:
           JWT_VALIDITY_ACCESS: ${{ secrets.JWT_VALIDITY_ACCESS }}
           JWT_VALIDITY_REFRESH: ${{ secrets.JWT_VALIDITY_REFRESH }}
 
-      # 7️⃣ ECS 서비스 업데이트
+      # 6️⃣ ECS 서비스 업데이트
       - name: ECS 서비스 업데이트
         run: |
           aws ecs update-service \
