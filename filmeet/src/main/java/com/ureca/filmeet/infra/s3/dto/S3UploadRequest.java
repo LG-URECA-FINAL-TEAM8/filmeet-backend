@@ -8,7 +8,7 @@ import java.util.List;
 public record S3UploadRequest(
         MultipartFile file
 ) {
-    private static final List<String> ALLOWED_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp");
+    private static final List<String> ALLOWED_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp", "svg");
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
     public void validate() throws FileUploadException {

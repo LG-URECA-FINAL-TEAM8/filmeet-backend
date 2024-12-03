@@ -11,6 +11,11 @@ import org.springframework.stereotype.Service;
 public class UserQueryService {
     private final UserRepository userRepository;
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + username));
