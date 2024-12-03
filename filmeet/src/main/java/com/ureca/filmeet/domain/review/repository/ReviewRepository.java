@@ -67,7 +67,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "JOIN FETCH r.user u " +
             "JOIN FETCH r.movie m " +
             "LEFT JOIN FETCH r.reviewComments rc " +
-            "JOIN FETCH rc.user rcu " +
+            "LEFT JOIN FETCH rc.user rcu " +
             "WHERE r.isDeleted = false AND r.isVisible = true AND r.id = :reviewId " +
             "ORDER BY rc.createdAt ASC")
     Optional<Review> findMovieReviewDetailBy(@Param("reviewId") Long reviewId);

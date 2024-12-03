@@ -102,7 +102,8 @@ public class MovieQueryController {
             @PathVariable("movieId") Long movieId,
             @AuthenticationPrincipal User user
     ) {
-        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId, user.getId());
+        Long userId = (user != null) ? user.getId() : null;
+        MovieDetailResponse movieDetail = movieQueryService.getMovieDetail(movieId, userId);
         return ApiResponse.ok(movieDetail);
     }
 
