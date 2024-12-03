@@ -6,10 +6,6 @@ import lombok.Getter;
 public enum ResponseCode {
 
     // Success Codes
-    SUCCESS(200, "Success"),
-    CREATED(201, "Resource Created"),
-
-    // Client Error Codes
     BAD_REQUEST(400, "Bad Request"),
     UNAUTHORIZED(401, "Unauthorized"),
     INVALID_PASSWORD(401, "Invalid Password"),
@@ -27,6 +23,10 @@ public enum ResponseCode {
     S3_DOWNLOAD_FAILED(500, "[101002] File download failed"),
 
     // Review domain Error Codes
+    SUCCESS(200, "Success"),
+    CREATED(201, "Resource Created"),
+
+    // Client Error Codes
     REVIEW_ALREADY_EXISTS(10201, "이미 리뷰를 작성했습니다."),
     REVIEW_MOVIE_NOT_FOUND(10202, "리뷰와 관련한 영화가 존재하지 않습니다"),
     REVIEW_USER_NOT_FOUND(10203, "리뷰와 관련한 사용자가 존재하지 않습니다"),
@@ -68,7 +68,13 @@ public enum ResponseCode {
     GAME_ROUNDS_EMPTY(11502, "총 라운드 수는 필수입니다."),
     GAME_ROUNDS_TOO_SMALL(11503, "최소 2강 이상이어야 합니다."),
     GAME_ROUNDS_TOO_LARGE(11504, "최대 16강까지 가능합니다."),
-    GAME_SELECTED_MOVIE_EMPTY(11505, "선택한 영화 ID는 필수입니다.");
+    GAME_SELECTED_MOVIE_EMPTY(11505, "선택한 영화 ID는 필수입니다."),
+
+    // Follow domain Error Codes (도메인:12)
+    FOLLOW_ALREADY_EXISTS(12201, "이미 팔로우한 사용자입니다."),
+    FOLLOW_NOT_FOUND(12202, "팔로우 관계를 찾을 수 없습니다."),
+    FOLLOW_USER_NOT_FOUND(12203, "팔로우할 사용자를 찾을 수 없습니다."),
+    SELF_FOLLOW_NOT_ALLOWED(12204, "자기 자신을 팔로우할 수 없습니다.");
 
     private final Integer status;
     private final String message;

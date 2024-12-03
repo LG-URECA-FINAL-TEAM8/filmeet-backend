@@ -1,6 +1,7 @@
 package com.ureca.filmeet.global.exception.handler;
 
 import com.ureca.filmeet.domain.collection.exception.CollectionException;
+import com.ureca.filmeet.domain.follow.exception.FollowException;
 import com.ureca.filmeet.domain.game.exception.GameException;
 import com.ureca.filmeet.domain.game.exception.GameRoundsEmptyException;
 import com.ureca.filmeet.domain.game.exception.GameRoundsTooLargeException;
@@ -101,6 +102,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
     }
 
+
     // Validation 예외 처리 추가
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<?>> handleValidationExceptions(
@@ -131,6 +133,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
+
+    // Follow 도메인 예외 처리
+    @ExceptionHandler(FollowException.class)
+    public ResponseEntity<ApiResponse<?>> followDomainExceptionHandler(FollowException e) {
+        log.error("follow domain exception occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
     }
 
     // 모든 예외 처리 (fallback)
