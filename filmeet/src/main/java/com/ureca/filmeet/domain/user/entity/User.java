@@ -40,6 +40,11 @@ public class User extends BaseTimeEntity {
     @Column(length = 20)
     private String nickname;
 
+    private Integer age = 0;
+
+    @Column(length = 4)
+    private String mbti;
+
     private String profileImage;
 
     @OneToMany(mappedBy = "user")
@@ -67,5 +72,14 @@ public class User extends BaseTimeEntity {
         this.provider = provider;
         this.nickname = nickname;
         this.profileImage = profileImage;
+    }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void updatePreference(String mbti, Integer age) {
+        this.mbti = mbti;
+        this.age = age;
     }
 }
