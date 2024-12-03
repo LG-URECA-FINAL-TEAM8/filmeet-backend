@@ -2,9 +2,21 @@ package com.ureca.filmeet.global.util;
 
 import com.ureca.filmeet.domain.collection.entity.Collection;
 import com.ureca.filmeet.domain.collection.entity.CollectionComment;
+import com.ureca.filmeet.domain.collection.entity.CollectionLikes;
+import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
+import com.ureca.filmeet.domain.genre.entity.Genre;
+import com.ureca.filmeet.domain.genre.entity.GenreScore;
+import com.ureca.filmeet.domain.genre.entity.MovieGenre;
+import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
+import com.ureca.filmeet.domain.movie.entity.Country;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.entity.MovieCountry;
+import com.ureca.filmeet.domain.movie.entity.MovieLikes;
+import com.ureca.filmeet.domain.movie.entity.MoviePersonnel;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
+import com.ureca.filmeet.domain.movie.entity.Personnel;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
+import com.ureca.filmeet.domain.movie.entity.enums.MoviePosition;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.entity.ReviewComment;
 import com.ureca.filmeet.domain.review.entity.ReviewLikes;
@@ -27,6 +39,24 @@ public abstract class TestUtils {
                 .runtime(runtime)
                 .posterUrl(posterUrl)
                 .filmRatings(filmRatings)
+                .build();
+    }
+
+    public static Movie createMovie(String title, String plot,
+                                    LocalDate releaseDate,
+                                    Integer runtime, String posterUrl,
+                                    FilmRatings filmRatings, BigDecimal averageRating, Integer ratingCounts,
+                                    Integer likeCounts) {
+        return Movie.builder()
+                .title(title)
+                .plot(plot)
+                .releaseDate(releaseDate)
+                .runtime(runtime)
+                .posterUrl(posterUrl)
+                .filmRatings(filmRatings)
+                .averageRating(averageRating)
+                .likeCounts(likeCounts)
+                .ratingCounts(ratingCounts)
                 .build();
     }
 
@@ -97,6 +127,79 @@ public abstract class TestUtils {
                 .content(content)
                 .user(user)
                 .collection(collection)
+                .build();
+    }
+
+    public static CollectionLikes createCollectionLikes(User user, Collection collection) {
+        return CollectionLikes.builder()
+                .user(user)
+                .collection(collection)
+                .build();
+    }
+
+    public static CollectionMovie createCollectionMovie(Movie movie, Collection collection) {
+        return CollectionMovie.builder()
+                .movie(movie)
+                .collection(collection)
+                .build();
+    }
+
+    public static GenreScore createGenreScore(User user, Genre genre, Integer score) {
+        return GenreScore.builder()
+                .user(user)
+                .genre(genre)
+                .score(score)
+                .build();
+    }
+
+    public static Genre createGenre(GenreType genreType) {
+        return Genre.builder()
+                .genreType(genreType)
+                .build();
+    }
+
+    public static MovieGenre createMovieGenre(Movie movie, Genre genre) {
+        return MovieGenre.builder()
+                .movie(movie)
+                .genre(genre)
+                .build();
+    }
+
+    public static Country createCountries(String nation) {
+        return Country.builder()
+                .nation(nation)
+                .build();
+    }
+
+    public static MovieCountry createMovieCountry(Movie movie, Country country) {
+        return MovieCountry.builder()
+                .movie(movie)
+                .country(country)
+                .build();
+    }
+
+    public static MovieLikes createMovieLikes(Movie movie, User user) {
+        return MovieLikes.builder()
+                .movie(movie)
+                .user(user)
+                .build();
+    }
+
+    public static MoviePersonnel createMoviePersonnel(Personnel personnel, Movie movie, MoviePosition moviePosition,
+                                                      String characterName) {
+        return MoviePersonnel.builder()
+                .personnel(personnel)
+                .movie(movie)
+                .moviePosition(moviePosition)
+                .characterName(characterName)
+                .build();
+    }
+
+    public static Personnel createPersonnel(String name, String profileImage, Integer staffId) {
+        return Personnel.builder()
+                .name(name)
+                .profileImage(profileImage)
+                .staffId(staffId)
                 .build();
     }
 }

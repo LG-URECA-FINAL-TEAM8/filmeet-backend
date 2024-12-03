@@ -18,12 +18,10 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
 
     @Query("SELECT c " +
             "FROM Collection c " +
-            "LEFT JOIN FETCH  c.collectionComments cc " +
-            "JOIN FETCH  cc.user u " +
-            "WHERE c.id = :collectionId AND c.user.id = :userId AND c.isDeleted = false ")
+            "JOIN FETCH  c.user u " +
+            "WHERE c.id = :collectionId AND c.isDeleted = false ")
     Optional<Collection> findCollectionByCollectionIdAndUserId(
-            @Param("collectionId") Long collectionId,
-            @Param("userId") Long userId
+            @Param("collectionId") Long collectionId
     );
 
     @Query("SELECT c " +

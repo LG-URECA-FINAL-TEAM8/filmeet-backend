@@ -6,21 +6,14 @@ import com.ureca.filmeet.domain.movie.entity.MovieLikes;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -44,8 +37,13 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @Column(length = 10)
+    @Column(length = 20)
     private String nickname;
+
+    private Integer age = 0;
+
+    @Column(length = 4)
+    private String mbti;
 
     private String profileImage;
 
@@ -65,7 +63,6 @@ public class User extends BaseTimeEntity {
     private List<MovieRatings> movieRatings = new ArrayList<>();
 
     @Builder
-
     public User(Long id, String username, String password, Role role, Provider provider, String nickname,
                 String profileImage) {
         this.id = id;
@@ -75,5 +72,14 @@ public class User extends BaseTimeEntity {
         this.provider = provider;
         this.nickname = nickname;
         this.profileImage = profileImage;
+    }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void updatePreference(String mbti, Integer age) {
+        this.mbti = mbti;
+        this.age = age;
     }
 }

@@ -10,7 +10,7 @@ public abstract class MovieException extends GlobalException {
     private final ResponseCode errorExceptionCode;
 
     public MovieException(ResponseCode errorExceptionCode) {
-        super(errorExceptionCode.getMessage());
+        super(errorExceptionCode);
         this.errorExceptionCode = errorExceptionCode;
     }
 }

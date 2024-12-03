@@ -70,8 +70,8 @@ public class CollectionQueryService {
                 .toList();
     }
 
-    public CollectionDetailResponse getCollection(Long collectionId, Long userId) {
-        Collection collection = collectionRepository.findCollectionByCollectionIdAndUserId(collectionId, userId)
+    public CollectionDetailResponse getCollection(Long collectionId) {
+        Collection collection = collectionRepository.findCollectionByCollectionIdAndUserId(collectionId)
                 .orElseThrow(CollectionNotFoundException::new);
 
         return CollectionDetailResponse.of(collection);

@@ -10,6 +10,7 @@ import com.ureca.filmeet.global.security.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -68,10 +69,31 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/actuator/health").permitAll() // 먼저 선언
-                        .requestMatchers("/images/**", "/users/signup", "/auth/**", "/swagger",
-                                "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
+                        // 기본 허용 경로
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/images/**",
+                                "/users/signup",
+                                "/users/check-username",
+                                "/auth/login",
+                                "/auth/refresh")
                         .permitAll()
+
+                        // 리뷰 관련 경로 허용
+                        .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
+                        .requestMatchers(HttpMethod.GET, "/reviews/*").permitAll()       // 리뷰 상세 조회
+                        .requestMatchers(HttpMethod.GET, "/reviews/users")
+                        .permitAll() // 지금 뜨는 리뷰 조회 (쿼리 파라미터는 컨트롤러에서 검증)
+
+                        // 영화 관련 경로 허용
+                        .requestMatchers(HttpMethod.GET, "/movies/upcoming").permitAll()        // 공개 예정작
+                        .requestMatchers(HttpMethod.GET, "/movies/boxoffice").permitAll()       // 박스오피스 순위
+                        .requestMatchers(HttpMethod.GET, "/movies/rankings").permitAll()        // TOP 10 영화
+                        .requestMatchers(HttpMethod.GET, "/movies/*").permitAll()               // 영화 상세 조회
+                        .requestMatchers(HttpMethod.GET, "/movies/search/genre").permitAll()    // 장르 검색
+                        .requestMatchers(HttpMethod.GET, "/movies/search/title").permitAll()    // 제목 검색
+
+                        // 컬렉션 관련 경로 허용
+                        .requestMatchers(HttpMethod.GET, "/collections/search/title").permitAll() // 컬렉션 제목 검색
                         .anyRequest().authenticated()
                 );
 

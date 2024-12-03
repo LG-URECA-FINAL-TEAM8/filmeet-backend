@@ -52,8 +52,23 @@ public enum ResponseCode {
     COLLECTION_MOVIES_NOT_FOUND(20206, "컬렉션과 관련한 영화 목록이 존재하지 않습니다."),
 
     // User domain Error Codes
-    NOT_FOUND_USER2(3, "");
+    NOT_FOUND_USER2(3, ""),
 
+    // Game domain Error Codes
+    GAME_NOT_FOUND(11201, "해당 게임을 찾을 수 없습니다."),
+    GAME_ALREADY_COMPLETED(11202, "이미 완료된 게임입니다."),
+    GAME_ABANDONED(11203, "중단된 게임입니다."),
+    GAME_MATCH_NOT_FOUND(11204, "해당 매치를 찾을 수 없습니다."),
+    GAME_INVALID_ROUND(11205, "잘못된 라운드 정보입니다."),
+    GAME_INVALID_WINNER_SELECTION(11206, "잘못된 승자 선택입니다."),
+    GAME_NOT_OWNER(11207, "게임의 소유자가 아닙니다."),
+    GAME_ALREADY_HAS_WINNER(11208, "이미 승자가 선택된 매치입니다."),
+    GAME_RESULT_NOT_FOUND(11209, "게임 결과를 찾을 수 없습니다."),
+    GAME_TITLE_EMPTY(11501, "게임 제목은 필수입니다."),
+    GAME_ROUNDS_EMPTY(11502, "총 라운드 수는 필수입니다."),
+    GAME_ROUNDS_TOO_SMALL(11503, "최소 2강 이상이어야 합니다."),
+    GAME_ROUNDS_TOO_LARGE(11504, "최대 16강까지 가능합니다."),
+    GAME_SELECTED_MOVIE_EMPTY(11505, "선택한 영화 ID는 필수입니다.");
 
     private final Integer status;
     private final String message;
