@@ -10,10 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustomRepository {
 
     @Query("SELECT m " +
@@ -64,19 +60,28 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             nativeQuery = true)
     List<Movie> findMoviesWithStarRatingAndLikesUnion();
 
-    @Query("SELECT m " +
-            "FROM Movie m " +
-            "JOIN m.movieGenres mg " +
-            "LEFT JOIN Review r ON r.movie.id = m.id AND r.user.id = :userId " +
-            "LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.user.id = :userId " +
-            "LEFT JOIN CollectionMovie cm ON cm.movie.id = m.id " +
-            "LEFT JOIN Collection c ON c.id = cm.id AND c.user.id = :userId " +
-            "WHERE m.isDeleted = false " +
-            "AND mg.genre.id IN :genreIds " +
-            "AND r.id IS NULL " +
-            "AND ml.id IS NULL " +
-            "AND c.id IS NULL " +
-            "AND m.id NOT IN :top10MovieIds")
+    @Query(""" 
+                    SELECT m
+                    FROM Movie m
+                    JOIN m.movieGenres mg
+                    LEFT JOIN Review r ON r.movie.id = m.id AND r.user.id = :userId
+                    LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.user.id = :userId
+                    LEFT JOIN CollectionMovie cm ON cm.movie.id = m.id
+                    LEFT JOIN Collection c ON c.id = cm.collection.id AND c.user.id = :userId
+                    LEFT JOIN MovieRatings mr ON mr.movie.id = m.id AND mr.user.id = :userId
+                    WHERE m.isDeleted = false
+                        AND mg.genre.id IN :genreIds
+                        AND r.id IS NULL
+                        AND ml.id IS NULL
+                        AND c.id IS NULL
+                        AND mr.id IS NULL
+                        AND NOT EXISTS (
+                                SELECT 1
+                                FROM Movie topMovies
+                                WHERE topMovies.id IN :top10MovieIds
+                                AND topMovies.id = m.id
+                            )
+            """)
     List<Movie> findMoviesByPreferredGenresAndNotInteracted(
             @Param("genreIds") List<Long> genreIds,
             @Param("userId") Long userId,

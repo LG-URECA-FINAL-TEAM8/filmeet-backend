@@ -10,7 +10,7 @@ public abstract class CollectionException extends GlobalException {
     private final ResponseCode errorExceptionCode;
 
     public CollectionException(ResponseCode errorExceptionCode) {
-        super(errorExceptionCode.getMessage());
+        super(errorExceptionCode);
         this.errorExceptionCode = errorExceptionCode;
     }
 }
