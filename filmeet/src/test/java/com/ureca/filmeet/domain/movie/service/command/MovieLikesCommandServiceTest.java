@@ -241,5 +241,4 @@ class MovieLikesCommandServiceTest {
         assertThatThrownBy(() -> movieLikesCommandService.movieLikes(movie.getId(), 999L))
                 .isInstanceOf(MovieUserNotFoundException.class);
     }
-
 }
