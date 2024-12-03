@@ -8,9 +8,9 @@ import com.ureca.filmeet.domain.genre.entity.Genre;
 import com.ureca.filmeet.domain.genre.entity.GenreScore;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
-import com.ureca.filmeet.domain.movie.entity.Countries;
+import com.ureca.filmeet.domain.movie.entity.Country;
 import com.ureca.filmeet.domain.movie.entity.Movie;
-import com.ureca.filmeet.domain.movie.entity.MovieCountries;
+import com.ureca.filmeet.domain.movie.entity.MovieCountry;
 import com.ureca.filmeet.domain.movie.entity.MovieLikes;
 import com.ureca.filmeet.domain.movie.entity.MoviePersonnel;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
@@ -165,16 +165,16 @@ public abstract class TestUtils {
                 .build();
     }
 
-    public static Countries createCountries(String nation) {
-        return Countries.builder()
+    public static Country createCountries(String nation) {
+        return Country.builder()
                 .nation(nation)
                 .build();
     }
 
-    public static MovieCountries createMovieCountry(Movie movie, Countries countries) {
-        return MovieCountries.builder()
+    public static MovieCountry createMovieCountry(Movie movie, Country country) {
+        return MovieCountry.builder()
                 .movie(movie)
-                .countries(countries)
+                .country(country)
                 .build();
     }
 
@@ -195,10 +195,11 @@ public abstract class TestUtils {
                 .build();
     }
 
-    public static Personnel createPersonnel(String name, String profileImage) {
+    public static Personnel createPersonnel(String name, String profileImage, Integer staffId) {
         return Personnel.builder()
                 .name(name)
                 .profileImage(profileImage)
+                .staffId(staffId)
                 .build();
     }
 }

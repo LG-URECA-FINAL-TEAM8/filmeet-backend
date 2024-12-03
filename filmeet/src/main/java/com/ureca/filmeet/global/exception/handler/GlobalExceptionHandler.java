@@ -1,6 +1,12 @@
 package com.ureca.filmeet.global.exception.handler;
 
 import com.ureca.filmeet.domain.collection.exception.CollectionException;
+import com.ureca.filmeet.domain.game.exception.GameException;
+import com.ureca.filmeet.domain.game.exception.GameRoundsEmptyException;
+import com.ureca.filmeet.domain.game.exception.GameRoundsTooLargeException;
+import com.ureca.filmeet.domain.game.exception.GameRoundsTooSmallException;
+import com.ureca.filmeet.domain.game.exception.GameSelectedMovieEmptyException;
+import com.ureca.filmeet.domain.game.exception.GameTitleEmptyException;
 import com.ureca.filmeet.domain.movie.exception.MovieException;
 import com.ureca.filmeet.domain.review.exception.ReviewException;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
@@ -8,11 +14,14 @@ import com.ureca.filmeet.global.exception.AccessTokenExpiredException;
 import com.ureca.filmeet.global.exception.InvalidPasswordException;
 import com.ureca.filmeet.global.exception.InvalidRefreshTokenException;
 import com.ureca.filmeet.global.exception.JwtAuthenticationException;
+import com.ureca.filmeet.global.exception.code.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -83,10 +92,52 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
     }
 
+    // 게임 도메인쪽 예외 처리
+    @ExceptionHandler(GameException.class)
+    public ResponseEntity<ApiResponse<?>> gameDomainExceptionHandler(GameException e) {
+        log.error("game domain exception occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
+    }
+
+    // Validation 예외 처리 추가
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<?>> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        FieldError fieldError = ex.getBindingResult().getFieldError();
+        if (fieldError != null) {
+            String field = fieldError.getField();
+            String defaultMessage = fieldError.getDefaultMessage();
+
+            // 게임 도메인 관련 validation 처리
+            if ("title".equals(field)) {
+                throw new GameTitleEmptyException();
+            } else if ("totalRounds".equals(field)) {
+                if (defaultMessage.contains("필수")) {
+                    throw new GameRoundsEmptyException();
+                } else if (defaultMessage.contains("최소")) {
+                    throw new GameRoundsTooSmallException();
+                } else if (defaultMessage.contains("최대")) {
+                    throw new GameRoundsTooLargeException();
+                }
+            } else if ("selectedMovieId".equals(field)) {
+                throw new GameSelectedMovieEmptyException();
+            }
+        }
+
+        // 기본 처리
+        log.error("validation exception occurred: {}", ex.getMessage(), ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
+
     // 모든 예외 처리 (fallback)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex) {
         log.error("Unhandled exception occurred: ", ex);
+        log.error("getCause: {}", ex.getCause());
         return ApiResponse.internalServerError();
     }
 }

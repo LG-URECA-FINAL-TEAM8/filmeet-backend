@@ -1,10 +1,10 @@
 package com.ureca.filmeet.infra.kmdb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ureca.filmeet.infra.kmdb.dto.KmdbActor;
 import com.ureca.filmeet.infra.kmdb.dto.KmdbApiResponse;
-import com.ureca.filmeet.infra.kmdb.dto.KmdbDirector;
 import com.ureca.filmeet.infra.kmdb.dto.KmdbPlot;
+import com.ureca.filmeet.infra.kmdb.dto.KmdbStaff;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class KmdbOpenApiService {
 
     private final RestTemplate restTemplate;
@@ -73,9 +74,8 @@ public class KmdbOpenApiService {
         return new KmdbApiResponse(
                 cleanResponseString((String) map.get("title")),              // 제목
                 (String) map.get("titleEng"),                               // 영어 제목
-                (String) map.get("prodYear"),                               // 제작 연도
-                cleanDirectors(map.get("directors")),                       // 감독
-                cleanActors(map.get("actors")),                             // 배우
+                (String) map.get("repRlsDate"),                               // 제작 연도
+                cleanStaffs(map.get("staffs")),
                 (String) map.get("nation"),                                 // 제작 국가
                 mapToList(map.get("plots"), "plot", KmdbPlot.class),        // 줄거리
                 (String) map.get("runtime"),                                // 상영 시간
@@ -120,23 +120,31 @@ public class KmdbOpenApiService {
         if (input == null) {
             return null;
         }
-        return input.replaceAll("!HS|!HE", "").trim();
+        return input.replaceAll("!HS|!HE|", "")
+                .trim()
+                .replaceAll("\\s+", " "); // 중첩된 공백 하나로 변환
     }
 
-    private List<KmdbDirector> cleanDirectors(Object directors) {
-        return mapToList(directors, "director", KmdbDirector.class).stream()
-                .map(director -> new KmdbDirector(
-                        cleanResponseString(director.directorNm()),
-                        director.directorEnNm()
-                ))
-                .toList();
-    }
 
-    private List<KmdbActor> cleanActors(Object actors) {
-        return mapToList(actors, "actor", KmdbActor.class).stream()
-                .map(actor -> new KmdbActor(
-                        cleanResponseString(actor.actorNm()),
-                        actor.actorEnNm()
+    private List<KmdbStaff> cleanStaffs(Object staffs) {
+        return mapToList(staffs, "staff", KmdbStaff.class).stream()
+                .filter(staff -> staff.staffId() != null && !staff.staffId().isBlank()) // staffId가 없는 경우 제외
+                .filter(staff -> {
+                    // 조건 1: 감독, 출연, 각본만 허용
+                    if (!"감독".equals(staff.staffRoleGroup()) && !"출연".equals(staff.staffRoleGroup()) && !"각본".equals(staff.staffRoleGroup())) {
+                        return false;
+                    }
+                    // 조건 2: 출연인 경우 staffRole이 반드시 있어야 함
+                    if ("출연".equals(staff.staffRoleGroup()) && (staff.staffRole() == null || staff.staffRole().isBlank())) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map(staff -> new KmdbStaff(
+                        staff.staffId(),
+                        staff.staffRoleGroup(),
+                        staff.staffRole(),
+                        cleanResponseString(staff.staffNm())
                 ))
                 .toList();
     }

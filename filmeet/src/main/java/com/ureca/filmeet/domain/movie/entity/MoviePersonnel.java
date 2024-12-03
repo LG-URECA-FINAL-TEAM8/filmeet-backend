@@ -36,7 +36,7 @@ public class MoviePersonnel extends BaseTimeEntity {
     private Movie movie;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @Column(length = 40)
     private MoviePosition moviePosition;
 
     @Column(length = 50)

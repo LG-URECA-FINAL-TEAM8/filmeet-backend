@@ -413,10 +413,10 @@ class MovieRepositoryTest {
     void findMovieDetailInfo_whenValidMovieId_returnsMovieDetails() {
         // given
         Movie movie = createMovie("영화1", "줄거리1", LocalDate.now(), 120, "https://poster.url", FilmRatings.ALL);
-        Personnel director = createPersonnel("감독", "Director");
-        Personnel actor = createPersonnel("배우", "Actor");
+        Personnel director = createPersonnel("감독", "Director", 10);
+        Personnel actor = createPersonnel("배우", "Actor", 15);
         MoviePersonnel movieDirector = createMoviePersonnel(director, movie, MoviePosition.DIRECTOR, "감독");
-        MoviePersonnel movieActor = createMoviePersonnel(actor, movie, MoviePosition.LEADING_ACTOR, "주연");
+        MoviePersonnel movieActor = createMoviePersonnel(actor, movie, MoviePosition.ACTOR, "주연");
 
         // when
         movieRepository.save(movie);

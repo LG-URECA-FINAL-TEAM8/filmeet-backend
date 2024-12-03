@@ -90,7 +90,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query("SELECT m FROM Movie m " +
             "LEFT JOIN FETCH m.movieCountries mc " +
-            "JOIN FETCH mc.countries c " +
+            "JOIN FETCH mc.country c " +
             "LEFT JOIN FETCH m.moviePersonnels mp " +
             "JOIN FETCH mp.personnel p " +
             "LEFT JOIN FETCH m.movieGenres mg " +

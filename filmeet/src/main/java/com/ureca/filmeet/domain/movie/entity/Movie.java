@@ -3,23 +3,17 @@ package com.ureca.filmeet.domain.movie.entity;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.global.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
@@ -55,16 +49,16 @@ public class Movie extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FilmRatings filmRatings;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Gallery> galleries = new ArrayList<>();
 
-    @OneToMany(mappedBy = "movie")
-    private List<MovieCountries> movieCountries = new ArrayList<>();
+    @OneToMany(mappedBy = "movie", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<MovieCountry> movieCountries = new ArrayList<>();
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<MoviePersonnel> moviePersonnels = new ArrayList<>();
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
     public void addLikeCounts() {
@@ -142,22 +136,22 @@ public class Movie extends BaseEntity {
     }
 
     //===연관 관계 메서드===//
-    public void addGalleries(Gallery gallery) {
+    public void addGallery(Gallery gallery) {
         galleries.add(gallery);
         gallery.changeMovie(this);
     }
 
-    public void addMovieCountries(MovieCountries movieCountry) {
+    public void addMovieCountry(MovieCountry movieCountry) {
         movieCountries.add(movieCountry);
         movieCountry.changeMovie(this);
     }
 
-    public void addMoviePersonnels(MoviePersonnel moviePersonnel) {
+    public void addMoviePersonnel(MoviePersonnel moviePersonnel) {
         moviePersonnels.add(moviePersonnel);
         moviePersonnel.changeMovie(this);
     }
 
-    public void addMovieGenres(MovieGenre movieGenre) {
+    public void addMovieGenre(MovieGenre movieGenre) {
         movieGenres.add(movieGenre);
         movieGenre.changeMovie(this);
     }

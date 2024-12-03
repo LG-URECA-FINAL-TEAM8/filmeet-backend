@@ -148,7 +148,7 @@ class MovieTest {
                 .build();
 
         // when
-        movie.addMovieGenres(movieGenre);
+        movie.addMovieGenre(movieGenre);
 
         // then
         assertThat(movie.getMovieGenres()).hasSize(1);

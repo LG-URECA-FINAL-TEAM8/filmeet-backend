@@ -6,9 +6,9 @@ import static com.ureca.filmeet.global.util.TestUtils.createMovieCountry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-import com.ureca.filmeet.domain.movie.entity.Countries;
+import com.ureca.filmeet.domain.movie.entity.Country;
 import com.ureca.filmeet.domain.movie.entity.Movie;
-import com.ureca.filmeet.domain.movie.entity.MovieCountries;
+import com.ureca.filmeet.domain.movie.entity.MovieCountry;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import java.time.LocalDate;
 import java.util.List;
@@ -38,21 +38,21 @@ class MovieCountriesRepositoryTest {
     void findMovieCountriesByMovieId_whenValidMovieId_returnsMovieCountries() {
         // given
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
-        Countries country1 = createCountries("South Korea");
-        Countries country2 = createCountries("United States");
-        MovieCountries movieCountry1 = createMovieCountry(movie, country1);
-        MovieCountries movieCountry2 = createMovieCountry(movie, country2);
+        Country country1 = createCountries("South Korea");
+        Country country2 = createCountries("United States");
+        MovieCountry movieCountry1 = createMovieCountry(movie, country1);
+        MovieCountry movieCountry2 = createMovieCountry(movie, country2);
 
         // when
         movieRepository.save(movie);
         countriesRepository.saveAll(List.of(country1, country2));
         movieCountriesRepository.saveAll(List.of(movieCountry1, movieCountry2));
-        List<MovieCountries> result = movieCountriesRepository.findMovieCountriesByMovieId(movie.getId());
+        List<MovieCountry> result = movieCountriesRepository.findMovieCountriesByMovieId(movie.getId());
 
         // then
         assertThat(result).hasSize(2);
         assertThat(result)
-                .extracting("movie.id", "countries.nation")
+                .extracting("movie.id", "country.nation")
                 .containsExactlyInAnyOrder(
                         tuple(movie.getId(), country1.getNation()),
                         tuple(movie.getId(), country2.getNation())
@@ -64,14 +64,14 @@ class MovieCountriesRepositoryTest {
     void findMovieCountriesByMovieId_whenInvalidMovieId_returnsEmptyList() {
         // given
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
-        Countries country = createCountries("South Korea");
-        MovieCountries movieCountry = createMovieCountry(movie, country);
+        Country country = createCountries("South Korea");
+        MovieCountry movieCountry = createMovieCountry(movie, country);
 
         // when
         movieRepository.save(movie);
         countriesRepository.save(country);
         movieCountriesRepository.save(movieCountry);
-        List<MovieCountries> result = movieCountriesRepository.findMovieCountriesByMovieId(999L);
+        List<MovieCountry> result = movieCountriesRepository.findMovieCountriesByMovieId(999L);
 
         // then
         assertThat(result).isEmpty();
@@ -84,20 +84,20 @@ class MovieCountriesRepositoryTest {
         Movie movie1 = createMovie("영화 제목1", "영화 줄거리1", LocalDate.now(), 120, "https://poster1.url", FilmRatings.ADULT);
         Movie movie2 = createMovie("영화 제목2", "영화 줄거리2", LocalDate.now(), 140, "https://poster2.url",
                 FilmRatings.FIFTEEN);
-        Countries country = createCountries("Japan");
-        MovieCountries movieCountry1 = createMovieCountry(movie1, country);
-        MovieCountries movieCountry2 = createMovieCountry(movie2, country);
+        Country country = createCountries("Japan");
+        MovieCountry movieCountry1 = createMovieCountry(movie1, country);
+        MovieCountry movieCountry2 = createMovieCountry(movie2, country);
 
         // when
         movieRepository.saveAll(List.of(movie1, movie2));
         countriesRepository.save(country);
         movieCountriesRepository.saveAll(List.of(movieCountry1, movieCountry2));
-        List<MovieCountries> result = movieCountriesRepository.findMovieCountriesByMovieId(movie1.getId());
+        List<MovieCountry> result = movieCountriesRepository.findMovieCountriesByMovieId(movie1.getId());
 
         // then
         assertThat(result).hasSize(1);
         assertThat(result)
-                .extracting("movie.id", "countries.nation")
+                .extracting("movie.id", "country.nation")
                 .containsExactly(
                         tuple(movie1.getId(), country.getNation())
                 );
