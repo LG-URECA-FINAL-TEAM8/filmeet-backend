@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,7 +36,7 @@ public class MoviePersonnel extends BaseTimeEntity {
     private Movie movie;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @Column(length = 40)
     private MoviePosition moviePosition;
 
     @Column(length = 50)
@@ -43,5 +44,13 @@ public class MoviePersonnel extends BaseTimeEntity {
 
     public void changeMovie(Movie movie) {
         this.movie = movie;
+    }
+
+    @Builder
+    public MoviePersonnel(Personnel personnel, Movie movie, MoviePosition moviePosition, String characterName) {
+        this.personnel = personnel;
+        this.movie = movie;
+        this.moviePosition = moviePosition;
+        this.characterName = characterName;
     }
 }

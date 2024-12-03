@@ -34,7 +34,8 @@ public class ReviewQueryController {
             @AuthenticationPrincipal User user,
             Pageable pageable
     ) {
-        Slice<GetMovieReviewsResponse> movieReviews = reviewQueryService.getMovieReviews(movieId, user.getId(),
+        Long userId = (user != null) ? user.getId() : null;
+        Slice<GetMovieReviewsResponse> movieReviews = reviewQueryService.getMovieReviews(movieId, userId,
                 pageable);
         return ApiResponse.ok(SliceResponseDto.of(movieReviews));
     }
@@ -44,8 +45,8 @@ public class ReviewQueryController {
             @PathVariable("reviewId") Long reviewId,
             @AuthenticationPrincipal User user
     ) {
-        GetMovieReviewDetailResponse movieReviewDetail = reviewQueryService.getMovieReviewDetail(reviewId,
-                user.getId());
+        Long userId = (user != null) ? user.getId() : null;
+        GetMovieReviewDetailResponse movieReviewDetail = reviewQueryService.getMovieReviewDetail(reviewId, userId);
         return ApiResponse.ok(movieReviewDetail);
     }
 
@@ -55,13 +56,14 @@ public class ReviewQueryController {
             @AuthenticationPrincipal User user,
             Pageable pageable
     ) {
+        Long userId = (user != null) ? user.getId() : null;
         if (filter.equals("recent_reviews")) {
-            Slice<ReviewTrendingResponse> recentReviews = reviewTrendingQueryService.getRecentReviews(user.getId(),
+            Slice<ReviewTrendingResponse> recentReviews = reviewTrendingQueryService.getRecentReviews(userId,
                     pageable);
             return ApiResponse.ok(SliceResponseDto.of(recentReviews));
         }
         LocalDateTime currentTime = LocalDateTime.now();
-        Slice<ReviewTrendingResponse> trendingReviews = reviewTrendingQueryService.getTrendingReviews(user.getId(),
+        Slice<ReviewTrendingResponse> trendingReviews = reviewTrendingQueryService.getTrendingReviews(userId,
                 pageable, currentTime);
         return ApiResponse.ok(SliceResponseDto.of(trendingReviews));
     }

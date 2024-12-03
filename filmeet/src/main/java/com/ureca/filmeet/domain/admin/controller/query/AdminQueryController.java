@@ -37,4 +37,9 @@ public class AdminQueryController {
         OmdbApiResponse response = omdbOpenApiService.getMovieByTitle(title);
         return ApiResponse.ok(response);
     }
+
+
+    // TODO [eastsage]: 전체 리뷰 조회 기능
+    // TODO [eastsage]: 리뷰 블라인드 기능
+    // TODO [eastsage]: 좋아요 조회 기능
 }

@@ -8,9 +8,8 @@ import java.util.List;
 public record KmdbApiResponse(
         String title,              // 영화 제목
         String titleEng,           // 영어 제목
-        String prodYear,           // 제작 연도
-        List<KmdbDirector> directors, // 감독 목록
-        List<KmdbActor> actors,       // 배우 목록
+        String repRlsDate,           // 제작 연도
+        List<KmdbStaff> staffs,
         String nation,             // 제작 국가
         List<KmdbPlot> plots,         // 줄거리 목록
         String runtime,            // 상영 시간
