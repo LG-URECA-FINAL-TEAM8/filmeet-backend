@@ -1,6 +1,8 @@
 package com.ureca.filmeet.domain.movie.repository;
 
+import com.ureca.filmeet.domain.movie.dto.response.RatingDistributionResponse;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -29,4 +31,17 @@ public interface MovieRatingsRepository extends JpaRepository<MovieRatings, Long
             Pageable pageable);
 
     boolean existsByMovieIdAndUserId(Long movieId, Long userId);
+
+    @Query("""
+                SELECT new com.ureca.filmeet.domain.movie.dto.response.RatingDistributionResponse(
+                    mr.ratingScore, COUNT(mr.ratingScore)
+                )
+                FROM MovieRatings mr
+                WHERE mr.movie.id = :movieId
+                GROUP BY mr.ratingScore
+                ORDER BY mr.ratingScore ASC
+            """)
+    List<RatingDistributionResponse> findRatingDistributionByMovieId(
+            @Param("movieId") Long movieId
+    );
 }
