@@ -2,11 +2,7 @@ package com.ureca.filmeet.domain.movie.service.query;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
-import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
-import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
-import com.ureca.filmeet.domain.movie.dto.response.MyMovieRating;
-import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
-import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
+import com.ureca.filmeet.domain.movie.dto.response.*;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
@@ -17,7 +13,6 @@ import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +20,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +35,32 @@ public class MovieQueryService {
     private final MovieRatingsRepository movieRatingsRepository;
     private final MovieCountriesRepository movieCountriesRepository;
 
+    private static List<String> getGalleryImages(Movie movie) {
+        return movie.getGalleries()
+                .stream()
+                .map(Gallery::getImageUrl)
+                .toList();
+    }
+
+    private static List<PersonnelInfoResponse> getPersonnelInfoResponses(Movie movie) {
+        return movie.getMoviePersonnels()
+                .stream()
+                .map(mp -> new PersonnelInfoResponse(
+                        mp.getMoviePosition(),
+                        mp.getCharacterName(),
+                        mp.getPersonnel().getName(),
+                        mp.getPersonnel().getProfileImage()
+                ))
+                .toList();
+    }
+
     public MovieDetailResponse getMovieDetailV1(Long movieId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
                 .orElseThrow(() -> new RuntimeException("no movie"));
 
         List<String> countries = movie.getMovieCountries()
                 .stream()
-                .map(mc -> mc.getCountries().getNation())
+                .map(mc -> mc.getCountry().getNation())
                 .toList();
 
         List<GenreType> genres = movie.getMovieGenres()
@@ -75,7 +91,7 @@ public class MovieQueryService {
 
         List<String> countries = movieCountriesRepository.findMovieCountriesByMovieId(movieId)
                 .stream()
-                .map(movieCountries -> movieCountries.getCountries().getNation())
+                .map(movieCountries -> movieCountries.getCountry().getNation())
                 .toList();
 
         List<GenreType> genres = movieGenreRepository.findMovieGenresByMovieId(movieId)
@@ -103,25 +119,6 @@ public class MovieQueryService {
                 galleryImages,
                 movieReviewsResponses
         );
-    }
-
-    private static List<String> getGalleryImages(Movie movie) {
-        return movie.getGalleries()
-                .stream()
-                .map(Gallery::getImageUrl)
-                .toList();
-    }
-
-    private static List<PersonnelInfoResponse> getPersonnelInfoResponses(Movie movie) {
-        return movie.getMoviePersonnels()
-                .stream()
-                .map(mp -> new PersonnelInfoResponse(
-                        mp.getMoviePosition(),
-                        mp.getCharacterName(),
-                        mp.getPersonnel().getName(),
-                        mp.getPersonnel().getProfileImage()
-                ))
-                .toList();
     }
 
     public Slice<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size) {
