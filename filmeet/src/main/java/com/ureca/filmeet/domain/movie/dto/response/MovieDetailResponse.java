@@ -25,7 +25,8 @@ public record MovieDetailResponse(
         List<GenreType> genres,
         List<PersonnelInfoResponse> personnels,
         List<String> galleryImages,
-        SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses
+        SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses,
+        List<RatingDistributionResponse> ratingDistribution
 ) {
 
     public static MovieDetailResponse from(Movie movie, boolean isLiked, MyMovieReview myMovieReview,
@@ -33,7 +34,8 @@ public record MovieDetailResponse(
                                            List<String> countries, List<GenreType> genres,
                                            List<PersonnelInfoResponse> personnels,
                                            List<String> galleryImages,
-                                           SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses) {
+                                           SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses,
+                                           List<RatingDistributionResponse> ratingDistribution) {
 
         return new MovieDetailResponse(
                 movie.getId(),
@@ -52,7 +54,8 @@ public record MovieDetailResponse(
                 genres,
                 personnels,
                 galleryImages,
-                movieReviewsResponses
+                movieReviewsResponses,
+                ratingDistribution
         );
     }
 }

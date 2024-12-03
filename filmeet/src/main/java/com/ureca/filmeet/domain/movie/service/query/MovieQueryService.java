@@ -2,7 +2,12 @@ package com.ureca.filmeet.domain.movie.service.query;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
-import com.ureca.filmeet.domain.movie.dto.response.*;
+import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MyMovieRating;
+import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
+import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
+import com.ureca.filmeet.domain.movie.dto.response.RatingDistributionResponse;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
@@ -13,6 +18,7 @@ import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +26,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +76,8 @@ public class MovieQueryService {
 
         List<String> galleryImages = getGalleryImages(movie);
 
-        return MovieDetailResponse.from(movie, false, null, null, countries, genres, personnels, galleryImages, null);
+        return MovieDetailResponse.from(movie, false, null, null, countries, genres, personnels, galleryImages, null,
+                null);
     }
 
     public MovieDetailResponse getMovieDetail(Long movieId, Long userId) {
@@ -103,6 +108,9 @@ public class MovieQueryService {
 
         List<String> galleryImages = getGalleryImages(movie);
 
+        List<RatingDistributionResponse> ratingDistribution = movieRatingsRepository.findRatingDistributionByMovieId(
+                movieId);
+
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "likeCounts");
         SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses = SliceResponseDto.of(
                 reviewRepository.findMovieReviewsWithLikes(movieId,
@@ -117,7 +125,8 @@ public class MovieQueryService {
                 genres,
                 personnels,
                 galleryImages,
-                movieReviewsResponses
+                movieReviewsResponses,
+                ratingDistribution
         );
     }
 
