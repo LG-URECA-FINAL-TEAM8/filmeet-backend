@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.game.repository;
 
 import com.ureca.filmeet.domain.game.entity.GameResult;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,7 @@ public interface GameResultRepository extends JpaRepository<GameResult, Long> {
             "WHERE gr.game.id = :gameId AND gr.user.id = :userId")
     List<GameResult> findByGameIdAndUserId(Long gameId, Long userId);
 
+    @Modifying
     @Query("DELETE FROM GameResult gr WHERE gr.game.id = :gameId")
     void deleteByGameId(Long gameId);
 }
