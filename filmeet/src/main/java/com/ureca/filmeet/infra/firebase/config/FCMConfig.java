@@ -39,18 +39,18 @@ public class FCMConfig {
             log.info("Initializing Firebase with config length: {}",
                     firebaseConfigJson != null ? firebaseConfigJson.length() : 0);
 
-            // local 환경: classpath에서 파일 읽기
             if (!StringUtils.isEmpty(firebaseConfigPath) && firebaseConfigPath.startsWith("classpath:")) {
                 googleCredentials = GoogleCredentials
                         .fromStream(new ClassPathResource(firebaseConfigPath.substring("classpath:".length())).getInputStream());
             }
-            // dev 환경: 환경 변수에서 JSON 직접 읽기
             else if (!StringUtils.isEmpty(firebaseConfigJson)) {
-                // JSON 문자열의 개행 문자 처리
+                // JSON 문자열의 개행 문자 처리를 더 세밀하게 수정
                 String processedJson = firebaseConfigJson
-                        .replace("\\n", "\n")
-                        .replace("\\\\n", "\n");
+                        .replace("\\\\n", "\n")  // double escaped newlines
+                        .replace("\\n", "\n")     // single escaped newlines
+                        .replace("\n", "\\n");    // convert actual newlines to escaped ones
 
+                log.debug("Processed JSON: {}", processedJson);
                 googleCredentials = GoogleCredentials
                         .fromStream(new ByteArrayInputStream(processedJson.getBytes(StandardCharsets.UTF_8)));
             }
@@ -62,7 +62,6 @@ public class FCMConfig {
                     .setCredentials(googleCredentials)
                     .build();
 
-            // FirebaseApp이 이미 초기화되어 있는지 확인
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
                 log.info("FirebaseApp initialized successfully");
@@ -71,6 +70,7 @@ public class FCMConfig {
             return FirebaseMessaging.getInstance();
         } catch (Exception e) {
             log.error("Firebase 초기화 실패: ", e);
+            log.error("Config JSON: {}", firebaseConfigJson);
             throw e;
         }
     }
