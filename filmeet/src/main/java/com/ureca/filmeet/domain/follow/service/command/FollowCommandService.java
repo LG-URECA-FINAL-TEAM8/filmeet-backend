@@ -2,12 +2,13 @@ package com.ureca.filmeet.domain.follow.service.command;
 
 import com.ureca.filmeet.domain.follow.entity.Follow;
 import com.ureca.filmeet.domain.follow.exception.FollowAlreadyExistsException;
-import com.ureca.filmeet.domain.follow.exception.SelfFollowNotAllowedException;
-import com.ureca.filmeet.domain.follow.exception.FollowUserNotFoundException;
 import com.ureca.filmeet.domain.follow.exception.FollowNotFoundException;
+import com.ureca.filmeet.domain.follow.exception.FollowUserNotFoundException;
+import com.ureca.filmeet.domain.follow.exception.SelfFollowNotAllowedException;
 import com.ureca.filmeet.domain.follow.repository.FollowRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import com.ureca.filmeet.global.notification.service.command.NotificationCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FollowCommandService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final NotificationCommandService notificationCommandService;
 
     /**
      * 팔로우 하기
@@ -44,6 +46,9 @@ public class FollowCommandService {
                 .build();
 
         followRepository.save(follow);
+
+        // 팔로우 알림 발송
+        notificationCommandService.sendFollowNotification(follower, following);
     }
 
     /**

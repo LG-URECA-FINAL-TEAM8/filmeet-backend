@@ -96,6 +96,7 @@ server:
   port: 8080
   servlet:
     context-path: /api
+
 ---
 
 # Dev 환경 설정
@@ -114,3 +115,6 @@ spring:
     redis:
       host: ${SPRING_DATA_REDIS_HOST}
       port: ${SPRING_DATA_REDIS_PORT}
+
+firebase:
+  config: ${FIREBASE_CONFIG}

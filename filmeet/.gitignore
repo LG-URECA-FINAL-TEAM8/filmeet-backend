@@ -19,6 +19,9 @@ bin/
 
 /src/main/resources/application-local.yml
 
+### firebase ###
+/src/main/resources/firebase-service-account.json
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

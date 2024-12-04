@@ -119,8 +119,6 @@ public class GameCommandService {
         }
 
         // 게임과 관련된 모든 데이터 삭제
-        gameResultRepository.deleteByGameId(gameId);
-        roundMatchRepository.deleteByGameId(gameId);
         gameRepository.delete(game);
     }
 

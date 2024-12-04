@@ -7,6 +7,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,6 +24,8 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     // 모든 팔로잉 조회
     Slice<Follow> findAllByFollowing(User following, Pageable pageable);
+    List<Follow> findAllByFollowing(User following);
+
 
     long countByFollower(User follower);    // 팔로잉 수
     long countByFollowing(User following);  // 팔로워 수
