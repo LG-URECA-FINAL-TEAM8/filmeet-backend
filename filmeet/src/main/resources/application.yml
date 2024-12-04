@@ -96,6 +96,10 @@ server:
   port: 8080
   servlet:
     context-path: /api
+
+firebase:
+  config-path: ${FIREBASE_CONFIG}
+
 ---
 
 # Dev 환경 설정
