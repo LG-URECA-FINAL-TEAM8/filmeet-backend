@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,12 @@ public class FCMConfig {
 
     @Value("${FIREBASE_CONFIG:}")
     private String firebaseConfigJson;
+
+    @PostConstruct
+    public void init() {
+        log.info("Firebase config length: {}",
+                firebaseConfigJson != null ? firebaseConfigJson.length() : 0);
+    }
 
     @Bean
     public FirebaseMessaging firebaseMessaging() throws IOException {
