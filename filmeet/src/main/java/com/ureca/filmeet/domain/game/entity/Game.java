@@ -14,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -43,11 +42,10 @@ public class Game extends BaseTimeEntity {
 
     private Integer totalRounds; // 총 라운드 수
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GameResult> gameResults = new ArrayList<>();
 
-    @BatchSize(size = 100)
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoundMatch> matches = new ArrayList<>();
 
     @Builder
