@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Configuration
@@ -44,15 +45,17 @@ public class FCMConfig {
                         .fromStream(new ClassPathResource(firebaseConfigPath.substring("classpath:".length())).getInputStream());
             }
             else if (!StringUtils.isEmpty(firebaseConfigJson)) {
-                // JSON 문자열의 개행 문자 처리를 더 세밀하게 수정
+                // private key 처리를 위한 JSON 가공
                 String processedJson = firebaseConfigJson
-                        .replace("\\\\n", "\n")  // double escaped newlines
-                        .replace("\\n", "\n")     // single escaped newlines
-                        .replace("\n", "\\n");    // convert actual newlines to escaped ones
+                        .replace("\\\\n", "\\n")  // double escaped to single escaped
+                        .replace("\\n", "\n");    // single escaped to actual newline
 
-                log.debug("Processed JSON: {}", processedJson);
-                googleCredentials = GoogleCredentials
-                        .fromStream(new ByteArrayInputStream(processedJson.getBytes(StandardCharsets.UTF_8)));
+                log.debug("Processed JSON (first 100 chars): {}",
+                        processedJson.substring(0, Math.min(processedJson.length(), 100)));
+
+                try (InputStream stream = new ByteArrayInputStream(processedJson.getBytes(StandardCharsets.UTF_8))) {
+                    googleCredentials = GoogleCredentials.fromStream(stream);
+                }
             }
             else {
                 throw new IllegalStateException("Firebase 설정을 찾을 수 없습니다.");
@@ -70,7 +73,6 @@ public class FCMConfig {
             return FirebaseMessaging.getInstance();
         } catch (Exception e) {
             log.error("Firebase 초기화 실패: ", e);
-            log.error("Config JSON: {}", firebaseConfigJson);
             throw e;
         }
     }
