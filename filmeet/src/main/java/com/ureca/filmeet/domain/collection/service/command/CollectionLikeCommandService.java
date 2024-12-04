@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CollectionCommentLikeService {
+public class CollectionLikeCommandService {
 
     private final UserRepository userRepository;
     private final CollectionRepository collectionRepository;

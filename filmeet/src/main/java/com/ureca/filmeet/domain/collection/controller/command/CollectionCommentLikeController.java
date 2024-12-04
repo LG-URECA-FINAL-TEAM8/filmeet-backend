@@ -1,6 +1,6 @@
 package com.ureca.filmeet.domain.collection.controller.command;
 
-import com.ureca.filmeet.domain.collection.service.command.CollectionCommentLikeService;
+import com.ureca.filmeet.domain.collection.service.command.CollectionLikeCommandService;
 import com.ureca.filmeet.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/likes")
 public class CollectionCommentLikeController {
 
-    private final CollectionCommentLikeService collectionCommentLikeService;
+    private final CollectionLikeCommandService collectionLikeCommandService;
 
     @PostMapping("/collections/{collectionId}")
     public void collectionLikes(
@@ -23,7 +23,7 @@ public class CollectionCommentLikeController {
             @AuthenticationPrincipal User user
     ) {
 
-        collectionCommentLikeService.collectionLikes(collectionId, user.getId());
+        collectionLikeCommandService.collectionLikes(collectionId, user.getId());
     }
 
     @DeleteMapping("/cancel/collections/{collectionId}")
@@ -32,6 +32,6 @@ public class CollectionCommentLikeController {
             @AuthenticationPrincipal User user
     ) {
 
-        collectionCommentLikeService.collectionLikesCancel(collectionId, user.getId());
+        collectionLikeCommandService.collectionLikesCancel(collectionId, user.getId());
     }
 }

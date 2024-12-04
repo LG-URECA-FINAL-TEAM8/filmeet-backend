@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class CollectionLikeLockServiceTest {
 
     @Autowired
-    private CollectionCommentLikeService collectionCommentLikeService;
+    private CollectionLikeCommandService collectionLikeCommandService;
 
     @Autowired
     private CollectionRepository collectionRepository;
@@ -35,7 +35,7 @@ public class CollectionLikeLockServiceTest {
             int num = 138 + i;
             executorService.submit(() -> {
                 try {
-                    collectionCommentLikeService.collectionLikes(1L, (long) num);
+                    collectionLikeCommandService.collectionLikes(1L, (long) num);
                 } finally {
                     latch.countDown();
                 }
@@ -62,7 +62,7 @@ public class CollectionLikeLockServiceTest {
             int num = 128 + i;
             executorService.submit(() -> {
                 try {
-                    collectionCommentLikeService.collectionLikes(1L, (long) num);
+                    collectionLikeCommandService.collectionLikes(1L, (long) num);
                 } finally {
                     likeLatch.countDown();
                 }
@@ -77,7 +77,7 @@ public class CollectionLikeLockServiceTest {
             int num = 128 + i;
             executorService.submit(() -> {
                 try {
-                    collectionCommentLikeService.collectionLikesCancel(1L, (long) num);
+                    collectionLikeCommandService.collectionLikesCancel(1L, (long) num);
                 } finally {
                     cancelLatch.countDown();
                 }

@@ -27,10 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("local")
-class CollectionCommentLikeServiceTest {
+class CollectionLikeCommandServiceTest {
 
     @Autowired
-    private CollectionCommentLikeService collectionCommentLikeService;
+    private CollectionLikeCommandService collectionLikeCommandService;
 
     @Autowired
     private CollectionRepository collectionRepository;
@@ -55,8 +55,8 @@ class CollectionCommentLikeServiceTest {
         userRepository.save(user1);
         userRepository.save(user2);
         collectionRepository.save(collection);
-        collectionCommentLikeService.collectionLikes(collection.getId(), user1.getId());
-        collectionCommentLikeService.collectionLikes(collection.getId(), user2.getId());
+        collectionLikeCommandService.collectionLikes(collection.getId(), user1.getId());
+        collectionLikeCommandService.collectionLikes(collection.getId(), user2.getId());
         Optional<CollectionLikes> collectionLikes = collectionLikeRepository.findCollectionLikesByCollectionIdAndUserId(
                 collection.getId(), user1.getId());
 
@@ -81,10 +81,10 @@ class CollectionCommentLikeServiceTest {
         // when
         userRepository.save(user);
         collectionRepository.save(collection);
-        collectionCommentLikeService.collectionLikes(collection.getId(), user.getId());
+        collectionLikeCommandService.collectionLikes(collection.getId(), user.getId());
 
         // then
-        assertThatThrownBy(() -> collectionCommentLikeService.collectionLikes(collection.getId(), user.getId()))
+        assertThatThrownBy(() -> collectionLikeCommandService.collectionLikes(collection.getId(), user.getId()))
                 .isInstanceOf(CollectionLikeAlreadyExistsException.class);
     }
 
@@ -99,7 +99,7 @@ class CollectionCommentLikeServiceTest {
         userRepository.save(user);
 
         // then
-        assertThatThrownBy(() -> collectionCommentLikeService.collectionLikes(999L, user.getId()))
+        assertThatThrownBy(() -> collectionLikeCommandService.collectionLikes(999L, user.getId()))
                 .isInstanceOf(CollectionNotFoundException.class);
     }
 
@@ -113,7 +113,7 @@ class CollectionCommentLikeServiceTest {
         collectionRepository.save(collection);
 
         // then
-        assertThatThrownBy(() -> collectionCommentLikeService.collectionLikes(collection.getId(), 999L))
+        assertThatThrownBy(() -> collectionLikeCommandService.collectionLikes(collection.getId(), 999L))
                 .isInstanceOf(CollectionUserNotFoundException.class);
     }
 
@@ -128,8 +128,8 @@ class CollectionCommentLikeServiceTest {
         // when
         userRepository.save(user);
         collectionRepository.save(collection);
-        collectionCommentLikeService.collectionLikes(collection.getId(), user.getId());
-        collectionCommentLikeService.collectionLikesCancel(collection.getId(), user.getId());
+        collectionLikeCommandService.collectionLikes(collection.getId(), user.getId());
+        collectionLikeCommandService.collectionLikesCancel(collection.getId(), user.getId());
         Optional<CollectionLikes> collectionLikes = collectionLikeRepository.findCollectionLikesByCollectionIdAndUserId(
                 collection.getId(),
                 user.getId()
@@ -151,7 +151,7 @@ class CollectionCommentLikeServiceTest {
         userRepository.save(user);
 
         // then
-        assertThatThrownBy(() -> collectionCommentLikeService.collectionLikesCancel(999L, user.getId()))
+        assertThatThrownBy(() -> collectionLikeCommandService.collectionLikesCancel(999L, user.getId()))
                 .isInstanceOf(CollectionNotFoundException.class);
     }
 
@@ -168,7 +168,7 @@ class CollectionCommentLikeServiceTest {
         collectionRepository.save(collection);
 
         // then
-        assertThatThrownBy(() -> collectionCommentLikeService.collectionLikesCancel(collection.getId(), 999L))
+        assertThatThrownBy(() -> collectionLikeCommandService.collectionLikesCancel(collection.getId(), 999L))
                 .isInstanceOf(CollectionUserNotFoundException.class);
     }
 }
