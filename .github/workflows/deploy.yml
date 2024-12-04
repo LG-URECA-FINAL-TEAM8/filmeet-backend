@@ -53,11 +53,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1  # ECR에 로그인하여 인증 토큰 획득
 
-      # Firebase 서비스 계정 JSON 복원
-      - name: Create Firebase JSON file from Secrets
-        run: |
-          echo "${{ secrets.FIREBASE_CONFIG }}" > firebase-service-account.json
-
       # 5️⃣ Docker 이미지 빌드 및 푸시
       - name: Docker 이미지 빌드 및 푸시
         run: ./gradlew jib --no-build-cache
@@ -76,6 +71,7 @@ jobs:
           KOBIS_APIKEY: ${{ secrets.KOBIS_APIKEY }}
           KMDB_APIKEY: ${{ secrets.KMDB_APIKEY }}
           OMDB_APIKEY: ${{ secrets.OMDB_APIKEY }}
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_VALIDITY_ACCESS: ${{ secrets.JWT_VALIDITY_ACCESS }}
           JWT_VALIDITY_REFRESH: ${{ secrets.JWT_VALIDITY_REFRESH }}
