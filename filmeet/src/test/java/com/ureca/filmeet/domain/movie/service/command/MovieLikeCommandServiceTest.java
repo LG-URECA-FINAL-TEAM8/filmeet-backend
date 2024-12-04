@@ -27,6 +27,7 @@ import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
 import com.ureca.filmeet.domain.movie.exception.MovieUserNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
+import com.ureca.filmeet.domain.movie.service.command.like.MovieLikeCommandService;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -44,10 +45,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("local")
-class MovieLikesCommandServiceTest {
+class MovieLikeCommandServiceTest {
 
     @Autowired
-    private MovieLikesCommandService movieLikesCommandService;
+    private MovieLikeCommandService movieLikeCommandServiceV4;
 
     @Autowired
     private UserRepository userRepository;
@@ -97,8 +98,8 @@ class MovieLikesCommandServiceTest {
         genreScoreRepository.saveAll(List.of(genreScore1, genreScore2, genreScore3, genreScore4));
         em.flush();
         em.clear();
-        movieLikesCommandService.movieLikes(movie1.getId(), user.getId());
-        movieLikesCommandService.movieLikes(movie2.getId(), user.getId());
+        movieLikeCommandServiceV4.movieLikes(movie1.getId(), user.getId());
+        movieLikeCommandServiceV4.movieLikes(movie2.getId(), user.getId());
         boolean isLiked1 = movieLikesRepository.existsByMovieIdAndUserId(movie1.getId(), user.getId());
         boolean isLiked2 = movieLikesRepository.existsByMovieIdAndUserId(movie2.getId(), user.getId());
         List<GenreScore> genreScores = genreScoreRepository.findAll();
@@ -131,7 +132,7 @@ class MovieLikesCommandServiceTest {
         movieLikesRepository.save(createMovieLikes(movie, user));
 
         // then
-        assertThatThrownBy(() -> movieLikesCommandService.movieLikes(movie.getId(), user.getId()))
+        assertThatThrownBy(() -> movieLikeCommandServiceV4.movieLikes(movie.getId(), user.getId()))
                 .isInstanceOf(MovieLikeAlreadyExistsException.class);
     }
 
@@ -165,8 +166,8 @@ class MovieLikesCommandServiceTest {
         genreScoreRepository.saveAll(List.of(genreScore1, genreScore2, genreScore3, genreScore4));
         em.flush();
         em.clear();
-        movieLikesCommandService.movieLikesCancel(movie1.getId(), user.getId());
-        movieLikesCommandService.movieLikesCancel(movie2.getId(), user.getId());
+        movieLikeCommandServiceV4.movieLikesCancel(movie1.getId(), user.getId());
+        movieLikeCommandServiceV4.movieLikesCancel(movie2.getId(), user.getId());
         boolean isLiked1 = movieLikesRepository.existsByMovieIdAndUserId(movie1.getId(), user.getId());
         boolean isLiked2 = movieLikesRepository.existsByMovieIdAndUserId(movie2.getId(), user.getId());
         List<GenreScore> genreScores = genreScoreRepository.findAll();
@@ -202,7 +203,7 @@ class MovieLikesCommandServiceTest {
         movieGenreRepository.save(movieGenre);
 
         // then
-        assertThatThrownBy(() -> movieLikesCommandService.movieLikesCancel(movie.getId(), user.getId()))
+        assertThatThrownBy(() -> movieLikeCommandServiceV4.movieLikesCancel(movie.getId(), user.getId()))
                 .isInstanceOf(MovieLikeNotFoundException.class);
     }
 
@@ -217,7 +218,7 @@ class MovieLikesCommandServiceTest {
         userRepository.save(user);
 
         // then
-        assertThatThrownBy(() -> movieLikesCommandService.movieLikes(999L, user.getId()))
+        assertThatThrownBy(() -> movieLikeCommandServiceV4.movieLikes(999L, user.getId()))
                 .isInstanceOf(MovieNotFoundException.class);
     }
 
@@ -238,7 +239,7 @@ class MovieLikesCommandServiceTest {
         movieGenreRepository.save(movieGenre);
 
         // then
-        assertThatThrownBy(() -> movieLikesCommandService.movieLikes(movie.getId(), 999L))
+        assertThatThrownBy(() -> movieLikeCommandServiceV4.movieLikes(movie.getId(), 999L))
                 .isInstanceOf(MovieUserNotFoundException.class);
     }
 }

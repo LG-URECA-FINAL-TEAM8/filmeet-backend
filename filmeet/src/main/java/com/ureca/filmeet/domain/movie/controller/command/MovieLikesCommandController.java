@@ -1,6 +1,6 @@
 package com.ureca.filmeet.domain.movie.controller.command;
 
-import com.ureca.filmeet.domain.movie.service.command.MovieLikesCommandService;
+import com.ureca.filmeet.domain.movie.service.command.like.MovieLikeCommandService;
 import com.ureca.filmeet.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/likes")
 public class MovieLikesCommandController {
 
-    private final MovieLikesCommandService movieLikesCommandService;
+    private final MovieLikeCommandService movieLikeCommandService;
 
     @PostMapping("/movies/{movieId}")
     public void movieLikes(
             @PathVariable("movieId") Long movieId,
             @AuthenticationPrincipal User user
     ) {
-        movieLikesCommandService.movieLikes(movieId, user.getId());
+        movieLikeCommandService.movieLikes(movieId, user.getId());
     }
 
     @DeleteMapping("/cancel/movies/{movieId}")
@@ -30,6 +30,6 @@ public class MovieLikesCommandController {
             @PathVariable("movieId") Long movieId,
             @AuthenticationPrincipal User user
     ) {
-        movieLikesCommandService.movieLikesCancel(movieId, user.getId());
+        movieLikeCommandService.movieLikesCancel(movieId, user.getId());
     }
 }
