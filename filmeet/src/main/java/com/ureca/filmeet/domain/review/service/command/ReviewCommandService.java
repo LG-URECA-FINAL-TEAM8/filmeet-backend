@@ -1,5 +1,7 @@
 package com.ureca.filmeet.domain.review.service.command;
 
+import com.ureca.filmeet.domain.follow.entity.Follow;
+import com.ureca.filmeet.domain.follow.repository.FollowRepository;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.dto.request.CreateReviewRequest;
@@ -14,9 +16,13 @@ import com.ureca.filmeet.domain.review.exception.ReviewUserNotFoundException;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import com.ureca.filmeet.global.notification.service.command.NotificationCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,6 +32,8 @@ public class ReviewCommandService {
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final ReviewRepository reviewRepository;
+    private final FollowRepository followRepository;
+    private final NotificationCommandService notificationCommandService;
 
     public CreateReviewResponse createReview(CreateReviewRequest createReviewRequest) {
         boolean isAlreadyReview = reviewRepository.existsByUserIdAndMovieId(createReviewRequest.userId(),
@@ -47,6 +55,15 @@ public class ReviewCommandService {
                 .build();
 
         Review saveReview = reviewRepository.save(review);
+        // 댓글 작성자의 팔로워들 조회
+        List<User> followers = followRepository.findAllByFollowing(user)
+                .stream()
+                .map(Follow::getFollower)
+                .collect(Collectors.toList());
+
+        // 팔로워들에게 알림 발송
+        notificationCommandService.sendReviewNotification(user, review.getId(), followers);
+
         return CreateReviewResponse.of(saveReview.getId());
     }
 

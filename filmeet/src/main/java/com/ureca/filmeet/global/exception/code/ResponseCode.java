@@ -74,7 +74,14 @@ public enum ResponseCode {
     FOLLOW_ALREADY_EXISTS(12201, "이미 팔로우한 사용자입니다."),
     FOLLOW_NOT_FOUND(12202, "팔로우 관계를 찾을 수 없습니다."),
     FOLLOW_USER_NOT_FOUND(12203, "팔로우할 사용자를 찾을 수 없습니다."),
-    SELF_FOLLOW_NOT_ALLOWED(12204, "자기 자신을 팔로우할 수 없습니다.");
+    SELF_FOLLOW_NOT_ALLOWED(12204, "자기 자신을 팔로우할 수 없습니다."),
+
+    // Notification domain Error Codes (도메인:13)
+    NOTIFICATION_NOT_FOUND(13201, "알림을 찾을 수 없습니다."),
+    NOTIFICATION_ACCESS_DENIED(13202, "해당 알림에 접근 권한이 없습니다."),
+    INVALID_FCM_TOKEN(13203, "유효하지 않은 FCM 토큰입니다."),
+    FCM_TOKEN_NOT_FOUND(13204, "FCM 토큰을 찾을 수 없습니다."),
+    FCM_SEND_FAILED(13205, "알림 전송에 실패했습니다.");
 
     private final Integer status;
     private final String message;

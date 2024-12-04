@@ -1,5 +1,6 @@
 package com.ureca.filmeet.global.exception.handler;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.ureca.filmeet.domain.collection.exception.CollectionException;
 import com.ureca.filmeet.domain.follow.exception.FollowException;
 import com.ureca.filmeet.domain.game.exception.GameException;
@@ -16,6 +17,7 @@ import com.ureca.filmeet.global.exception.InvalidPasswordException;
 import com.ureca.filmeet.global.exception.InvalidRefreshTokenException;
 import com.ureca.filmeet.global.exception.JwtAuthenticationException;
 import com.ureca.filmeet.global.exception.code.ResponseCode;
+import com.ureca.filmeet.global.notification.exception.NotificationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -142,6 +144,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
+    }
+
+    // Notification 도메인 예외 처리
+    @ExceptionHandler(NotificationException.class)
+    public ResponseEntity<ApiResponse<?>> handleNotificationException(NotificationException e) {
+        log.error("notification exception occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
+    }
+
+    // FCM 예외 처리
+    @ExceptionHandler(FirebaseMessagingException.class)
+    public ResponseEntity<ApiResponse<?>> handleFirebaseMessagingException(FirebaseMessagingException e) {
+        log.error("FCM exception occurred: {}", e.getMessage(), e);
+
+        // FCM 에러 코드에 따른 처리
+        ResponseCode errorCode = switch (e.getMessagingErrorCode()) {
+            case INVALID_ARGUMENT -> ResponseCode.INVALID_FCM_TOKEN;
+            case UNREGISTERED -> ResponseCode.FCM_TOKEN_NOT_FOUND;
+            default -> ResponseCode.FCM_SEND_FAILED;
+        };
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(errorCode));
     }
 
     // 모든 예외 처리 (fallback)
