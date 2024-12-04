@@ -6,9 +6,9 @@ import com.ureca.filmeet.domain.review.dto.request.CreateCommentRequest;
 import com.ureca.filmeet.domain.review.dto.response.CreateCommentResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,7 +61,7 @@ public class ReviewCommentLockServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch likeLatch = new CountDownLatch(numberOfThreads);
         CountDownLatch cancelLatch = new CountDownLatch(numberOfThreads);
-        List<Long> commentIds = new ArrayList<>();
+        List<Long> commentIds = new CopyOnWriteArrayList<>();
 
         for (int i = 1; i <= numberOfThreads; i++) {
             int num = 128 + i;

@@ -80,7 +80,7 @@ class CollectionCommentCommandServiceTest {
         CollectionCommentCreateRequest request = new CollectionCommentCreateRequest(collection.getId(), "댓글 내용");
 
         // then
-        assertThatThrownBy(() -> collectionCommentCommandService.createCollectionComment(request, 999L))
+        assertThatThrownBy(() -> collectionCommentCommandService.createCollectionComment(request, 0L))
                 .isInstanceOf(CollectionUserNotFoundException.class);
     }
 
@@ -186,7 +186,7 @@ class CollectionCommentCommandServiceTest {
         collectionRepository.save(collection);
         collectionCommentRepository.save(comment);
         CollectionCommentDeleteRequest request = new CollectionCommentDeleteRequest(100L, comment.getId());
-        
+
         // then
         assertThatThrownBy(() -> collectionCommentCommandService.deleteCollectionComment(request, user.getId()))
                 .isInstanceOf(CollectionNotFoundException.class);

@@ -110,10 +110,10 @@ class CollectionLikeCommandServiceTest {
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", null);
 
         // when
-        collectionRepository.save(collection);
+        Collection saveCollection = collectionRepository.save(collection);
 
         // then
-        assertThatThrownBy(() -> collectionLikeCommandService.collectionLikes(collection.getId(), 999L))
+        assertThatThrownBy(() -> collectionLikeCommandService.collectionLikes(saveCollection.getId(), 0L))
                 .isInstanceOf(CollectionUserNotFoundException.class);
     }
 

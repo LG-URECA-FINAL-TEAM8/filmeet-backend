@@ -139,7 +139,7 @@ class CollectionCommandServiceTest {
         CollectionCreateRequest request = new CollectionCreateRequest("컬렉션 제목", "컬렉션 내용", List.of(1L, 2L));
 
         // when & then
-        assertThatThrownBy(() -> collectionCommandService.createCollection(request, 999L))
+        assertThatThrownBy(() -> collectionCommandService.createCollection(request, 0L))
                 .isInstanceOf(CollectionUserNotFoundException.class);
     }
 

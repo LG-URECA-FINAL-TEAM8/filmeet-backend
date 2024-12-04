@@ -14,6 +14,7 @@ import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -150,9 +151,11 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCollectionCommentWrittenUserBy_whenCommentNotWrittenByUser_returnsEmpty() {
         // given
-        User user1 = createUser("user1", "password", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        String username1 = UUID.randomUUID() + "";
+        String username2 = UUID.randomUUID() + "";
+        User user1 = createUser(username1, "password", Role.ROLE_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
-        User user2 = createUser("user2", "password", Role.ROLE_USER, Provider.NAVER, "닉네임2",
+        User user2 = createUser(username2, "password", Role.ROLE_USER, Provider.NAVER, "닉네임2",
                 "https://example.com/profile2.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user1);
         CollectionComment collectionComment = createCollectionComment("댓글 내용", user2, collection);
