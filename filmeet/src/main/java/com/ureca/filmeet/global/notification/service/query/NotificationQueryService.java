@@ -17,12 +17,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class NotificationQueryService {
     private final NotificationRepository notificationRepository;
 
-    public SliceResponseDto<NotificationResponse> getNotifications(User user, Pageable pageable) {
-        Slice<Notification> notifications = notificationRepository
-                .findByReceiverOrderByCreatedAtDesc(user, pageable);
+    public SliceResponseDto<NotificationResponse> getNotifications(
+            User user,
+            Boolean isRead,  // Boolean 객체로 변경하여 null 허용
+            Pageable pageable
+    ) {
+        Slice<Notification> notifications;
+
+        if (isRead != null) {
+            // 읽음/안읽음 필터링이 지정된 경우
+            notifications = notificationRepository
+                    .findByReceiverAndIsReadOrderByCreatedAtDesc(user, isRead, pageable);
+        } else {
+            // 모든 알림 조회
+            notifications = notificationRepository
+                    .findByReceiverOrderByCreatedAtDesc(user, pageable);
+        }
 
         return SliceResponseDto.of(notifications.map(NotificationResponse::from));
     }
+
 
     public long getUnreadCount(User user) {
         return notificationRepository.countByReceiverAndIsReadFalse(user);

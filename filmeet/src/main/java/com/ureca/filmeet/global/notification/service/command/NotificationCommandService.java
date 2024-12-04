@@ -59,7 +59,7 @@ public class NotificationCommandService {
             }
         });
     }
-
+    // 알림 읽음 처리
     public void markAsRead(Long notificationId, User user) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(NotificationNotFoundException::new);
@@ -67,7 +67,7 @@ public class NotificationCommandService {
         validateReceiver(notification, user);
         notification.markAsRead();
     }
-
+    // 전체 읽음 처리
     public void markAllAsRead(User user) {
         List<Notification> unreadNotifications =
                 notificationRepository.findByReceiverAndIsReadFalse(user);
@@ -75,9 +75,25 @@ public class NotificationCommandService {
         unreadNotifications.forEach(Notification::markAsRead);
     }
 
+    public void deleteNotification(Long notificationId, User user) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(NotificationNotFoundException::new);
+
+        validateReceiver(notification, user);
+        notificationRepository.delete(notification);
+    }
+
+    public void deleteAllNotifications(User user) {
+        List<Notification> notifications = notificationRepository.findByReceiver(user);
+        notificationRepository.deleteAll(notifications);
+    }
+
+
     private void validateReceiver(Notification notification, User user) {
         if (!notification.getReceiver().getId().equals(user.getId())) {
             throw new NotificationAccessDeniedException();
         }
     }
+
+
 }
