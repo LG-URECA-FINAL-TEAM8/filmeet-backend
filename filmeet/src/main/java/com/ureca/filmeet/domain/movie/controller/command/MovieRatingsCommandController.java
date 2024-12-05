@@ -44,6 +44,6 @@ public class MovieRatingsCommandController {
             @RequestBody DeleteMovieRatingRequest deleteMovieRatingRequest
     ) {
         movieRatingsCommandService.deleteMovieRating(deleteMovieRatingRequest);
-        return ApiResponse.ok("영화 평점 삭제에 성공 했습니다.");
+        return ApiResponse.ok("평점을 삭제 했습니다.");
     }
 }
