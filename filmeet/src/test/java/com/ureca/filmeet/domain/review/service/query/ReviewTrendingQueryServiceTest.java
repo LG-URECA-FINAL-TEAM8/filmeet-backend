@@ -17,6 +17,7 @@ import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +50,9 @@ class ReviewTrendingQueryServiceTest {
     void calculatePopularityScore_moreLikesHigherScore() {
         // given
         LocalDateTime now = LocalDateTime.now();
+        String username = UUID.randomUUID() + "";
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
-        User user = createUser("뮤", "password", Role.ROLE_USER, Provider.NAVER, "닉네임1", "https://profile.url");
+        User user = createUser(username, "password", Role.ROLE_USER, Provider.NAVER, "닉네임1", "https://profile.url");
 
         Review lowLikesReview = createReview("좋아요 적음", movie, user, 2, 3);
         Review highLikesReview = createReview("좋아요 많음", movie, user, 3, 3);
@@ -78,8 +80,9 @@ class ReviewTrendingQueryServiceTest {
     void calculatePopularityScore_moreCommentsHigherScore() {
         // given
         LocalDateTime now = LocalDateTime.now();
+        String username = UUID.randomUUID() + "";
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
-        User user = createUser("ㅁㅇㅇㅇ", "password", Role.ROLE_USER, Provider.NAVER, "닉네임1", "https://profile.url");
+        User user = createUser(username, "password", Role.ROLE_USER, Provider.NAVER, "닉네임1", "https://profile.url");
 
         Review lowCommentsReview = createReview("좋아요 적음", movie, user, 3, 3);
         Review highCommentsReview = createReview("좋아요 많음", movie, user, 3, 4);
