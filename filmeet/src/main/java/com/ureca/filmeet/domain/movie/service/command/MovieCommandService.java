@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.movie.service.command;
 
 import com.ureca.filmeet.domain.admin.dto.request.AddMoviesRequest;
+import com.ureca.filmeet.domain.admin.dto.request.UpdateMovieLikeCountRequest;
 import com.ureca.filmeet.domain.genre.entity.Genre;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
@@ -8,13 +9,16 @@ import com.ureca.filmeet.domain.genre.repository.GenreRepository;
 import com.ureca.filmeet.domain.movie.entity.*;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.MoviePosition;
+import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.CountriesRepository;
 import com.ureca.filmeet.domain.movie.repository.GalleryRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
+import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.infra.kmdb.dto.KmdbPlot;
 import com.ureca.filmeet.infra.kmdb.dto.KmdbStaff;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,43 +36,68 @@ public class MovieCommandService {
     private final CountriesRepository countriesRepository;
     private final GenreRepository genreRepository;
     private final PersonnelCommandService personnelCommandService;
+    private final MovieQueryService movieQueryService;
 
     @Transactional
-    public Boolean addMovies(List<AddMoviesRequest> requests) {
-        requests.forEach(request -> {
-            // 1. Movie 생성
+    public void addMovies(List<AddMoviesRequest> requests) {
+        // 1. 이미 존재하는 영화 제목 조회
+        List<String> duplicatedTitles = movieRepository.findExistingTitlesByTitleIn(
+                requests.stream().map(AddMoviesRequest::title).toList()
+        );
+
+        // 2. 존재하지 않는 영화만 필터링
+        List<AddMoviesRequest> filteredRequests = requests.stream()
+                .filter(request -> !duplicatedTitles.contains(request.title()))
+                .toList();
+
+        filteredRequests.forEach(request -> {
+            // 3. Movie 생성
             Movie movie = Movie.builder()
                     .title(request.title())
                     .plot(request.plots().stream().filter(plot -> "한국어".equals(plot.plotLang()))
                             .map(KmdbPlot::plotText).findFirst().orElse("줄거리 없음"))
                     .releaseDate(parseReleaseDate(request.repRlsDate()))
-                    .runtime(Integer.parseInt(request.runtime()))
+                    .runtime(convertToInteger(request.runtime()))
                     .posterUrl(request.posters().isEmpty() ? null : request.posters().get(0))
                     .filmRatings(parseFilmRatings(request.rating()))
                     .build();
 
-            // 2. Gallery 저장
+            // 4. Gallery 저장
             saveGalleriesAndAddGalleries(request, movie);
 
-            // 3. Staff 저장
+            // 5. Staff 저장
             addPersonnelToMovie(movie, request.staffs());
 
-            // 4. Country 저장
+            // 6. Country 저장
             List<String> nations = Arrays.stream(request.nation().trim().split(",")).toList();
             addMovieCountryToMovie(nations, movie);
 
-            // 5. Genre 저장
+            // 7. Genre 저장
             List<GenreType> genreTypes = Arrays.stream(request.genre().trim().split(","))
                     .map(GenreType::fromName) // GenreType으로 변환
                     .distinct()
                     .toList();
             addMovieGenreToMovie(genreTypes, movie);
 
-            // 6. 영화 저장
+            // 8. 영화 저장
             movieRepository.save(movie);
         });
+    }
 
-        return true;
+    @Transactional
+    public void deleteMovie(Long id) {
+        try {
+            movieRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new MovieNotFoundException();
+        }
+    }
+
+    @Transactional
+    public void updateLikeCount(Long movieId, UpdateMovieLikeCountRequest request) {
+        Movie movie = movieQueryService.getMovieById(movieId);
+        Integer updatedNum = request.likeCount();
+        movie.updateLikeCounts(updatedNum);
     }
 
     private void saveGalleriesAndAddGalleries(AddMoviesRequest request, Movie movie) {
@@ -76,11 +105,13 @@ public class MovieCommandService {
                 .map(poster -> new Gallery(movie, poster)) // Gallery 객체 생성
                 .toList();
 
-//        galleryRepository.saveAll(newGalleries);
         newGalleries.forEach(movie::addGallery);
     }
 
     private LocalDate parseReleaseDate(String releaseDate) {
+        if (releaseDate == null || releaseDate.isBlank()) {
+            return LocalDate.of(1111, 11, 11);
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDate.parse(releaseDate, formatter);
     }
@@ -153,5 +184,12 @@ public class MovieCommandService {
             case "각본" -> MoviePosition.SCREEN_WRITER;
             default -> MoviePosition.ACTOR; // 배우
         };
+    }
+
+    private Integer convertToInteger(String runtime) {
+        if (runtime.isBlank() || runtime == null) {
+            return 0;
+        }
+        return Integer.parseInt(runtime);
     }
 }
