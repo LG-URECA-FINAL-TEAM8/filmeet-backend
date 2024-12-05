@@ -3,6 +3,8 @@ package com.ureca.filmeet.domain.collection.controller.command;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCommentCreateRequest;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCommentDeleteRequest;
 import com.ureca.filmeet.domain.collection.dto.request.CollectionCommentModifyRequest;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionCommentCreateResponse;
+import com.ureca.filmeet.domain.collection.dto.response.CollectionCommentModifyResponse;
 import com.ureca.filmeet.domain.collection.service.command.CollectionCommentCommandService;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
@@ -24,7 +26,7 @@ public class CollectionCommentCommandController {
     private final CollectionCommentCommandService collectionCommentCommandService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Long>> createCollectionComment(
+    public ResponseEntity<ApiResponse<CollectionCommentCreateResponse>> createCollectionComment(
             @RequestBody CollectionCommentCreateRequest collectionCommentCreateRequest,
             @AuthenticationPrincipal User user
     ) {
@@ -32,24 +34,31 @@ public class CollectionCommentCommandController {
         Long collectionCommentId = collectionCommentCommandService.createCollectionComment(
                 collectionCommentCreateRequest,
                 user.getId());
-        return ApiResponse.ok(collectionCommentId);
+        CollectionCommentCreateResponse commentCreateResponse = new CollectionCommentCreateResponse(
+                collectionCommentId);
+        return ApiResponse.ok(commentCreateResponse);
     }
 
     @PatchMapping
-    public ResponseEntity<ApiResponse<Long>> modifyCollectionComment(
+    public ResponseEntity<ApiResponse<CollectionCommentModifyResponse>> modifyCollectionComment(
             @RequestBody CollectionCommentModifyRequest collectionCommentModifyRequest,
             @AuthenticationPrincipal User user
     ) {
+
         Long collectionCommentId = collectionCommentCommandService.modifyCollectionComment(
                 collectionCommentModifyRequest, user.getId());
-        return ApiResponse.ok(collectionCommentId);
+        CollectionCommentModifyResponse commentModifyResponse = new CollectionCommentModifyResponse(
+                collectionCommentId);
+        return ApiResponse.ok(commentModifyResponse);
     }
 
     @DeleteMapping
-    public void deleteCollectionComment(
+    public ResponseEntity<ApiResponse<String>> deleteCollectionComment(
             @RequestBody CollectionCommentDeleteRequest collectionCommentDeleteRequest,
             @AuthenticationPrincipal User user
     ) {
+
         collectionCommentCommandService.deleteCollectionComment(collectionCommentDeleteRequest, user.getId());
+        return ApiResponse.ok("댓글을 삭제 했습니다.");
     }
 }

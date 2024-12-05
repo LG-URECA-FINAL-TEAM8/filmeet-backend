@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -323,10 +324,12 @@ class ReviewRepositoryTest {
     @Test
     void findMovieReviewsWithLikes_whenMovieHasReviews_returnsReviewsWithLikeStatus() {
         // given
+        String username1 = UUID.randomUUID() + "";
+        String username2 = UUID.randomUUID() + "";
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user1 = createUser("user1", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user1 = createUser(username1, "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
-        User user2 = createUser("user2", "securePassword", Role.ROLE_USER, Provider.GOOGLE, "닉네임2",
+        User user2 = createUser(username2, "securePassword", Role.ROLE_USER, Provider.GOOGLE, "닉네임2",
                 "https://example.com/profile2.jpg");
         Review review1 = createReview("리뷰 내용1", movie, user1);
         Review review2 = createReview("리뷰 내용2", movie, user1);
@@ -374,8 +377,9 @@ class ReviewRepositoryTest {
     @Test
     void findMovieReviewsWithLikes_whenReviewIsDeleted_returnsEmpty() {
         // given
+        String username = UUID.randomUUID() + "";
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("user1", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user = createUser(username, "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         review.delete(); // 리뷰 삭제
@@ -397,14 +401,16 @@ class ReviewRepositoryTest {
     @DisplayName("리뷰 상세 정보를 조회할때 리뷰와 연관된 영화, 유저, 댓글, 댓글에 대한 유저 정보를 성공적으로 조회한다.")
     @Test
     void shouldRetrieveReviewWithAssociatedDetails() {
-
         // given
+        String username1 = UUID.randomUUID() + "";
+        String username2 = UUID.randomUUID() + "";
+        String username3 = UUID.randomUUID() + "";
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user1 = createUser("user1", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user1 = createUser(username1, "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
-        User user2 = createUser("user2", "securePassword", Role.ROLE_ADMIN, Provider.GOOGLE, "닉네임2",
+        User user2 = createUser(username2, "securePassword", Role.ROLE_ADMIN, Provider.GOOGLE, "닉네임2",
                 "https://example.com/profile1.jpg");
-        User user3 = createUser("user3", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임3",
+        User user3 = createUser(username3, "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임3",
                 "https://example.com/profile1.jpg");
         Review review = createReview("리뷰 내용", movie, user1);
         ReviewComment reviewComment1 = createReviewComment("리뷰 댓글 내용1", review, user1);
@@ -436,16 +442,16 @@ class ReviewRepositoryTest {
                     assertThat(foundReview.getUser())
                             .isNotNull()
                             .satisfies(user -> {
-                                assertThat(user.getUsername()).isEqualTo("user1");
-                                assertThat(user.getNickname()).isEqualTo("닉네임1");
+                                assertThat(user.getUsername()).isEqualTo(username1);
+                                assertThat(user.getNickname()).isEqualTo(user1.getNickname());
                             });
 
                     // 리뷰와 연관된 무비 정보 검증
                     assertThat(foundReview.getMovie())
                             .isNotNull()
                             .satisfies(findMovie -> {
-                                assertThat(findMovie.getTitle()).isEqualTo("제목1");
-                                assertThat(findMovie.getPlot()).isEqualTo("줄거리");
+                                assertThat(findMovie.getTitle()).isEqualTo(movie.getTitle());
+                                assertThat(findMovie.getPlot()).isEqualTo(movie.getPlot());
                             });
 
                     assertThat(foundReview.getReviewComments())
@@ -466,15 +472,17 @@ class ReviewRepositoryTest {
     @Test
     void findTrendingReviewsByUser() {
         // given
+        String username1 = UUID.randomUUID() + "";
+        String username2 = UUID.randomUUID() + "";
         Movie movie1 = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc",
                 FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리", LocalDate.now(), 250, "https://abc",
                 FilmRatings.ADULT);
         Movie movie3 = createMovie("제목3", "줄거리", LocalDate.now(), 350, "https://abc",
                 FilmRatings.ADULT);
-        User user1 = createUser("user1", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user1 = createUser(username1, "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
-        User user2 = createUser("user2", "securePassword", Role.ROLE_USER, Provider.GOOGLE, "닉네임2",
+        User user2 = createUser(username2, "securePassword", Role.ROLE_USER, Provider.GOOGLE, "닉네임2",
                 "https://example.com/profile2.jpg");
         Review review1 = createReview("리뷰 내용1", movie1, user1);
         Review review2 = createReview("리뷰 내용2", movie2, user1);
@@ -572,13 +580,14 @@ class ReviewRepositoryTest {
     @Test
     void findUserReviews_whenUserHasReviews_returnsPagedUserReviews() {
         // given
+        String username = UUID.randomUUID() + "";
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.of(2023, 1, 1), 120, "https://poster1.jpg",
                 FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.of(2023, 2, 1), 130, "https://poster2.jpg",
                 FilmRatings.ALL);
         Movie movie3 = createMovie("제목3", "줄거리3", LocalDate.of(2023, 2, 1), 140, "https://poster3.jpg",
                 FilmRatings.ALL);
-        User user = createUser("user1", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user = createUser(username, "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
         Review review1 = createReview("리뷰 내용1", movie1, user);
         Review review2 = createReview("리뷰 내용2", movie2, user);
