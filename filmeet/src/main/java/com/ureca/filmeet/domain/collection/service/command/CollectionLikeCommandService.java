@@ -10,19 +10,19 @@ import com.ureca.filmeet.domain.collection.repository.CollectionLikeRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import com.ureca.filmeet.global.annotation.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
-public class CollectionCommentLikeService {
+public class CollectionLikeCommandService {
 
     private final UserRepository userRepository;
     private final CollectionRepository collectionRepository;
     private final CollectionLikeRepository collectionLikeRepository;
 
+    @DistributedLock(key = "'collectionLikes:' + #collectionId")
     public void collectionLikes(Long collectionId, Long userId) {
         boolean isAlreadyLiked = collectionLikeRepository.existsByCollectionIdAndUserId(collectionId, userId);
         if (isAlreadyLiked) {
@@ -44,6 +44,7 @@ public class CollectionCommentLikeService {
         collection.addLikeCounts();
     }
 
+    @DistributedLock(key = "'collectionLikes:' + #collectionId")
     public void collectionLikesCancel(Long collectionId, Long userId) {
         Collection collection = collectionRepository.findById(collectionId)
                 .orElseThrow(CollectionNotFoundException::new);

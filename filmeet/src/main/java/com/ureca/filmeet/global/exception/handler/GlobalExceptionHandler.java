@@ -3,14 +3,10 @@ package com.ureca.filmeet.global.exception.handler;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.ureca.filmeet.domain.collection.exception.CollectionException;
 import com.ureca.filmeet.domain.follow.exception.FollowException;
-import com.ureca.filmeet.domain.game.exception.GameException;
-import com.ureca.filmeet.domain.game.exception.GameRoundsEmptyException;
-import com.ureca.filmeet.domain.game.exception.GameRoundsTooLargeException;
-import com.ureca.filmeet.domain.game.exception.GameRoundsTooSmallException;
-import com.ureca.filmeet.domain.game.exception.GameSelectedMovieEmptyException;
-import com.ureca.filmeet.domain.game.exception.GameTitleEmptyException;
+import com.ureca.filmeet.domain.game.exception.*;
 import com.ureca.filmeet.domain.movie.exception.MovieException;
 import com.ureca.filmeet.domain.review.exception.ReviewException;
+import com.ureca.filmeet.domain.user.exception.UserException;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.exception.AccessTokenExpiredException;
 import com.ureca.filmeet.global.exception.InvalidPasswordException;
@@ -68,10 +64,17 @@ public class GlobalExceptionHandler {
         return ApiResponse.invalidPassword();
     }
 
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<?> handleUserException(UserException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
+    }
+
     // 리뷰 도메인쪽 예외 처리
     @ExceptionHandler(ReviewException.class)
     public ResponseEntity<ApiResponse<?>> reviewDomainExceptionHandler(ReviewException e) {
-        log.error("review domain exception occurred: {}", e.getMessage(), e);
+        log.error("review domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -80,7 +83,7 @@ public class GlobalExceptionHandler {
     // 영화 도메인쪽 예외 처리
     @ExceptionHandler(MovieException.class)
     public ResponseEntity<ApiResponse<?>> movieDomainExceptionHandler(MovieException e) {
-        log.error("movie domain exception occurred: {}", e.getMessage(), e);
+        log.error("movie domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -89,7 +92,7 @@ public class GlobalExceptionHandler {
     // 컬렉션 도메인쪽 예외 처리
     @ExceptionHandler(CollectionException.class)
     public ResponseEntity<ApiResponse<?>> collectionDomainExceptionHandler(CollectionException e) {
-        log.error("collection domain exception occurred: {}", e.getMessage(), e);
+        log.error("collection domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -98,7 +101,7 @@ public class GlobalExceptionHandler {
     // 게임 도메인쪽 예외 처리
     @ExceptionHandler(GameException.class)
     public ResponseEntity<ApiResponse<?>> gameDomainExceptionHandler(GameException e) {
-        log.error("game domain exception occurred: {}", e.getMessage(), e);
+        log.error("game domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -140,7 +143,7 @@ public class GlobalExceptionHandler {
     // Follow 도메인 예외 처리
     @ExceptionHandler(FollowException.class)
     public ResponseEntity<ApiResponse<?>> followDomainExceptionHandler(FollowException e) {
-        log.error("follow domain exception occurred: {}", e.getMessage(), e);
+        log.error("follow domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));

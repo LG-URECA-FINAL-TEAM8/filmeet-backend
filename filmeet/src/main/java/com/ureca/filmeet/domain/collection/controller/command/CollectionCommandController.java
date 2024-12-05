@@ -46,10 +46,11 @@ public class CollectionCommandController {
     }
 
     @DeleteMapping
-    public void deleteCollection(
+    public ResponseEntity<ApiResponse<String>> deleteCollection(
             @RequestBody CollectionDeleteRequest collectionDeleteRequest,
             @AuthenticationPrincipal User user
     ) {
         collectionCommandService.deleteCollection(collectionDeleteRequest, user.getId());
+        return ApiResponse.ok("컬렉션을 삭제 했습니다.");
     }
 }

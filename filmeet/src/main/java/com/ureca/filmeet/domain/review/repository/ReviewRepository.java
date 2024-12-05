@@ -84,7 +84,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "FROM Review r " +
             "JOIN r.movie m " +
             "JOIN r.user u " +
-            "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId"
+            "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId " +
+            "WHERE r.isDeleted = false AND r.isVisible = true "
     )
     Slice<ReviewResponse> findTrendingReviewsBy(
             @Param("userId") Long userId,
@@ -104,12 +105,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "JOIN r.movie m " +
             "JOIN r.user u " +
             "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId " +
-            "WHERE u.id = :userId"
+            "WHERE u.id = :userId AND r.isDeleted = false AND r.isVisible = true "
     )
     Slice<UserReviewsResponse> findUserReviews(
             @Param("userId") Long userId,
             Pageable pageable
     );
 
-    boolean existsByUserIdAndMovieId(Long userId, Long movieId);
+    boolean existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(Long userId, Long movieId);
 }

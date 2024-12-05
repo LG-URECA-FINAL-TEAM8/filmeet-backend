@@ -28,7 +28,7 @@ public class Movie extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String title;
 
-    @Column(length = 1000)
+    @Column(length = 5000)
     private String plot;
 
     @Column(nullable = false)
@@ -61,6 +61,32 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
+    @Builder
+    public Movie(String title, String plot, LocalDate releaseDate,
+                 Integer runtime, String posterUrl,
+                 Integer likeCounts, Integer ratingCounts,
+                 BigDecimal averageRating, FilmRatings filmRatings) {
+        this.title = title;
+        this.plot = plot;
+        this.releaseDate = releaseDate;
+        this.runtime = runtime;
+        this.posterUrl = posterUrl;
+        this.likeCounts = likeCounts != null ? likeCounts : 0;
+        this.ratingCounts = ratingCounts != null ? ratingCounts : 0;
+        this.averageRating = averageRating != null ? averageRating : BigDecimal.ZERO;
+        this.filmRatings = filmRatings;
+    }
+
+    private static void validateRatingScoreNotNull(BigDecimal ratingScoreToDelete) {
+        if (ratingScoreToDelete == null) {
+            throw new RuntimeException("평점 입력값이 null입니다.");
+        }
+    }
+
+    public void updateLikeCounts(Integer likeCounts) {
+        this.likeCounts = likeCounts;
+    }
+
     public void addLikeCounts() {
         this.likeCounts++;
     }
@@ -78,7 +104,7 @@ public class Movie extends BaseEntity {
                 .add(ratingScore);
 
         // 새로운 평균 계산
-        this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts + 1), 1, RoundingMode.HALF_UP);
+        this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts + 1), 2, RoundingMode.DOWN);
 
         this.ratingCounts++;
     }
@@ -86,6 +112,10 @@ public class Movie extends BaseEntity {
     public void modifyMovieRating(BigDecimal oldRatingScore, BigDecimal newRatingScore) {
         validateRatingScoreNotNull(oldRatingScore);
         validateRatingScoreNotNull(newRatingScore);
+        if (this.ratingCounts <= 0) {
+            this.averageRating = BigDecimal.ZERO;
+            return;
+        }
 
         // 현재 총 점수 계산
         BigDecimal currentTotalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts));
@@ -95,37 +125,26 @@ public class Movie extends BaseEntity {
                 .subtract(oldRatingScore)
                 .add(newRatingScore);
 
-        // ratingCounts가 0인 경우 평균 평점을 0으로 설정
-        if (this.ratingCounts == 0) {
-            this.averageRating = BigDecimal.ZERO;
-        } else {
-            // 새로운 평균 계산
-            this.averageRating = updatedTotalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1,
-                    RoundingMode.HALF_UP);
-        }
+        // 새로운 평균 계산
+        this.averageRating = updatedTotalScore.divide(BigDecimal.valueOf(this.ratingCounts), 2, RoundingMode.DOWN);
     }
 
     public void updateAfterRatingDeletion(BigDecimal ratingScoreToDelete) {
         validateRatingCountsNotZero();
         validateRatingScoreNotNull(ratingScoreToDelete);
 
-        this.ratingCounts--;
-
         // 총합에서 삭제된 평점 제거
-        BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts + 1))
+        BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts))
                 .subtract(ratingScoreToDelete);
 
-        // 새로운 평균 계산
-        if (this.ratingCounts == 0) {
-            this.averageRating = BigDecimal.ZERO; // 남은 평점이 없으면 평균은 0
-        } else {
-            this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1, RoundingMode.HALF_UP);
-        }
-    }
+        // 평점 수 감소
+        this.ratingCounts--;
 
-    private static void validateRatingScoreNotNull(BigDecimal ratingScoreToDelete) {
-        if (ratingScoreToDelete == null) {
-            throw new RuntimeException("평점 입력값이 null입니다.");
+        // 새로운 평균 계산
+        if (this.ratingCounts <= 0) {
+            this.averageRating = BigDecimal.ZERO;
+        } else {
+            this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts), 2, RoundingMode.DOWN);
         }
     }
 
@@ -154,21 +173,5 @@ public class Movie extends BaseEntity {
     public void addMovieGenre(MovieGenre movieGenre) {
         movieGenres.add(movieGenre);
         movieGenre.changeMovie(this);
-    }
-
-    @Builder
-    public Movie(String title, String plot, LocalDate releaseDate,
-                 Integer runtime, String posterUrl,
-                 Integer likeCounts, Integer ratingCounts,
-                 BigDecimal averageRating, FilmRatings filmRatings) {
-        this.title = title;
-        this.plot = plot;
-        this.releaseDate = releaseDate;
-        this.runtime = runtime;
-        this.posterUrl = posterUrl;
-        this.likeCounts = likeCounts != null ? likeCounts : 0;
-        this.ratingCounts = ratingCounts != null ? ratingCounts : 0;
-        this.averageRating = averageRating != null ? averageRating : BigDecimal.ZERO;
-        this.filmRatings = filmRatings;
     }
 }

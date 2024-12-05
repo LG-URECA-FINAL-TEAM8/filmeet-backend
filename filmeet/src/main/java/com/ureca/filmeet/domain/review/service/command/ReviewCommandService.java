@@ -36,7 +36,8 @@ public class ReviewCommandService {
     private final NotificationCommandService notificationCommandService;
 
     public CreateReviewResponse createReview(CreateReviewRequest createReviewRequest) {
-        boolean isAlreadyReview = reviewRepository.existsByUserIdAndMovieId(createReviewRequest.userId(),
+        boolean isAlreadyReview = reviewRepository.existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(
+                createReviewRequest.userId(),
                 createReviewRequest.movieId());
         if (isAlreadyReview) {
             throw new ReviewAlreadyExistsException();

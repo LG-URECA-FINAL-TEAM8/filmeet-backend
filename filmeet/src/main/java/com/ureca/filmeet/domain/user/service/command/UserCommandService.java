@@ -12,6 +12,8 @@ import com.ureca.filmeet.domain.user.dto.response.UserDetailResponse;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
+import com.ureca.filmeet.domain.user.exception.UserInvalidNicknameException;
+import com.ureca.filmeet.domain.user.exception.UserInvalidUsernameException;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import com.ureca.filmeet.domain.user.service.query.UserQueryService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,10 @@ public class UserCommandService {
 
     public UserDetailResponse signUp(UserSignUpRequest request) {
         if (userRepository.existsByUsername(request.username())) {
-            throw new IllegalArgumentException("Username is already in use");
+            throw new UserInvalidUsernameException();
+        }
+        if (userRepository.existsByNickname(request.nickname())) {
+            throw new UserInvalidNicknameException();
         }
 
         User newUser = User.builder()
@@ -42,6 +47,7 @@ public class UserCommandService {
                 .password(passwordEncoder.encode(request.password()))
                 .nickname(request.nickname())
                 .role(Role.ROLE_USER)
+                .profileImage("https://filmeet-images.s3.ap-northeast-2.amazonaws.com/2024/12/03/1e928cad-c203-41e7-9184-8e46e6bf1ee0_default_profile.svg")
                 .build();
         User savedUser = userRepository.save(newUser);
 

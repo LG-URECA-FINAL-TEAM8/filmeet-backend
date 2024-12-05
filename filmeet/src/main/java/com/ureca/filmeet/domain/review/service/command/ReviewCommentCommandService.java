@@ -13,12 +13,12 @@ import com.ureca.filmeet.domain.review.repository.ReviewCommentRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import com.ureca.filmeet.global.annotation.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class ReviewCommentCommandService {
 
@@ -26,6 +26,7 @@ public class ReviewCommentCommandService {
     private final ReviewRepository reviewRepository;
     private final ReviewCommentRepository reviewCommentRepository;
 
+    @DistributedLock(key = "'reviewComment:' + #createCommentRequest.reviewId")
     public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest) {
         Review review = reviewRepository.findReviewBy(createCommentRequest.reviewId())
                 .orElseThrow(ReviewNotFoundException::new);
@@ -45,6 +46,7 @@ public class ReviewCommentCommandService {
         return CreateCommentResponse.of(savedReviewComment.getId());
     }
 
+    @Transactional
     public ModifyCommentResponse modifyComment(ModifyCommentRequest modifyCommentRequest) {
         ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewCommentId())
                 .orElseThrow(ReviewCommentNotFoundException::new);
@@ -65,6 +67,7 @@ public class ReviewCommentCommandService {
         review.decrementCommentCounts();
     }
 
+    @DistributedLock(key = "'reviewComment:' + #reviewId")
     public void deleteComment(Long reviewId, Long commentId) {
         ReviewComment reviewComment = reviewCommentRepository.findReviewCommentWithReview(reviewId, commentId)
                 .orElseThrow(ReviewCommentNotFoundException::new);

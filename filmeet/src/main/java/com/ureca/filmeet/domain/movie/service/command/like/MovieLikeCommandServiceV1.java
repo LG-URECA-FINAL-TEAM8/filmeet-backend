@@ -1,4 +1,4 @@
-package com.ureca.filmeet.domain.movie.service.command;
+package com.ureca.filmeet.domain.movie.service.command.like;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreScoreAction;
 import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
@@ -16,19 +16,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+//@Service
 @Transactional
 @RequiredArgsConstructor
-public class MovieLikesCommandService {
+public class MovieLikeCommandServiceV1 implements MovieLikeCommandService {
 
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final MovieLikesRepository movieLikesRepository;
     private final GenreScoreRepository genreScoreRepository;
 
+    @Override
     public void movieLikes(Long movieId, Long userId) {
         boolean isAlreadyLiked = movieLikesRepository.existsByMovieIdAndUserId(movieId, userId);
         if (isAlreadyLiked) {
@@ -52,6 +52,7 @@ public class MovieLikesCommandService {
         movie.addLikeCounts();
     }
 
+    @Override
     public void movieLikesCancel(Long movieId, Long userId) {
         Movie movie = movieRepository.findMovieWithGenreByMovieId(movieId)
                 .orElseThrow(MovieNotFoundException::new);
