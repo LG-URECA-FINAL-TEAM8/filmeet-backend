@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     // 리뷰 도메인쪽 예외 처리
     @ExceptionHandler(ReviewException.class)
     public ResponseEntity<ApiResponse<?>> reviewDomainExceptionHandler(ReviewException e) {
-        log.error("review domain exception occurred: {}", e.getMessage(), e);
+        log.error("review domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
     // 영화 도메인쪽 예외 처리
     @ExceptionHandler(MovieException.class)
     public ResponseEntity<ApiResponse<?>> movieDomainExceptionHandler(MovieException e) {
-        log.error("movie domain exception occurred: {}", e.getMessage(), e);
+        log.error("movie domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
     // 컬렉션 도메인쪽 예외 처리
     @ExceptionHandler(CollectionException.class)
     public ResponseEntity<ApiResponse<?>> collectionDomainExceptionHandler(CollectionException e) {
-        log.error("collection domain exception occurred: {}", e.getMessage(), e);
+        log.error("collection domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -96,7 +96,7 @@ public class GlobalExceptionHandler {
     // 게임 도메인쪽 예외 처리
     @ExceptionHandler(GameException.class)
     public ResponseEntity<ApiResponse<?>> gameDomainExceptionHandler(GameException e) {
-        log.error("game domain exception occurred: {}", e.getMessage(), e);
+        log.error("game domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
@@ -138,7 +138,7 @@ public class GlobalExceptionHandler {
     // Follow 도메인 예외 처리
     @ExceptionHandler(FollowException.class)
     public ResponseEntity<ApiResponse<?>> followDomainExceptionHandler(FollowException e) {
-        log.error("follow domain exception occurred: {}", e.getMessage(), e);
+        log.error("follow domain exception occurred: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(e.getErrorExceptionCode()));
