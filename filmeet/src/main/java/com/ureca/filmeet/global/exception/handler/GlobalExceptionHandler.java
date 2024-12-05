@@ -3,14 +3,10 @@ package com.ureca.filmeet.global.exception.handler;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.ureca.filmeet.domain.collection.exception.CollectionException;
 import com.ureca.filmeet.domain.follow.exception.FollowException;
-import com.ureca.filmeet.domain.game.exception.GameException;
-import com.ureca.filmeet.domain.game.exception.GameRoundsEmptyException;
-import com.ureca.filmeet.domain.game.exception.GameRoundsTooLargeException;
-import com.ureca.filmeet.domain.game.exception.GameRoundsTooSmallException;
-import com.ureca.filmeet.domain.game.exception.GameSelectedMovieEmptyException;
-import com.ureca.filmeet.domain.game.exception.GameTitleEmptyException;
+import com.ureca.filmeet.domain.game.exception.*;
 import com.ureca.filmeet.domain.movie.exception.MovieException;
 import com.ureca.filmeet.domain.review.exception.ReviewException;
+import com.ureca.filmeet.domain.user.exception.UserException;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.exception.AccessTokenExpiredException;
 import com.ureca.filmeet.global.exception.InvalidPasswordException;
@@ -66,6 +62,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<?> handleInvalidPasswordException(InvalidPasswordException ex) {
         return ApiResponse.invalidPassword();
+    }
+
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<?> handleUserException(UserException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(e.getErrorExceptionCode()));
     }
 
     // 리뷰 도메인쪽 예외 처리

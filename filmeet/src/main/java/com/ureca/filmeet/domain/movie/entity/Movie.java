@@ -3,24 +3,17 @@ package com.ureca.filmeet.domain.movie.entity;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.global.common.BaseEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
@@ -35,7 +28,7 @@ public class Movie extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String title;
 
-    @Column(length = 1000)
+    @Column(length = 5000)
     private String plot;
 
     @Column(nullable = false)
@@ -67,6 +60,32 @@ public class Movie extends BaseEntity {
 
     @OneToMany(mappedBy = "movie", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<MovieGenre> movieGenres = new ArrayList<>();
+
+    @Builder
+    public Movie(String title, String plot, LocalDate releaseDate,
+                 Integer runtime, String posterUrl,
+                 Integer likeCounts, Integer ratingCounts,
+                 BigDecimal averageRating, FilmRatings filmRatings) {
+        this.title = title;
+        this.plot = plot;
+        this.releaseDate = releaseDate;
+        this.runtime = runtime;
+        this.posterUrl = posterUrl;
+        this.likeCounts = likeCounts != null ? likeCounts : 0;
+        this.ratingCounts = ratingCounts != null ? ratingCounts : 0;
+        this.averageRating = averageRating != null ? averageRating : BigDecimal.ZERO;
+        this.filmRatings = filmRatings;
+    }
+
+    private static void validateRatingScoreNotNull(BigDecimal ratingScoreToDelete) {
+        if (ratingScoreToDelete == null) {
+            throw new RuntimeException("평점 입력값이 null입니다.");
+        }
+    }
+
+    public void updateLikeCounts(Integer likeCounts) {
+        this.likeCounts = likeCounts;
+    }
 
     public void addLikeCounts() {
         this.likeCounts++;
@@ -129,13 +148,6 @@ public class Movie extends BaseEntity {
         }
     }
 
-
-    private static void validateRatingScoreNotNull(BigDecimal ratingScoreToDelete) {
-        if (ratingScoreToDelete == null) {
-            throw new RuntimeException("평점 입력값이 null입니다.");
-        }
-    }
-
     private void validateRatingCountsNotZero() {
         if (this.ratingCounts <= 0) {
             throw new RuntimeException("평점을 삭제할 수 없습니다. 별점 개수가 0입니다.");
@@ -161,21 +173,5 @@ public class Movie extends BaseEntity {
     public void addMovieGenre(MovieGenre movieGenre) {
         movieGenres.add(movieGenre);
         movieGenre.changeMovie(this);
-    }
-
-    @Builder
-    public Movie(String title, String plot, LocalDate releaseDate,
-                 Integer runtime, String posterUrl,
-                 Integer likeCounts, Integer ratingCounts,
-                 BigDecimal averageRating, FilmRatings filmRatings) {
-        this.title = title;
-        this.plot = plot;
-        this.releaseDate = releaseDate;
-        this.runtime = runtime;
-        this.posterUrl = posterUrl;
-        this.likeCounts = likeCounts != null ? likeCounts : 0;
-        this.ratingCounts = ratingCounts != null ? ratingCounts : 0;
-        this.averageRating = averageRating != null ? averageRating : BigDecimal.ZERO;
-        this.filmRatings = filmRatings;
     }
 }

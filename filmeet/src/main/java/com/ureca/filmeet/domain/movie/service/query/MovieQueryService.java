@@ -1,13 +1,9 @@
 package com.ureca.filmeet.domain.movie.service.query;
 
+import com.ureca.filmeet.domain.admin.dto.response.AdminMovieResponse;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
-import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
-import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
-import com.ureca.filmeet.domain.movie.dto.response.MyMovieRating;
-import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
-import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
-import com.ureca.filmeet.domain.movie.dto.response.RatingDistributionResponse;
+import com.ureca.filmeet.domain.movie.dto.response.*;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
@@ -18,14 +14,12 @@ import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +50,17 @@ public class MovieQueryService {
                         mp.getPersonnel().getProfileImage()
                 ))
                 .toList();
+    }
+
+    public Movie getMovieById(Long movieId) {
+        return movieRepository.findById(movieId).orElseThrow(MovieNotFoundException::new);
+    }
+
+    public Page<AdminMovieResponse> getMovies(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "releaseDate"));
+        Page<Movie> moviePage = movieRepository.findAll(pageable);
+
+        return moviePage.map(AdminMovieResponse::fromEntity);
     }
 
     public MovieDetailResponse getMovieDetailV1(Long movieId) {
