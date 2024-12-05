@@ -3,17 +3,24 @@ package com.ureca.filmeet.domain.movie.entity;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.global.common.BaseEntity;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
@@ -78,7 +85,7 @@ public class Movie extends BaseEntity {
                 .add(ratingScore);
 
         // 새로운 평균 계산
-        this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts + 1), 1, RoundingMode.HALF_UP);
+        this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts + 1), 2, RoundingMode.DOWN);
 
         this.ratingCounts++;
     }
@@ -86,6 +93,10 @@ public class Movie extends BaseEntity {
     public void modifyMovieRating(BigDecimal oldRatingScore, BigDecimal newRatingScore) {
         validateRatingScoreNotNull(oldRatingScore);
         validateRatingScoreNotNull(newRatingScore);
+        if (this.ratingCounts <= 0) {
+            this.averageRating = BigDecimal.ZERO;
+            return;
+        }
 
         // 현재 총 점수 계산
         BigDecimal currentTotalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts));
@@ -95,33 +106,29 @@ public class Movie extends BaseEntity {
                 .subtract(oldRatingScore)
                 .add(newRatingScore);
 
-        // ratingCounts가 0인 경우 평균 평점을 0으로 설정
-        if (this.ratingCounts == 0) {
-            this.averageRating = BigDecimal.ZERO;
-        } else {
-            // 새로운 평균 계산
-            this.averageRating = updatedTotalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1,
-                    RoundingMode.HALF_UP);
-        }
+        // 새로운 평균 계산
+        this.averageRating = updatedTotalScore.divide(BigDecimal.valueOf(this.ratingCounts), 2, RoundingMode.DOWN);
     }
 
     public void updateAfterRatingDeletion(BigDecimal ratingScoreToDelete) {
         validateRatingCountsNotZero();
         validateRatingScoreNotNull(ratingScoreToDelete);
 
-        this.ratingCounts--;
-
         // 총합에서 삭제된 평점 제거
-        BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts + 1))
+        BigDecimal totalScore = this.averageRating.multiply(BigDecimal.valueOf(this.ratingCounts))
                 .subtract(ratingScoreToDelete);
 
+        // 평점 수 감소
+        this.ratingCounts--;
+
         // 새로운 평균 계산
-        if (this.ratingCounts == 0) {
-            this.averageRating = BigDecimal.ZERO; // 남은 평점이 없으면 평균은 0
+        if (this.ratingCounts <= 0) {
+            this.averageRating = BigDecimal.ZERO;
         } else {
-            this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts), 1, RoundingMode.HALF_UP);
+            this.averageRating = totalScore.divide(BigDecimal.valueOf(this.ratingCounts), 2, RoundingMode.DOWN);
         }
     }
+
 
     private static void validateRatingScoreNotNull(BigDecimal ratingScoreToDelete) {
         if (ratingScoreToDelete == null) {
