@@ -4,14 +4,15 @@ import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.trending.ReviewResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
-import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+import java.util.Optional;
+
+public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCustomRepository {
 
     @Query("SELECT r " +
             "FROM Review r " +
@@ -113,4 +114,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     );
 
     boolean existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(Long userId, Long movieId);
+
+
 }
