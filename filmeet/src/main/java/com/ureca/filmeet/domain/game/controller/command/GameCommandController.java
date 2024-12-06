@@ -3,6 +3,7 @@ package com.ureca.filmeet.domain.game.controller.command;
 import com.ureca.filmeet.domain.game.dto.request.GameCreateRequest;
 import com.ureca.filmeet.domain.game.dto.request.RoundMatchSelectionRequest;
 import com.ureca.filmeet.domain.game.service.command.GameCommandService;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,17 +11,21 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/games")
 @RequiredArgsConstructor
 public class GameCommandController {
     private final GameCommandService gameCommandService;
+
 
     @PostMapping
     @Operation(summary = "게임 생성", description = "새로운 이상형 월드컵 게임을 생성합니다.")
@@ -43,5 +48,11 @@ public class GameCommandController {
                 user
         );
         return ApiResponse.ok(null);
+    }
+
+    @GetMapping("/{movieId}/recommendations")
+    public ResponseEntity<List<MoviesRoundmatchResponse>> recommendMoviesByGenre(@PathVariable Long movieId) {
+        List<MoviesRoundmatchResponse> recommendations = gameCommandService.recommendMoviesByGenre(movieId);
+        return ResponseEntity.ok(recommendations);
     }
 }
