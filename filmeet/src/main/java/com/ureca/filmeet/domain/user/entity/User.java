@@ -93,7 +93,8 @@ public class User extends BaseTimeEntity {
         this.profileImage = profileImage;
     }
 
-    public User(int totalMovieLikes, int totalCollections, int totalGames) {
+    public User(Long memberId, int totalMovieLikes, int totalCollections, int totalGames) {
+        this.id = memberId;
         this.totalMovieLikes = totalMovieLikes;
         this.totalCollections = totalCollections;
         this.totalGames = totalGames;
