@@ -79,8 +79,8 @@ public enum ResponseCode {
 
     // User domain Error Codes
     USER_NOT_FOUND(40201, "유저를 찾을 수 없습니다."),
-    USER_USERNAME_INVALID(40202, "username이 사용 불가능 합니다."),
-    USER_NICKNAME_INVALID(40203, "nickname이 사용 불가능 합니다."),
+    USER_USERNAME_INVALID(40202, "중복된 아이디입니다."),
+    USER_NICKNAME_INVALID(40203, "중복된 닉네임입니다."),
 
     // Game domain Error Codes
     GAME_NOT_FOUND(11201, "해당 게임을 찾을 수 없습니다."),
