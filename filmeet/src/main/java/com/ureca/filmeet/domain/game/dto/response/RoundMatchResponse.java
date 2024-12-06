@@ -20,8 +20,8 @@ public record RoundMatchResponse(
                 match.getId(),
                 match.getGame().getId(),
                 match.getUser().getId(),
-                MoviesRoundmatchResponse.of(match.getMovie1(), commentCounts1),
-                MoviesRoundmatchResponse.of(match.getMovie2(), commentCounts2),
+                MoviesRoundmatchResponse.forGameDetail(match.getMovie1(), commentCounts1),
+                MoviesRoundmatchResponse.forGameDetail(match.getMovie2(), commentCounts2),
                 match.getWinner() != null ? String.valueOf(match.getWinner().getId()) : null,  // null 체크 추가
                 match.getRoundNumber(),
                 match.getCreatedAt()

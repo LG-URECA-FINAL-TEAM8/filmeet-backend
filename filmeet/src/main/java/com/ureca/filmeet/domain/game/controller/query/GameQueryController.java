@@ -61,7 +61,7 @@ public class GameQueryController {
     }
 
     @GetMapping("/rankings")
-    @Operation(summary = "영화 랭킹 조회", description = "영화의 우승 비율 및 승률 정보를 제공합니다.")
+    @Operation(summary = "게임 랭킹 조회", description = "영화의 우승 비율 및 승률 정보를 제공합니다.")
     public ResponseEntity<ApiResponse<List<GameRankingResponse>>> getMovieRankings() {
         List<GameRankingResponse> rankings = gameQueryService.getGameRankings();
         return ApiResponse.ok(rankings);

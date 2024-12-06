@@ -15,10 +15,13 @@ import com.ureca.filmeet.domain.game.repository.GameRepository;
 import com.ureca.filmeet.domain.game.repository.GameResultRepository;
 import com.ureca.filmeet.domain.game.repository.RoundMatchRepository;
 import com.ureca.filmeet.domain.genre.service.GenreScoreService;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
+import com.ureca.filmeet.domain.movie.exception.MovieRecommendationException;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.user.entity.User;
+import com.ureca.filmeet.global.exception.code.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -259,5 +262,22 @@ public class GameCommandService {
                 });
 
         return movieRanks;
+    }
+
+    // 월드컵 우승과 비슷한 영화 추천
+    public List<MoviesRoundmatchResponse> recommendMoviesByGenre(Long movieId) {
+        // 영화 ID가 null인 경우 예외 처리
+        if (movieId == null) {
+            throw new MovieRecommendationException(ResponseCode.INVALID_MOVIE_ID);
+        }
+
+        List<MoviesRoundmatchResponse> recommendations = movieRepository.findSimilarMoviesByGenre(movieId);
+
+        // 추천 결과가 빈 값일 경우 예외 처리
+        if (recommendations.isEmpty()) {
+            throw new MovieRecommendationException(ResponseCode.MOVIE_RECOMMENDATION_EMPTY);
+        }
+
+        return recommendations;
     }
 }
