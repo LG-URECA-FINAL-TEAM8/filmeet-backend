@@ -25,23 +25,28 @@ public class ReviewCommentCommandController {
 
     @PostMapping("/comments")
     public ResponseEntity<ApiResponse<CreateCommentResponse>> createComment(
-            @RequestBody CreateCommentRequest createCommentRequest) {
+            @RequestBody CreateCommentRequest createCommentRequest
+    ) {
+
         CreateCommentResponse reviewComment = reviewCommentCommandService.createComment(createCommentRequest);
         return ApiResponse.ok(reviewComment);
     }
 
     @PatchMapping("/comments")
     public ResponseEntity<ApiResponse<ModifyCommentResponse>> modifyComment(
-            @RequestBody ModifyCommentRequest modifyCommentRequest) {
+            @RequestBody ModifyCommentRequest modifyCommentRequest
+    ) {
+
         ModifyCommentResponse modifyCommentResponse = reviewCommentCommandService.modifyComment(modifyCommentRequest);
         return ApiResponse.ok(modifyCommentResponse);
     }
 
     @DeleteMapping("/{reviewId}/comments/{commentId}")
-    public void deleteComment(
+    public ResponseEntity<ApiResponse<String>> deleteComment(
             @PathVariable("reviewId") Long reviewId,
             @PathVariable("commentId") Long commentId
     ) {
         reviewCommentCommandService.deleteComment(reviewId, commentId);
+        return ApiResponse.ok("댓글을 삭제 했습니다.");
     }
 }

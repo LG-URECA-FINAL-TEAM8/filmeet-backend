@@ -41,6 +41,6 @@ public class ReviewCommandController {
             @PathVariable("movieId") Long movieId
     ) {
         reviewCommandService.deleteReview(reviewId, movieId);
-        return ApiResponse.ok("삭제 성공");
+        return ApiResponse.ok("리뷰를 삭제 했습니다.");
     }
 }

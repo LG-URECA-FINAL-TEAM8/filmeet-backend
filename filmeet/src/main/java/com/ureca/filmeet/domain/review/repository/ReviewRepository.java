@@ -4,14 +4,15 @@ import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.trending.ReviewResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
-import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+import java.util.Optional;
+
+public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCustomRepository {
 
     @Query("SELECT r " +
             "FROM Review r " +
@@ -84,7 +85,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "FROM Review r " +
             "JOIN r.movie m " +
             "JOIN r.user u " +
-            "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId"
+            "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId " +
+            "WHERE r.isDeleted = false AND r.isVisible = true "
     )
     Slice<ReviewResponse> findTrendingReviewsBy(
             @Param("userId") Long userId,
@@ -104,7 +106,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "JOIN r.movie m " +
             "JOIN r.user u " +
             "LEFT JOIN ReviewLikes rl ON rl.review = r AND rl.user.id = :userId " +
-            "WHERE u.id = :userId"
+            "WHERE u.id = :userId AND r.isDeleted = false AND r.isVisible = true "
     )
     Slice<UserReviewsResponse> findUserReviews(
             @Param("userId") Long userId,
@@ -115,4 +117,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT SUM(r.commentCounts) FROM Review r WHERE r.movie.id = :movieId")
     Integer findTotalCommentCountsByMovieId(@Param("movieId") Long movieId);
+  
+    boolean existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(Long userId, Long movieId);
 }

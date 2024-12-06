@@ -5,18 +5,17 @@ import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
 import com.ureca.filmeet.domain.movie.dto.request.DeleteMovieRatingRequest;
 import com.ureca.filmeet.domain.movie.dto.request.EvaluateMovieRatingRequest;
 import com.ureca.filmeet.domain.movie.dto.request.ModifyMovieRatingRequest;
-import com.ureca.filmeet.domain.movie.dto.response.EvaluateMovieRatingResponse;
 import com.ureca.filmeet.domain.movie.dto.response.ModifyMovieRatingResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
-import com.ureca.filmeet.domain.movie.exception.MovieRatingAlreadyExistsException;
 import com.ureca.filmeet.domain.movie.exception.MovieRatingNotFoundException;
 import com.ureca.filmeet.domain.movie.exception.MovieUserNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import com.ureca.filmeet.global.annotation.DistributedLock;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class MovieRatingsCommandService {
 
@@ -36,11 +34,13 @@ public class MovieRatingsCommandService {
     private final MovieRatingsRepository movieRatingsRepository;
     private final GenreScoreRepository genreScoreRepository;
 
-    public EvaluateMovieRatingResponse evaluateMovieRating(EvaluateMovieRatingRequest evaluateMovieRatingRequest) {
+    @DistributedLock(key = "'evaluateMovie:' + #evaluateMovieRatingRequest.movieId")
+    public void evaluateMovieRating(EvaluateMovieRatingRequest evaluateMovieRatingRequest) {
         boolean isAlreadyRating = movieRatingsRepository.existsByMovieIdAndUserId(evaluateMovieRatingRequest.movieId(),
                 evaluateMovieRatingRequest.userId());
         if (isAlreadyRating) {
-            throw new MovieRatingAlreadyExistsException();
+            modifyMovieRating(evaluateMovieRatingRequest);
+            return;
         }
 
         User user = userRepository.findById(evaluateMovieRatingRequest.userId())
@@ -53,7 +53,7 @@ public class MovieRatingsCommandService {
                 .movie(movie)
                 .ratingScore(ratingScore)
                 .build();
-        MovieRatings savedMovieRatings = movieRatingsRepository.save(movieRatings);
+        movieRatingsRepository.save(movieRatings);
 
         movie.evaluateMovieRating(ratingScore);
 
@@ -63,10 +63,31 @@ public class MovieRatingsCommandService {
                 GenreScoreAction.RATING,
                 ratingScore
         );
-
-        return EvaluateMovieRatingResponse.of(savedMovieRatings);
     }
 
+    private void modifyMovieRating(EvaluateMovieRatingRequest modifyRatingRequest) {
+        MovieRatings movieRatings = movieRatingsRepository.findMovieRatingBy(
+                        modifyRatingRequest.movieId(),
+                        modifyRatingRequest.userId()
+                )
+                .orElseThrow(MovieRatingNotFoundException::new);
+        BigDecimal oldRatingScore = movieRatings.getRatingScore();
+        BigDecimal newRatingScore = modifyRatingRequest.ratingScore();
+        movieRatings.modifyRatingScore(newRatingScore);
+
+        Movie movie = movieRepository.findMovieWithGenreByMovieId(modifyRatingRequest.movieId())
+                .orElseThrow(MovieNotFoundException::new);
+        movie.modifyMovieRating(oldRatingScore, newRatingScore);
+
+        updateGenreScoresForUser(
+                modifyRatingRequest.userId(),
+                movie,
+                GenreScoreAction.RATING_UPDATE,
+                newRatingScore.subtract(oldRatingScore)
+        );
+    }
+
+    @Transactional
     public ModifyMovieRatingResponse modifyMovieRating(ModifyMovieRatingRequest modifyMovieRatingRequest) {
         MovieRatings movieRatings = movieRatingsRepository.findMovieRatingBy(
                         modifyMovieRatingRequest.movieId(),
@@ -91,6 +112,7 @@ public class MovieRatingsCommandService {
         return ModifyMovieRatingResponse.of(movieRatings.getId());
     }
 
+    @DistributedLock(key = "'evaluateMovie:' + #deleteMovieRatingRequest.movieId")
     public void deleteMovieRating(DeleteMovieRatingRequest deleteMovieRatingRequest) {
         MovieRatings movieRatings = movieRatingsRepository.findMovieRatingBy(
                         deleteMovieRatingRequest.movieId(),

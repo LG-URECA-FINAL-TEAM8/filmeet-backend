@@ -12,12 +12,12 @@ import com.ureca.filmeet.domain.collection.repository.CollectionCommentRepositor
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import com.ureca.filmeet.global.annotation.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CollectionCommentCommandService {
 
@@ -25,6 +25,7 @@ public class CollectionCommentCommandService {
     private final CollectionRepository collectionRepository;
     private final CollectionCommentRepository collectionCommentRepository;
 
+    @DistributedLock(key = "'collectionComment:' + #collectionCommentCreateRequest.collectionId")
     public Long createCollectionComment(CollectionCommentCreateRequest collectionCommentCreateRequest, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(CollectionUserNotFoundException::new);
@@ -44,6 +45,7 @@ public class CollectionCommentCommandService {
         return savedCollection.getId();
     }
 
+    @Transactional
     public Long modifyCollectionComment(CollectionCommentModifyRequest collectionCommentModifyRequest, Long userId) {
         CollectionComment collectionComment = collectionCommentRepository.findCollectionCommentWrittenUserBy(
                         userId, collectionCommentModifyRequest.collectionCommentId())
@@ -54,6 +56,7 @@ public class CollectionCommentCommandService {
         return collectionComment.getId();
     }
 
+    @DistributedLock(key = "'collectionComment:' + #collectionCommentDeleteRequest.collectionId")
     public void deleteCollectionComment(CollectionCommentDeleteRequest collectionCommentDeleteRequest, Long userId) {
         CollectionComment collectionComment = collectionCommentRepository.findCollectionCommentWrittenUserBy(
                         userId, collectionCommentDeleteRequest.collectionCommentId())

@@ -38,51 +38,36 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(
-            HttpSecurity http
-    ) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
                                 .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .oidcUserService(customOidcUserService) // OIDC Flow (Google)
-                                .userService(customOAuth2UserService)  // OAuth2 Flow (Naver)
-                        )
-                        .successHandler((request, response, authentication) ->
-                                oAuth2AuthenticationSuccessHandler
-                                        .onAuthenticationSuccess(request, response, authentication))
-                )
+                        .userInfoEndpoint(userInfo -> userInfo.oidcUserService(customOidcUserService) // OIDC Flow (Google)
+                                .userService(customOAuth2UserService))// OAuth2 Flow (Naver)
+
+                        .successHandler((request, response, authentication) -> oAuth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication)))
                 .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
                 .exceptionHandling(handler -> handler
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         // 기본 허용 경로
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/images/**",
-                                "/users/signup",
-                                "/users/check-username",
-                                "/auth/login",
-                                "/auth/refresh")
-                        .permitAll()
+                        .requestMatchers("/actuator/health").permitAll().requestMatchers("/images/**", "/error", "/users/signup", "/users/check-username", "/auth/login", "/auth/refresh").permitAll()
 
                         // 리뷰 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
+                        .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
                         .requestMatchers(HttpMethod.GET, "/reviews/*").permitAll()       // 리뷰 상세 조회
-                        .requestMatchers(HttpMethod.GET, "/reviews/users")
-                        .permitAll() // 지금 뜨는 리뷰 조회 (쿼리 파라미터는 컨트롤러에서 검증)
+                        .requestMatchers(HttpMethod.GET, "/reviews/users").permitAll() // 지금 뜨는 리뷰 조회 (쿼리 파라미터는 컨트롤러에서 검증)
 
                         // 영화 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/movies/upcoming").permitAll()        // 공개 예정작
@@ -94,8 +79,7 @@ public class SecurityConfig {
 
                         // 컬렉션 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/collections/search/title").permitAll() // 컬렉션 제목 검색
-                        .anyRequest().authenticated()
-                );
+                        .anyRequest().authenticated());
 
         return http.build();
     }

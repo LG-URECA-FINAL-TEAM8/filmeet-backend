@@ -10,12 +10,11 @@ import com.ureca.filmeet.domain.review.repository.ReviewLikesRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
+import com.ureca.filmeet.global.annotation.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class ReviewLikesCommandService {
 
@@ -23,6 +22,7 @@ public class ReviewLikesCommandService {
     private final ReviewRepository reviewRepository;
     private final ReviewLikesRepository reviewLikesRepository;
 
+    @DistributedLock(key = "'reviewLikes:' + #reviewId")
     public void reviewLikes(Long reviewId, Long userId) {
         boolean isAlreadyLiked = reviewLikesRepository.existsByReviewIdAndUserId(reviewId, userId);
         if (isAlreadyLiked) {
@@ -44,6 +44,7 @@ public class ReviewLikesCommandService {
         review.addLikeCounts();
     }
 
+    @DistributedLock(key = "'reviewLikes:' + #reviewId")
     public void reviewLikesCancel(Long reviewId, Long userId) {
         ReviewLikes reviewLikes = reviewLikesRepository.findReviewLikesByReviewIdAndUserId(reviewId, userId)
                 .orElseThrow(ReviewLikeNotFoundException::new);

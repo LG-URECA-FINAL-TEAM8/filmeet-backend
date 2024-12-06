@@ -4,6 +4,32 @@ import lombok.Getter;
 
 @Getter
 public enum ResponseCode {
+    /**
+     * - ERROR CODE CONVENTION
+     * 00       0           00
+     * {Domain} {Package}   {ERROR_NUM}
+     * <p>
+     * - Domain
+     * review:      10
+     * movie:       20
+     * collection:  30
+     * user:        40
+     * admin:       50
+     * game:        11
+     * follow:      12
+     * <p>
+     * - Package
+     * controller:  1
+     * service:     2
+     * entity:      3
+     * repository:  4
+     * dto:         5
+     * <p>
+     * - Error Num
+     * 01 ~ 99 (Increasing Num From 01)
+     * <p>
+     * e.g. review, service, 의 1번 째 정의한 Exception -> 10201
+     */
 
     // Success Codes
     BAD_REQUEST(400, "Bad Request"),
@@ -55,7 +81,9 @@ public enum ResponseCode {
     COLLECTION_MOVIES_NOT_FOUND(20206, "컬렉션과 관련한 영화 목록이 존재하지 않습니다."),
 
     // User domain Error Codes
-    NOT_FOUND_USER2(3, ""),
+    USER_NOT_FOUND(40201, "유저를 찾을 수 없습니다."),
+    USER_USERNAME_INVALID(40202, "중복된 아이디입니다."),
+    USER_NICKNAME_INVALID(40203, "중복된 닉네임입니다."),
 
     // Game domain Error Codes
     GAME_NOT_FOUND(11201, "해당 게임을 찾을 수 없습니다."),

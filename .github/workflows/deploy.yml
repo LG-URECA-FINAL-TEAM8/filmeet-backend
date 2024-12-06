@@ -72,6 +72,7 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_VALIDITY_ACCESS: ${{ secrets.JWT_VALIDITY_ACCESS }}
           JWT_VALIDITY_REFRESH: ${{ secrets.JWT_VALIDITY_REFRESH }}
+          FRONT_REDIRECT_URL: ${{ secrets.FRONT_REDIRECT_URL }}
 
       # 6️⃣ ECS 서비스 업데이트
       - name: ECS 서비스 업데이트

@@ -10,7 +10,6 @@ import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +29,6 @@ public class MovieQueryController {
     private final MovieRankingsQueryService movieRankingsQueryService;
     private final MovieRecommendationQueryService movieRecommendationQueryService;
 
-    @PreAuthorize("true")
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<SliceResponseDto<UpcomingMoviesResponse>>> getUpcomingMovies(
             @RequestParam(defaultValue = "0") int page,

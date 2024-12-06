@@ -3,7 +3,6 @@ package com.ureca.filmeet.domain.movie.controller.command;
 import com.ureca.filmeet.domain.movie.dto.request.DeleteMovieRatingRequest;
 import com.ureca.filmeet.domain.movie.dto.request.EvaluateMovieRatingRequest;
 import com.ureca.filmeet.domain.movie.dto.request.ModifyMovieRatingRequest;
-import com.ureca.filmeet.domain.movie.dto.response.EvaluateMovieRatingResponse;
 import com.ureca.filmeet.domain.movie.dto.response.ModifyMovieRatingResponse;
 import com.ureca.filmeet.domain.movie.service.command.MovieRatingsCommandService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
@@ -24,12 +23,11 @@ public class MovieRatingsCommandController {
     private final MovieRatingsCommandService movieRatingsCommandService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<EvaluateMovieRatingResponse>> evaluateMovieRating(
+    public ResponseEntity<ApiResponse<String>> evaluateMovieRating(
             @RequestBody EvaluateMovieRatingRequest evaluateMovieRatingRequest
     ) {
-        EvaluateMovieRatingResponse evaluateMovieRatingResponse = movieRatingsCommandService.evaluateMovieRating(
-                evaluateMovieRatingRequest);
-        return ApiResponse.ok(evaluateMovieRatingResponse);
+        movieRatingsCommandService.evaluateMovieRating(evaluateMovieRatingRequest);
+        return ApiResponse.ok("영화 평가에 참여하셨습니다.");
     }
 
     @PatchMapping
@@ -42,9 +40,10 @@ public class MovieRatingsCommandController {
     }
 
     @DeleteMapping
-    public void deleteMovieRating(
+    public ResponseEntity<ApiResponse<String>> deleteMovieRating(
             @RequestBody DeleteMovieRatingRequest deleteMovieRatingRequest
     ) {
         movieRatingsCommandService.deleteMovieRating(deleteMovieRatingRequest);
+        return ApiResponse.ok("평점을 삭제 했습니다.");
     }
 }
