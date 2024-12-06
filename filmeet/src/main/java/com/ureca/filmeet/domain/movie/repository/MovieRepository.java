@@ -122,4 +122,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             "LEFT JOIN FETCH mg.genre " +
             "WHERE m IN :movies")
     List<Movie> findMoviesWithGenres(@Param("movies") List<Movie> movies);
+
+    @Query("SELECT distinct m.id FROM Movie m")
+    List<Long> findAllDistinctMovieIds();
 }
