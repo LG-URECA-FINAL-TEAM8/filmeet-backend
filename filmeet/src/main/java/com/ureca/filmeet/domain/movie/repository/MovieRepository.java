@@ -1,5 +1,6 @@
 package com.ureca.filmeet.domain.movie.repository;
 
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -130,4 +131,24 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             "LEFT JOIN FETCH mg.genre " +
             "WHERE m IN :movies")
     List<Movie> findMoviesWithGenres(@Param("movies") List<Movie> movies);
+
+    @Query("""
+        SELECT new com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse(
+            m.id,
+            m.title,
+            m.posterUrl,
+            m.likeCounts,
+            CAST(COALESCE(SUM(r.commentCounts), 0) AS int),
+            m.ratingCounts
+        )
+        FROM Movie m
+        INNER JOIN MovieGenre mg ON m.id = mg.movie.id
+        INNER JOIN MovieGenre targetMg ON targetMg.movie.id = :movieId AND mg.genre.id = targetMg.genre.id
+        LEFT JOIN Review r ON r.movie.id = m.id
+        WHERE m.id != :movieId
+        GROUP BY m.id, m.title, m.posterUrl, m.likeCounts, m.ratingCounts
+        ORDER BY COUNT(mg.genre.id) DESC, m.likeCounts DESC
+        limit 6
+    """)
+    List<MoviesRoundmatchResponse> findSimilarMoviesByGenre(@Param("movieId") Long movieId);
 }

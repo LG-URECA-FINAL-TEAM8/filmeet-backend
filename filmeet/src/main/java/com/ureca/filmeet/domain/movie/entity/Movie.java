@@ -148,6 +148,18 @@ public class Movie extends BaseEntity {
         }
     }
 
+    public void updateMovie(String title, String posterUrl, Integer likeCounts, BigDecimal averageRating) {
+        this.title = title;
+        this.posterUrl = posterUrl;
+        this.likeCounts = likeCounts;
+        this.averageRating = averageRating;
+    }
+
+    public void updateGalleries(List<Gallery> galleries) {
+        this.galleries.clear();
+        this.galleries.addAll(galleries);
+    }
+
     private void validateRatingCountsNotZero() {
         if (this.ratingCounts <= 0) {
             throw new RuntimeException("평점을 삭제할 수 없습니다. 별점 개수가 0입니다.");

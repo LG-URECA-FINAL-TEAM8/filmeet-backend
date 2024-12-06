@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.game.controller.query;
 
 import com.ureca.filmeet.domain.game.dto.response.GameDetailResponse;
+import com.ureca.filmeet.domain.game.dto.response.GameRankingResponse;
 import com.ureca.filmeet.domain.game.dto.response.GameResponse;
 import com.ureca.filmeet.domain.game.service.query.GameQueryService;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/games")
@@ -55,5 +58,12 @@ public class GameQueryController {
                 PageRequest.of(page, size)
         );
         return ApiResponse.ok(SliceResponseDto.of(games));
+    }
+
+    @GetMapping("/rankings")
+    @Operation(summary = "게임 랭킹 조회", description = "영화의 우승 비율 및 승률 정보를 제공합니다.")
+    public ResponseEntity<ApiResponse<List<GameRankingResponse>>> getMovieRankings() {
+        List<GameRankingResponse> rankings = gameQueryService.getGameRankings();
+        return ApiResponse.ok(rankings);
     }
 }

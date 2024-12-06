@@ -68,6 +68,9 @@ public enum ResponseCode {
     MOVIE_LIKE_NOT_FOUND(20204, "취소할 영화 좋아요가 없습니다."),
     MOVIE_RATING_ALREADY_EXISTS(20205, "이미 영화에 별점을 남겼습니다."),
     MOVIE_RATING_NOT_FOUND(20206, "기존 영화 별점이 없습니다."),
+    MOVIE_RECOMMENDATION_EMPTY(20207, "추천할 영화가 존재하지 않습니다."),
+    MOVIE_GENRE_NOT_FOUND(20208, "영화에 연관된 장르가 존재하지 않습니다."),
+    INVALID_MOVIE_ID(20209, "잘못된 영화 ID입니다."),
 
     // Collection domain Error Codes
     COLLECTION_USER_NOT_FOUND(30201, "컬렉션과 관련한 유저가 존재하지 않습니다."),
@@ -79,8 +82,8 @@ public enum ResponseCode {
 
     // User domain Error Codes
     USER_NOT_FOUND(40201, "유저를 찾을 수 없습니다."),
-    USER_USERNAME_INVALID(40202, "username이 사용 불가능 합니다."),
-    USER_NICKNAME_INVALID(40203, "nickname이 사용 불가능 합니다."),
+    USER_USERNAME_INVALID(40202, "중복된 아이디입니다."),
+    USER_NICKNAME_INVALID(40203, "중복된 닉네임입니다."),
 
     // Game domain Error Codes
     GAME_NOT_FOUND(11201, "해당 게임을 찾을 수 없습니다."),
