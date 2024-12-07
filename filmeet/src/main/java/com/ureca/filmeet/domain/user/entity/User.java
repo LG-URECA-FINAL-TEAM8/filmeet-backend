@@ -109,6 +109,26 @@ public class User extends BaseTimeEntity {
         this.age = age;
     }
 
+    public void addTotalMovieLikes() {
+        this.totalMovieLikes++;
+    }
+
+    public void decrementTotalMovieLikes() {
+        if (this.totalMovieLikes > 0) {
+            this.totalMovieLikes--;
+        }
+    }
+
+    public void addTotalCollections() {
+        this.totalCollections++;
+    }
+
+    public void decrementTotalCollections() {
+        if (this.totalCollections > 0) {
+            this.totalCollections--;
+        }
+    }
+
     public void adjustActivityScores(
             int maxLikes, int minLikes, int maxGames, int minGames, int maxCollections, int minCollections,
             double averageLikeCount, double averageGameCount, double averageCollectionCount
