@@ -37,8 +37,9 @@ public class AdminQueryController {
 
     @GetMapping("/movies")
     public ResponseEntity<?> getMovies(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "10") int size) {
-        Page<AdminMovieResponse> movieResponses = movieQueryService.getMovies(page, size);
+                                       @RequestParam(defaultValue = "10") int size,
+                                       @RequestParam(required = false) String query) {
+        Page<AdminMovieResponse> movieResponses = movieQueryService.getMovies(page, size, query);
         return ResponseEntity.ok(movieResponses);
     }
 
