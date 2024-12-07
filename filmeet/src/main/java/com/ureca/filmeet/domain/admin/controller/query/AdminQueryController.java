@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_MOVIE_ADMIN') or hasRole('ROLE_REVIEW_ADMIN')")
 @RequestMapping("/admin")
 public class AdminQueryController {
 
@@ -40,13 +42,13 @@ public class AdminQueryController {
         return ResponseEntity.ok(movieResponses);
     }
 
-    // TODO [eastsage]: 좋아요 조회 기능
     @GetMapping("/movies/{movieId}/likes")
     public ResponseEntity<?> getMovieLikes(@PathVariable Long movieId) {
         List<AdminMovieLikesResponse> responses = movieLikesQueryService.getMovieLikesByMovieId(movieId);
         return ApiResponse.ok(responses);
     }
 
+    @PreAuthorize("hasAuthority('EXTERNAL_API_READ_AUTHORITY')")
     @GetMapping("/search/kmdb")
     public ResponseEntity<?> searchMovies(
             @RequestParam(required = false) String director,
@@ -57,12 +59,14 @@ public class AdminQueryController {
         return ApiResponse.ok(responses);
     }
 
+    @PreAuthorize("hasAuthority('EXTERNAL_API_READ_AUTHORITY')")
     @GetMapping("/search/omdb")
     public ResponseEntity<?> getMovieByTitle(@RequestParam String title) {
         OmdbApiResponse response = omdbOpenApiService.getMovieByTitle(title);
         return ApiResponse.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('REVIEW_READ_ALL_AUTHORITY')")
     @GetMapping("/reviews")
     public ResponseEntity<?> getReviews(
             @RequestParam(required = false) String movieTitle,
