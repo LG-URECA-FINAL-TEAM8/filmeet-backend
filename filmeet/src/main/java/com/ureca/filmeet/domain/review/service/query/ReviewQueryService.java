@@ -6,6 +6,7 @@ import com.ureca.filmeet.domain.review.dto.response.ReviewCommentResponse;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.exception.ReviewNotFoundException;
+import com.ureca.filmeet.domain.review.repository.ReviewCommentRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewLikesRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class ReviewQueryService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewCommentRepository reviewCommentRepository;
     private final ReviewLikesRepository reviewLikesRepository;
 
     public Slice<GetMovieReviewsResponse> getMovieReviews(Long movieId, Long userId, Pageable pageable) {
@@ -43,5 +45,10 @@ public class ReviewQueryService {
     public Slice<UserReviewsResponse> getUserReviews(Long userId, Pageable pageable) {
 
         return reviewRepository.findUserReviews(userId, pageable);
+    }
+
+    public Slice<ReviewCommentResponse> getMovieReviewComments(Long reviewId, Pageable pageable) {
+        return reviewCommentRepository.findReviewCommentsBy(reviewId, pageable)
+                .map(ReviewCommentResponse::of);
     }
 }

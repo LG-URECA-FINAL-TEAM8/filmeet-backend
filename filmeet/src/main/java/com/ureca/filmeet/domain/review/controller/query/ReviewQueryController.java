@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.review.controller.query;
 
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewDetailResponse;
 import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
+import com.ureca.filmeet.domain.review.dto.response.ReviewCommentResponse;
 import com.ureca.filmeet.domain.review.dto.response.trending.ReviewTrendingResponse;
 import com.ureca.filmeet.domain.review.service.query.ReviewQueryService;
 import com.ureca.filmeet.domain.review.service.query.ReviewTrendingQueryService;
@@ -48,6 +49,16 @@ public class ReviewQueryController {
         Long userId = (user != null) ? user.getId() : null;
         GetMovieReviewDetailResponse movieReviewDetail = reviewQueryService.getMovieReviewDetail(reviewId, userId);
         return ApiResponse.ok(movieReviewDetail);
+    }
+
+    @GetMapping("/{reviewId}/comments")
+    public ResponseEntity<ApiResponse<SliceResponseDto<ReviewCommentResponse>>> getMovieReviewComments(
+            @PathVariable("reviewId") Long reviewId,
+            Pageable pageable
+    ) {
+
+        Slice<ReviewCommentResponse> reviewComments = reviewQueryService.getMovieReviewComments(reviewId, pageable);
+        return ApiResponse.ok(SliceResponseDto.of(reviewComments));
     }
 
     @GetMapping("/users")
