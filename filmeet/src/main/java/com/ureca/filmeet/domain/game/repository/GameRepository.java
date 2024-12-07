@@ -1,9 +1,7 @@
 package com.ureca.filmeet.domain.game.repository;
 
-import com.ureca.filmeet.domain.game.dto.response.GameRankingResponse;
 import com.ureca.filmeet.domain.game.entity.Game;
 import com.ureca.filmeet.domain.game.entity.GameStatus;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
