@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.admin.controller.command;
 
 import com.ureca.filmeet.domain.admin.dto.request.AddMoviesRequest;
 import com.ureca.filmeet.domain.admin.dto.request.UpdateMovieLikeCountRequest;
+import com.ureca.filmeet.domain.admin.dto.request.UpdateMovieRequest;
 import com.ureca.filmeet.domain.movie.service.command.MovieCommandService;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.review.service.command.ReviewCommandService;
@@ -38,12 +39,12 @@ public class AdminCommandController {
         return ApiResponse.okWithoutData();
     }
 
-    // TODO [eastsage]: 영화 정보 수정
+    // TODO [eastsage]: 영화 정보 수정 (제목, 좋아요, 포스터)
     @PutMapping("/movies/{movieId}")
-//    public ResponseEntity<?> updateMovie(@PathVariable Long movieId, @RequestBody UpdateMovieRequest request) {
-//        movieCommandService.updateMovie();
-//        return ApiResponse.okWithoutData();
-//    }
+    public ResponseEntity<?> updateMovie(@PathVariable Long movieId, @RequestBody UpdateMovieRequest request) {
+        movieCommandService.updateMovie(movieId, request);
+        return ApiResponse.okWithoutData();
+    }
 
     @PatchMapping("/reviews/{reviewId}/blind")
     public ResponseEntity<?> blindReview(@PathVariable Long reviewId) {

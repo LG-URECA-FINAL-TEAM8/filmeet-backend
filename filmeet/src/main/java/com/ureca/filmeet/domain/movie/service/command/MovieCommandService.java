@@ -7,6 +7,7 @@ import com.ureca.filmeet.domain.genre.entity.Genre;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.GenreRepository;
+import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
 import com.ureca.filmeet.domain.movie.entity.*;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.MoviePosition;
@@ -38,6 +39,7 @@ public class MovieCommandService {
     private final GenreRepository genreRepository;
     private final PersonnelCommandService personnelCommandService;
     private final MovieQueryService movieQueryService;
+    private final MovieGenreRepository movieGenreRepository;
 
     @Transactional
     public void addMovies(List<AddMoviesRequest> requests) {
@@ -108,8 +110,11 @@ public class MovieCommandService {
         Movie movie = movieQueryService.getMovieById(movieId);
         movie.updateMovie(request.title(),
                 request.posterUrl(),
-                request.likeCounts(),
-                request.averageRating());
+                request.likeCounts());
+
+        Gallery gallery = new Gallery(movie, request.posterUrl());
+        galleryRepository.save(gallery);
+        movie.addGallery(gallery);
     }
 
     private void saveGalleriesAndAddGalleries(AddMoviesRequest request, Movie movie) {

@@ -148,11 +148,10 @@ public class Movie extends BaseEntity {
         }
     }
 
-    public void updateMovie(String title, String posterUrl, Integer likeCounts, BigDecimal averageRating) {
+    public void updateMovie(String title, String posterUrl, Integer likeCounts) {
         this.title = title;
         this.posterUrl = posterUrl;
         this.likeCounts = likeCounts;
-        this.averageRating = averageRating;
     }
 
     public void updateGalleries(List<Gallery> galleries) {
