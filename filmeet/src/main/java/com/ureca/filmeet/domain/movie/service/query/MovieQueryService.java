@@ -56,9 +56,17 @@ public class MovieQueryService {
         return movieRepository.findById(movieId).orElseThrow(MovieNotFoundException::new);
     }
 
-    public Page<AdminMovieResponse> getMovies(int page, int size) {
+    public Page<AdminMovieResponse> getMovies(int page, int size, String query) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "releaseDate"));
-        Page<Movie> moviePage = movieRepository.findAll(pageable);
+
+        Page<Movie> moviePage;
+        if (query == null || query.isBlank()) {
+            // 검색어가 없는 경우 전체 조회
+            moviePage = movieRepository.findAll(pageable);
+        } else {
+            // 검색어가 있는 경우 제목 기준 검색
+            moviePage = movieRepository.findByTitleContainingIgnoreCase(query, pageable);
+        }
 
         return moviePage.map(AdminMovieResponse::fromEntity);
     }

@@ -34,7 +34,7 @@ spring:
               - openid
               - profile
               - email
-            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            redirect-uri: "https://filmeet.net/api/login/oauth2/code/google"
             authorization-grant-type: authorization_code
             client-name: Google
             client-authentication-method: client_secret_post
@@ -46,7 +46,7 @@ spring:
               - name
               - email
               - profile_image
-            redirect-uri: "{baseUrl}/login/oauth2/code/naver"
+            redirect-uri: "https://filmeet.net/api/login/oauth2/code/naver"
             authorization-grant-type: authorization_code
             client-name: Naver
             client-authentication-method: client_secret_post
@@ -94,8 +94,6 @@ server:
   port: 8080
   servlet:
     context-path: /api
-  forward-headers-strategy: native
-
 ---
 
 # Dev 환경 설정
