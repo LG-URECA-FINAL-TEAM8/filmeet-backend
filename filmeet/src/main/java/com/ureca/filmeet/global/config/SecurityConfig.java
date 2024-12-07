@@ -61,7 +61,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         // 기본 허용 경로
-                        .requestMatchers("/actuator/health").permitAll().requestMatchers("/images/**", "/error", "/users/signup", "/users/check-username", "/auth/login", "/auth/refresh").permitAll()
+                        .requestMatchers("/actuator/health").permitAll().requestMatchers("/**", "/images/**", "/error", "/users/signup", "/users/check-username", "/auth/login", "/auth/refresh").permitAll()
 
                         // 리뷰 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
