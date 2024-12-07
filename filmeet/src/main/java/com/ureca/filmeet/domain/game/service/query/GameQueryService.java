@@ -6,10 +6,6 @@ import com.ureca.filmeet.domain.game.dto.response.GameResponse;
 import com.ureca.filmeet.domain.game.dto.response.RoundMatchResponse;
 import com.ureca.filmeet.domain.game.exception.GameNotFoundException;
 import com.ureca.filmeet.domain.game.repository.GameRepository;
-import com.ureca.filmeet.domain.game.repository.RoundMatchRepository;
-import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
-import com.ureca.filmeet.domain.movie.entity.Movie;
-import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +16,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.ion.Decimal;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,8 +29,6 @@ public class GameQueryService {
 
     private final GameRepository gameRepository;
     private final ReviewRepository reviewRepository;
-    private final RoundMatchRepository roundMatchRepository;
-    private final MovieRepository movieRepository;
 
 
     public GameResponse getGame(Long gameId) {
@@ -93,9 +84,6 @@ public class GameQueryService {
                     Long id = ((Number) row[0]).longValue();  // ID는 Long으로 변환
                     String title = (String) row[1];  // 제목
                     String posterUrl = (String) row[2];  // 포스터 URL
-
-                    Long gameCount = ((Number) row[3]).longValue();  // 게임 횟수
-                    Long victoryCount = ((Number) row[4]).longValue();  // 승리 횟수
                     Double victoryRatio = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
                     Double winRate = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0; // 승률
 

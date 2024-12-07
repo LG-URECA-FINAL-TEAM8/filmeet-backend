@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
+import static com.ureca.filmeet.global.notification.entity.NotificationType.COMMENT;
+import static com.ureca.filmeet.global.notification.entity.NotificationType.FOLLOW;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -38,7 +41,16 @@ public class NotificationCommandService {
         );
 
         fcmTokenService.sendNotificationWithData(following, title, body, data);
+
+        notificationRepository.save(Notification.builder()
+                .receiver(following)
+                .sender(follower)
+                .type(FOLLOW)
+                .message(body)
+                .contentId(String.valueOf(follower.getId()))
+                .build());
     }
+
     /**
      * 댓글 알림 발송
      */
@@ -57,8 +69,19 @@ public class NotificationCommandService {
             if (!receiver.getId().equals(commenter.getId())) {
                 fcmTokenService.sendNotificationWithData(receiver, title, body, data);
             }
+
+            notificationRepository.save(Notification.builder()
+                    .receiver(receiver)
+                    .sender(commenter)
+                    .type(COMMENT)
+                    .message(body)
+                    .contentId(contentId.toString())
+                    .build());
         });
+
+
     }
+
     // 알림 읽음 처리
     public void markAsRead(Long notificationId, User user) {
         Notification notification = notificationRepository.findById(notificationId)
@@ -67,6 +90,7 @@ public class NotificationCommandService {
         validateReceiver(notification, user);
         notification.markAsRead();
     }
+
     // 전체 읽음 처리
     public void markAllAsRead(User user) {
         List<Notification> unreadNotifications =
