@@ -26,17 +26,17 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findByStatus(GameStatus gameStatus);
 
     @Query(value = """
-       SELECT 
-           gr.movie_id AS id, 
-           m.title AS title, 
-           m.poster_url AS posterUrl, 
-           COUNT(gr.game_id) AS gameCount, 
+       SELECT
+           gr.movie_id AS id,
+           m.title AS title,
+           m.poster_url AS posterUrl,
+           COUNT(gr.game_id) AS gameCount,
            SUM(CASE WHEN gr.game_rank = 1 THEN 1 ELSE 0 END) AS victoryCount,
            ROUND(
                (SUM(CASE WHEN gr.game_rank = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(gr.game_id), 2
            ) AS victoryRatio,
            (
-               SELECT 
+               SELECT
                    ROUND((COUNT(rm.id) * 100.0) / COUNT(*), 2)
                FROM round_match rm
                WHERE rm.winner_id = gr.movie_id
