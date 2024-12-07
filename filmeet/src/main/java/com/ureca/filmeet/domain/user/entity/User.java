@@ -32,7 +32,7 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role; // 사용자 역할 (예: ROLE_USER, ROLE_ADMIN)
+    private Role role;
 
     @Enumerated(EnumType.STRING)
     private Provider provider;

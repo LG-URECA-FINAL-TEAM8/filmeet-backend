@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -61,7 +63,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         // 기본 허용 경로
-                        .requestMatchers("/actuator/health").permitAll().requestMatchers("/**", "/images/**", "/error", "/users/signup", "/users/check-username", "/auth/login", "/auth/refresh").permitAll()
+                        .requestMatchers("/actuator/health").permitAll().requestMatchers("/images/**", "/error", "/users/signup", "/users/check-username", "/auth/login", "/auth/refresh").permitAll()
 
                         // 리뷰 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
@@ -95,5 +97,24 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+
+        // 계층 설정
+        // SUPER_ADMIN > MOVIE_ADMIN > USER
+        // SUPER_ADMIN > REVIEW_ADMIN > USER
+        String hierarchy = """
+                ROLE_SUPER_ADMIN > ROLE_MOVIE_ADMIN
+                ROLE_SUPER_ADMIN > ROLE_REVIEW_ADMIN
+                ROLE_MOVIE_ADMIN > ROLE_USER
+                ROLE_REVIEW_ADMIN > ROLE_USER
+                """;
+
+
+        roleHierarchy.setHierarchy(hierarchy);
+        return roleHierarchy;
     }
 }
