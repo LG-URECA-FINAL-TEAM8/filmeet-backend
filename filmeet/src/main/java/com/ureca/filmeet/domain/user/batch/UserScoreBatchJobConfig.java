@@ -30,18 +30,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class UserScoreBatchJobConfig {
-
-    @Bean
-    public DataSourceTransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
 
     @Bean
     public Job userScoreUpdateJob(JobRepository jobRepository, Step calculateStatsStep, Step userScoreUpdateStep) {
@@ -62,9 +56,9 @@ public class UserScoreBatchJobConfig {
     @Bean
     public Step userScoreUpdateStep(JobRepository jobRepository, ItemReader<User> userItemReader,
                                     ItemProcessor<User, User> userProcessor, ItemWriter<User> userItemWriter,
-                                    DataSourceTransactionManager transactionManager) {
+                                    PlatformTransactionManager transactionManager) {
         return new StepBuilder("userScoreUpdateStep", jobRepository)
-                .<User, User>chunk(200, transactionManager)
+                .<User, User>chunk(100, transactionManager)
                 .reader(userItemReader)
                 .processor(userProcessor)
                 .writer(userItemWriter)
@@ -76,7 +70,7 @@ public class UserScoreBatchJobConfig {
     public ItemReader<User> userItemReader(DataSource dataSource) {
         JdbcPagingItemReader<User> reader = new JdbcPagingItemReader<>();
         reader.setDataSource(dataSource);
-        reader.setFetchSize(200);
+        reader.setFetchSize(100);
 
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
         queryProvider.setSelectClause("SELECT member_id, total_movie_likes, total_collections, total_games");
@@ -132,7 +126,10 @@ public class UserScoreBatchJobConfig {
     private <T> T getExecutionContextValue(ExecutionContext executionContext, String key, Class<T> type,
                                            T defaultValue) {
         Object value = executionContext.get(key);
-        if (value != null && type.isInstance(value)) {
+        if (value == null) {
+            return defaultValue;
+        }
+        if (type.isInstance(value)) {
             return type.cast(value);
         }
         return defaultValue;
@@ -202,10 +199,6 @@ public class UserScoreBatchJobConfig {
                     .getStepExecution()
                     .getJobExecution()
                     .getExecutionContext();
-
-//            ExecutionContext jobExecutionContext = chunkContext.getStepContext()
-//                    .getStepExecution()
-//                    .getExecutionContext();
 
             jobExecutionContext.put("maxLikes", likeStats.get("maxLikes"));
             jobExecutionContext.put("minLikes", likeStats.get("minLikes"));
