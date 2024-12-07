@@ -82,4 +82,9 @@ public class ReviewCommandService {
                 .orElseThrow(ReviewNotFoundException::new);
         review.delete();
     }
+
+    public void blindReview(Long reviewId) {
+        Review review = reviewRepository.findReviewBy(reviewId).orElseThrow(ReviewNotFoundException::new);
+        review.blind();
+    }
 }

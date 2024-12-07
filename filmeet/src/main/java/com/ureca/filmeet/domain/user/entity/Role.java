@@ -6,28 +6,29 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static com.ureca.filmeet.domain.user.entity.Permission.*;
+import static com.ureca.filmeet.domain.user.entity.PrivilegeSets.*;
 
 @Getter
 public enum Role {
-    ROLE_ADMIN(Set.of(
-            COMMON_READ,  //Permission enum class
-            COMMON_CREATE,
-            COMMON_UPDATE,
-            COMMON_DELETE,
-            MOVIE_CREATE,
-            MOVIE_UPDATE,
-            MOVIE_DELETE
-    )),
-    ROLE_USER(Set.of(
-            COMMON_READ,
-            COMMON_CREATE,
-            COMMON_UPDATE,
-            COMMON_DELETE
-    ));
+    ROLE_USER(
+            USER_COMMON_PRIVILEGES
+    ),
+    ROLE_MOVIE_ADMIN(
+            Stream.of(USER_COMMON_PRIVILEGES, ADMIN_MOVIE_PRIVILEGES, ADMIN_EXTERNAL_API_PRIVILEGES)
+                    .flatMap(Set::stream).collect(Collectors.toSet())
+    ),
+    ROLE_REVIEW_ADMIN(
+            Stream.of(USER_COMMON_PRIVILEGES, ADMIN_REVIEW_PRIVILEGES)
+                    .flatMap(Set::stream).collect(Collectors.toSet())
+    ),
+    ROLE_SUPER_ADMIN(
+            Stream.of(USER_COMMON_PRIVILEGES, ADMIN_MOVIE_PRIVILEGES, ADMIN_REVIEW_PRIVILEGES, ADMIN_EXTERNAL_API_PRIVILEGES)
+                    .flatMap(Set::stream).collect(Collectors.toSet())
+    );
 
-    private final Set<Permission> permissions;  //Permission enum class
+    private final Set<Permission> permissions;
 
     Role(Set<Permission> permissions) {
         this.permissions = permissions;

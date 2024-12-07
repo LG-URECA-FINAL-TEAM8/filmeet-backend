@@ -2,10 +2,12 @@ package com.ureca.filmeet.domain.movie.service.command;
 
 import com.ureca.filmeet.domain.admin.dto.request.AddMoviesRequest;
 import com.ureca.filmeet.domain.admin.dto.request.UpdateMovieLikeCountRequest;
+import com.ureca.filmeet.domain.admin.dto.request.UpdateMovieRequest;
 import com.ureca.filmeet.domain.genre.entity.Genre;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.GenreRepository;
+import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
 import com.ureca.filmeet.domain.movie.entity.*;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.MoviePosition;
@@ -37,23 +39,26 @@ public class MovieCommandService {
     private final GenreRepository genreRepository;
     private final PersonnelCommandService personnelCommandService;
     private final MovieQueryService movieQueryService;
+    private final MovieGenreRepository movieGenreRepository;
 
     @Transactional
     public void addMovies(List<AddMoviesRequest> requests) {
         // 1. 이미 존재하는 영화 제목 조회
         List<String> duplicatedTitles = movieRepository.findExistingTitlesByTitleIn(
-                requests.stream().map(AddMoviesRequest::title).toList()
+                requests.stream()
+                        .map(request -> request.title().replace(" ", ""))
+                        .toList()
         );
 
         // 2. 존재하지 않는 영화만 필터링
         List<AddMoviesRequest> filteredRequests = requests.stream()
-                .filter(request -> !duplicatedTitles.contains(request.title()))
+                .filter(request -> !duplicatedTitles.equals(request.title().replace(" ", "")))
                 .toList();
 
         filteredRequests.forEach(request -> {
             // 3. Movie 생성
             Movie movie = Movie.builder()
-                    .title(request.title())
+                    .title(request.title().replace(" ", ""))
                     .plot(request.plots().stream().filter(plot -> "한국어".equals(plot.plotLang()))
                             .map(KmdbPlot::plotText).findFirst().orElse("줄거리 없음"))
                     .releaseDate(parseReleaseDate(request.repRlsDate()))
@@ -98,6 +103,18 @@ public class MovieCommandService {
         Movie movie = movieQueryService.getMovieById(movieId);
         Integer updatedNum = request.likeCount();
         movie.updateLikeCounts(updatedNum);
+    }
+
+    @Transactional
+    public void updateMovie(Long movieId, UpdateMovieRequest request) {
+        Movie movie = movieQueryService.getMovieById(movieId);
+        movie.updateMovie(request.title(),
+                request.posterUrl(),
+                request.likeCounts());
+
+        Gallery gallery = new Gallery(movie, request.posterUrl());
+        galleryRepository.save(gallery);
+        movie.addGallery(gallery);
     }
 
     private void saveGalleriesAndAddGalleries(AddMoviesRequest request, Movie movie) {

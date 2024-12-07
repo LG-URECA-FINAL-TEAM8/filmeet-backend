@@ -24,4 +24,28 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     Optional<Game> findByIdWithMatches(Long gameId);
 
     List<Game> findByStatus(GameStatus gameStatus);
+
+    @Query(value = """
+       SELECT
+           gr.movie_id AS id,
+           m.title AS title,
+           m.poster_url AS posterUrl,
+           COUNT(gr.game_id) AS gameCount,
+           SUM(CASE WHEN gr.game_rank = 1 THEN 1 ELSE 0 END) AS victoryCount,
+           ROUND(
+               (SUM(CASE WHEN gr.game_rank = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(gr.game_id), 2
+           ) AS victoryRatio,
+           (
+               SELECT
+                   ROUND((COUNT(rm.id) * 100.0) / COUNT(*), 2)
+               FROM round_match rm
+               WHERE rm.winner_id = gr.movie_id
+           ) AS winRate
+       FROM game_result gr
+       INNER JOIN movie m ON gr.movie_id = m.movie_id
+       GROUP BY gr.movie_id, m.title, m.poster_url
+       ORDER BY victoryRatio DESC, winRate DESC
+       """, nativeQuery = true)
+    List<Object[]> findAllMovieRankings();
+
 }

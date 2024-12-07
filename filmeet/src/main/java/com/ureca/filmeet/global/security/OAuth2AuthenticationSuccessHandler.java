@@ -1,28 +1,31 @@
 package com.ureca.filmeet.global.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ureca.filmeet.domain.auth.dto.CustomUser;
 import com.ureca.filmeet.domain.auth.dto.response.TokenResponse;
 import com.ureca.filmeet.domain.user.entity.Role;
-import com.ureca.filmeet.global.common.dto.ApiResponse;
-import com.ureca.filmeet.global.exception.code.ResponseCode;
 import com.ureca.filmeet.global.util.jwt.TokenService;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
-@RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenService tokenService;
-    private final ObjectMapper objectMapper;
+    private final String redirectUrl;
+
+    public OAuth2AuthenticationSuccessHandler(TokenService tokenService,
+                                              @Value("${front.redirect-url}") String redirectUrl) {
+        this.tokenService = tokenService;
+        this.redirectUrl = redirectUrl;
+    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -37,18 +40,24 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // JWT 발급
         TokenResponse tokens = tokenService.generateTokens(username, role);
 
-        // JSON 응답 구성
-        ApiResponse<Map<String, Object>> apiResponse = new ApiResponse<>(
-                ResponseCode.SUCCESS,
-                Map.of(
-                        "accessToken", tokens.accessToken(),
-                        "refreshToken", tokens.refreshToken()
-                )
-        );
+        // Refresh Token을 HttpOnly 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.refreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(10 * 60); // 10분 만료
+        response.addCookie(refreshTokenCookie);
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+        // Access Token은 일반 쿠키에 저장 (옵션)
+        Cookie accessTokenCookie = new Cookie("accessToken", tokens.accessToken());
+        accessTokenCookie.setHttpOnly(false); // 프론트엔드에서 접근 가능
+        accessTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(10 * 60); // 10분 만료
+        response.addCookie(accessTokenCookie);
+
+        // 프론트엔드로 리다이렉트
+        response.sendRedirect(redirectUrl);
 
         clearAuthenticationAttributes(request);
     }

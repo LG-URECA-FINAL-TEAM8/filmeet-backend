@@ -1,11 +1,14 @@
 package com.ureca.filmeet.domain.movie.repository;
 
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -131,4 +134,30 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     List<Movie> findMoviesWithGenres(@Param("movies") List<Movie> movies);
 
     Optional<Movie> findMovieByTitle(String movieName);
+           
+    @Query("""
+                SELECT new com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse(
+                    m.id,
+                    m.title,
+                    m.posterUrl,
+                    m.likeCounts,
+                    CAST(COALESCE(SUM(r.commentCounts), 0) AS int),
+                    m.ratingCounts
+                )
+                FROM Movie m
+                INNER JOIN MovieGenre mg ON m.id = mg.movie.id
+                INNER JOIN MovieGenre targetMg ON targetMg.movie.id = :movieId AND mg.genre.id = targetMg.genre.id
+                LEFT JOIN Review r ON r.movie.id = m.id
+                WHERE m.id != :movieId
+                GROUP BY m.id, m.title, m.posterUrl, m.likeCounts, m.ratingCounts
+                ORDER BY COUNT(mg.genre.id) DESC, m.likeCounts DESC
+                limit 6
+            """)
+    List<MoviesRoundmatchResponse> findSimilarMoviesByGenre(@Param("movieId") Long movieId);
+
+    @EntityGraph(attributePaths = {"movieGenres.genre"})
+    Page<Movie> findAll(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"movieGenres.genre"})
+    Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 }

@@ -5,6 +5,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.ureca.filmeet.domain.user.entity.User;
+import com.ureca.filmeet.domain.user.repository.UserRepository;
 import com.ureca.filmeet.infra.firebase.entity.FCMToken;
 import com.ureca.filmeet.infra.firebase.exception.FCMSendFailedException;
 import com.ureca.filmeet.infra.firebase.exception.FCMTokenNotFoundException;
@@ -26,6 +27,21 @@ import java.util.Map;
 public class FCMTokenService {
     private final FCMTokenRepository fcmTokenRepository;
     private final FirebaseMessaging firebaseMessaging;
+    private final UserRepository userRepository;
+
+    public void saveToken(Long userid, String token) {
+        User user = userRepository.findById(userid)
+                .orElseThrow(InvalidFCMTokenException::new);
+        // 토큰이 이미 존재하는지 확인
+        fcmTokenRepository.findByUserAndToken(user, token)
+                .ifPresentOrElse(
+                        existingToken -> existingToken.updateToken(token),
+                        () -> fcmTokenRepository.save(FCMToken.builder()
+                                .user(user)
+                                .token(token)
+                                .build())
+                );
+    }
 
     public void saveToken(User user, String token) {
         // 토큰이 이미 존재하는지 확인

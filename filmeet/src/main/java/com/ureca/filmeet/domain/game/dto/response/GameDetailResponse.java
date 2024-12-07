@@ -17,7 +17,8 @@ public record GameDetailResponse(
         LocalDateTime createdAt,
         List<RoundMatchResponse> matches
 ) {
-    public static GameDetailResponse from(Game game) {
+
+    public static GameDetailResponse from(Game game, List<RoundMatchResponse> matches) {
         return new GameDetailResponse(
                 game.getId(),
                 game.getTitle(),
@@ -26,9 +27,7 @@ public record GameDetailResponse(
                 game.getStartDate(),
                 game.getEndDate(),
                 game.getCreatedAt(),
-                game.getMatches().stream()
-                        .map(RoundMatchResponse::from)
-                        .collect(Collectors.toList())
+                matches
         );
     }
 }
