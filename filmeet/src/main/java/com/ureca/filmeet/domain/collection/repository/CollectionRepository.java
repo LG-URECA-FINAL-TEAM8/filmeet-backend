@@ -12,6 +12,11 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
 
     @Query("SELECT c " +
             "FROM Collection c " +
+            "WHERE c.id = :collectionId AND c.isDeleted = false ")
+    Optional<Collection> findCollectionBy(@Param("collectionId") Long collectionId);
+
+    @Query("SELECT c " +
+            "FROM Collection c " +
             "JOIN FETCH c.user u " +
             "WHERE c.user.id = :userId AND c.isDeleted = false ")
     Slice<Collection> findCollectionsByUserId(@Param("userId") Long userId, Pageable pageable);

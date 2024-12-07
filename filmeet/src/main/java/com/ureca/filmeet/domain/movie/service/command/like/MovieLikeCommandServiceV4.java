@@ -1,6 +1,5 @@
 package com.ureca.filmeet.domain.movie.service.command.like;
 
-import com.ureca.filmeet.domain.genre.entity.enums.GenreScoreAction;
 import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieLikes;
@@ -48,9 +47,10 @@ public class MovieLikeCommandServiceV4 implements MovieLikeCommandService {
                 .build();
         movieLikesRepository.save(movieLikes);
 
-        updateGenreScoresForUser(userId, movie, GenreScoreAction.LIKE);
+        updateGenreScoresForUser(user, movie, user.getLikeActivityScore());
 
         movie.addLikeCounts();
+        user.addTotalMovieLikes();
     }
 
     @DistributedLock(key = "'movieLikes:' + #movieId")
@@ -59,16 +59,20 @@ public class MovieLikeCommandServiceV4 implements MovieLikeCommandService {
         Movie movie = movieRepository.findMovieWithGenreByMovieId(movieId)
                 .orElseThrow(MovieNotFoundException::new);
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(MovieUserNotFoundException::new);
+
         MovieLikes movieLikes = movieLikesRepository.findMovieLikesBy(movieId, userId)
                 .orElseThrow(MovieLikeNotFoundException::new);
         movieLikesRepository.delete(movieLikes);
 
-        updateGenreScoresForUser(userId, movie, GenreScoreAction.LIKE_CANCEL);
+        updateGenreScoresForUser(user, movie, -user.getLikeActivityScore());
 
         movie.decrementLikeCounts();
+        user.decrementTotalMovieLikes();
     }
 
-    private void updateGenreScoresForUser(Long userId, Movie movie, GenreScoreAction genreScoreAction) {
+    private void updateGenreScoresForUser(User user, Movie movie, int activityScore) {
         List<Long> genreIds = Optional.ofNullable(movie.getMovieGenres())
                 .orElse(Collections.emptyList())
                 .stream()
@@ -76,9 +80,9 @@ public class MovieLikeCommandServiceV4 implements MovieLikeCommandService {
                 .toList();
 
         genreScoreRepository.bulkUpdateGenreScores(
-                genreScoreAction.getWeight(),
+                activityScore,
                 genreIds,
-                userId
+                user.getId()
         );
     }
 }
