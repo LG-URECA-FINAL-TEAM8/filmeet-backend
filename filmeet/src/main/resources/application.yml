@@ -74,6 +74,7 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
     org.springframework.security: debug
+    org.springframework.web.client.RestTemplate: DEBUG
 
 management:
   endpoints:
