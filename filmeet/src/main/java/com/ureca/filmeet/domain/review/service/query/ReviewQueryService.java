@@ -10,14 +10,12 @@ import com.ureca.filmeet.domain.review.exception.ReviewNotFoundException;
 import com.ureca.filmeet.domain.review.repository.ReviewCommentRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewLikesRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,15 +33,9 @@ public class ReviewQueryService {
     public GetMovieReviewDetailResponse getMovieReviewDetail(Long reviewId, Long userId) {
         Review review = reviewRepository.findMovieReviewDetailBy(reviewId)
                 .orElseThrow(ReviewNotFoundException::new);
-
-        List<ReviewCommentResponse> reviewCommentResponse = review.getReviewComments()
-                .stream()
-                .map(ReviewCommentResponse::of)
-                .toList();
-
         boolean existsReviewLikes = reviewLikesRepository.existsByReviewIdAndUserId(reviewId, userId);
 
-        return GetMovieReviewDetailResponse.from(review, reviewCommentResponse, existsReviewLikes);
+        return GetMovieReviewDetailResponse.from(review, existsReviewLikes);
     }
 
     public Slice<UserReviewsResponse> getUserReviews(Long userId, Pageable pageable) {
@@ -54,9 +46,12 @@ public class ReviewQueryService {
     public Slice<ReviewCommentResponse> getMovieReviewComments(Long reviewId, Pageable pageable) {
         return reviewCommentRepository.findReviewCommentsBy(reviewId, pageable)
                 .map(ReviewCommentResponse::of);
-  
+    }
+
     public Page<AdminReviewResponse> getReviewsForAdmin(String movieTitle, String username, LocalDate createdAt,
-                                                        LocalDate lastModifiedAt, String sortDirection, Pageable pageable) {
-        return reviewRepository.findReviewsByFilters(movieTitle, username, createdAt, lastModifiedAt, sortDirection, pageable);
+                                                        LocalDate lastModifiedAt, String sortDirection,
+                                                        Pageable pageable) {
+        return reviewRepository.findReviewsByFilters(movieTitle, username, createdAt, lastModifiedAt, sortDirection,
+                pageable);
     }
 }
