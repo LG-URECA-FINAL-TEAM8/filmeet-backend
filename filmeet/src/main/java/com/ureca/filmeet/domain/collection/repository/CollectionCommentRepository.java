@@ -29,4 +29,13 @@ public interface CollectionCommentRepository extends JpaRepository<CollectionCom
             @Param("collectionId") Long collectionId,
             Pageable pageable
     );
+
+    @Query("SELECT cc " +
+            "FROM CollectionComment cc " +
+            "JOIN FETCH cc.collection c " +
+            "WHERE cc.id = :collectionCommentId AND cc.user.id = :userId AND cc.isDeleted = false ")
+    Optional<CollectionComment> findCollectionCommentWithCollectionBy(
+            @Param("userId") Long userId,
+            @Param("collectionCommentId") Long collectionCommentId
+    );
 }
