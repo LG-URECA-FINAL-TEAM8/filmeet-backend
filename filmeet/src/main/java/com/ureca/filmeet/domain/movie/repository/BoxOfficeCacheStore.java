@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +17,10 @@ public class BoxOfficeCacheStore {
 
     private final CopyOnWriteArrayList<Map<String, String>> cachedBoxOfficeMovies = new CopyOnWriteArrayList<>();
 
+    private final MovieRepository movieRepository;
     private final KobisOpenAPIRestService kobisOpenAPIRestService;
 
+    //    @Scheduled(cron = "*/10 * * * * ?")
     @Scheduled(cron = "0 0 8 * * ?")
     public void updateBoxOfficeMovies() {
         try {
@@ -33,15 +33,23 @@ public class BoxOfficeCacheStore {
         }
     }
 
-    @Retryable(
-            retryFor = {RuntimeException.class},
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 2000)
-    )
+    //    @Retryable(
+//            retryFor = {RuntimeException.class},
+//            maxAttempts = 3,
+//            backoff = @Backoff(delay = 2000)
+//    )
     public List<Map<String, String>> fetchBoxOfficeMovies() {
         try {
             log.info("Fetching box office data...");
-            return kobisOpenAPIRestService.fetchDailyBoxOffice();
+            List<Map<String, String>> boxOfficeMovies = kobisOpenAPIRestService.fetchDailyBoxOffice();
+            boxOfficeMovies.forEach(boxOfficeMovie -> {
+                String movieName = boxOfficeMovie.get("movieName");
+                movieRepository.findMovieByTitle(movieName).ifPresent(movie -> {
+                    boxOfficeMovie.put("movieId", String.valueOf(movie.getId()));
+                    boxOfficeMovie.put("posterUrl", movie.getPosterUrl());
+                });
+            });
+            return boxOfficeMovies;
         } catch (RuntimeException e) {
             log.error("Error fetching box office data, retrying...", e);
             throw e; // 재시도 대상 예외 던지기

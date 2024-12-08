@@ -7,6 +7,7 @@ import com.ureca.filmeet.domain.review.dto.response.ReviewCommentResponse;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.domain.review.exception.ReviewNotFoundException;
+import com.ureca.filmeet.domain.review.repository.ReviewCommentRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewLikesRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.List;
 public class ReviewQueryService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewCommentRepository reviewCommentRepository;
     private final ReviewLikesRepository reviewLikesRepository;
 
     public Slice<GetMovieReviewsResponse> getMovieReviews(Long movieId, Long userId, Pageable pageable) {
@@ -49,6 +51,10 @@ public class ReviewQueryService {
         return reviewRepository.findUserReviews(userId, pageable);
     }
 
+    public Slice<ReviewCommentResponse> getMovieReviewComments(Long reviewId, Pageable pageable) {
+        return reviewCommentRepository.findReviewCommentsBy(reviewId, pageable)
+                .map(ReviewCommentResponse::of);
+  
     public Page<AdminReviewResponse> getReviewsForAdmin(String movieTitle, String username, LocalDate createdAt,
                                                         LocalDate lastModifiedAt, String sortDirection, Pageable pageable) {
         return reviewRepository.findReviewsByFilters(movieTitle, username, createdAt, lastModifiedAt, sortDirection, pageable);
