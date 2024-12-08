@@ -3,7 +3,6 @@ package com.ureca.filmeet.domain.review.dto.response;
 import com.ureca.filmeet.domain.review.entity.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record GetMovieReviewDetailResponse(
 
@@ -19,12 +18,13 @@ public record GetMovieReviewDetailResponse(
         String movieTitle,
         String posterUrl,
         LocalDate movieReleaseDate,
-        Boolean isLiked,
-        List<ReviewCommentResponse> reviewCommentResponses
+        Boolean isLiked
 ) {
 
-    public static GetMovieReviewDetailResponse from(Review review, List<ReviewCommentResponse> reviewCommentResponses,
-                                                    boolean existsReviewLikes) {
+    public static GetMovieReviewDetailResponse from(
+            Review review,
+            boolean existsReviewLikes
+    ) {
         return new GetMovieReviewDetailResponse(
                 review.getId(),
                 review.getUser().getId(),
@@ -38,8 +38,7 @@ public record GetMovieReviewDetailResponse(
                 review.getMovie().getTitle(),
                 review.getMovie().getPosterUrl(),
                 review.getMovie().getReleaseDate(),
-                existsReviewLikes,
-                reviewCommentResponses
+                existsReviewLikes
         );
     }
 }
