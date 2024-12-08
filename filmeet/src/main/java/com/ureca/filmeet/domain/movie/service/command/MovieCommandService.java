@@ -52,7 +52,7 @@ public class MovieCommandService {
 
         // 2. 존재하지 않는 영화만 필터링
         List<AddMoviesRequest> filteredRequests = requests.stream()
-                .filter(request -> !duplicatedTitles.equals(request.title().replace(" ", "")))
+                .filter(request -> !duplicatedTitles.contains(request.title().replace(" ", "")))
                 .toList();
 
         filteredRequests.forEach(request -> {

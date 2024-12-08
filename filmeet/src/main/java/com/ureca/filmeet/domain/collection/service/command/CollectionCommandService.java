@@ -10,7 +10,6 @@ import com.ureca.filmeet.domain.collection.exception.CollectionUserNotFoundExcep
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieBulkRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
-import com.ureca.filmeet.domain.genre.entity.enums.GenreScoreAction;
 import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
@@ -54,12 +53,16 @@ public class CollectionCommandService {
 
         collectionMovieBulkRepository.saveAll(collection, movies);
 
-        updateGenreScoresForUser(user.getId(), movies, GenreScoreAction.COLLECTION);
+        updateGenreScoresForUser(user, movies, user.getCollectionActivityScore());
+        user.addTotalCollections();
 
         return savedCollection.getId();
     }
 
     public Long modifyCollection(CollectionModifyRequest modifyRequest, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(CollectionUserNotFoundException::new);
+
         // 1. 컬렉션 조회
         Collection collection = collectionRepository.findById(modifyRequest.collectionId())
                 .orElseThrow(CollectionNotFoundException::new);
@@ -88,8 +91,7 @@ public class CollectionCommandService {
 
             // 삭제된 영화의 장르 점수 업데이트 (점수 감소)
             List<Movie> moviesToRemoveEntities = movieRepository.findMoviesWithGenreByMovieIds(moviesToRemove);
-            updateGenreScoresForUser(userId, moviesToRemoveEntities,
-                    GenreScoreAction.COLLECTION_DELETE);
+            updateGenreScoresForUser(user, moviesToRemoveEntities, -user.getCollectionActivityScore());
         }
 
         // 7. 추가할 영화 처리
@@ -98,23 +100,27 @@ public class CollectionCommandService {
             collectionMovieBulkRepository.saveAll(collection, movies);
 
             // 추가된 영화의 장르 점수 업데이트 (점수 증가)
-            updateGenreScoresForUser(userId, movies, GenreScoreAction.COLLECTION);
+            updateGenreScoresForUser(user, movies, user.getCollectionActivityScore());
         }
 
         return collection.getId();
     }
 
     public void deleteCollection(CollectionDeleteRequest collectionDeleteRequest, Long userId) {
-        Collection collection = collectionRepository.findById(collectionDeleteRequest.collectionId())
+        User user = userRepository.findById(userId)
+                .orElseThrow(CollectionUserNotFoundException::new);
+
+        Collection collection = collectionRepository.findCollectionBy(collectionDeleteRequest.collectionId())
                 .orElseThrow(CollectionNotFoundException::new);
         collection.delete();
 
         List<Movie> movies = movieRepository.findMoviesWithGenreByMovieIds(collectionDeleteRequest.movieIds());
 
-        updateGenreScoresForUser(userId, movies, GenreScoreAction.COLLECTION_DELETE);
+        updateGenreScoresForUser(user, movies, -user.getCollectionActivityScore());
+        user.decrementTotalCollections();
     }
 
-    private void updateGenreScoresForUser(Long userId, List<Movie> movies, GenreScoreAction genreScoreAction) {
+    private void updateGenreScoresForUser(User user, List<Movie> movies, int activityScore) {
         // 영화에 포함된 모든 장르 ID 추출
         List<Long> genreIds = movies.stream()
                 .flatMap(movie -> Optional.ofNullable(movie.getMovieGenres())
@@ -126,9 +132,9 @@ public class CollectionCommandService {
 
         // 장르 점수 업데이트
         genreScoreRepository.bulkUpdateGenreScores(
-                genreScoreAction.getWeight(),
+                activityScore,
                 genreIds,
-                userId
+                user.getId()
         );
     }
 }
