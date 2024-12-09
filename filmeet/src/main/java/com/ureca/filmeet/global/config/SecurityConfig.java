@@ -65,6 +65,8 @@ public class SecurityConfig {
                         // 기본 허용 경로
                         .requestMatchers("/actuator/health").permitAll().requestMatchers("/images/**", "/error", "/users/signup", "/users/check-username", "/auth/login", "/auth/refresh").permitAll()
 
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+
                         // 리뷰 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
                         .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
@@ -118,3 +120,20 @@ public class SecurityConfig {
         return roleHierarchy;
     }
 }
+/**
+ * [org.springframework.security.web.session.DisableEncodeUrlFilter@5b79457f,
+ * org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@43ca23a8,
+ * org.springframework.security.web.context.SecurityContextHolderFilter@1fc5aaa5,
+ * org.springframework.security.web.header.HeaderWriterFilter@70176150,
+ * org.springframework.web.filter.CorsFilter@2528c5eb,
+ * org.springframework.security.web.authentication.logout.LogoutFilter@4da18e2c,
+ * org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@7ed91434,
+ * org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@403683e5,
+ * org.springframework.security.web.savedrequest.RequestCacheAwareFilter@ca53bc6,
+ * org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@189c55bf,
+ * org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2a35af75,
+ * org.springframework.security.web.session.SessionManagementFilter@49f640a4,
+ * org.springframework.security.web.access.ExceptionTranslationFilter@5926f473,
+ * com.ureca.filmeet.global.filter.JwtAuthenticationFilter@76c5599b,
+ * org.springframework.security.web.access.intercept.AuthorizationFilter@71d2fac0]
+ */
