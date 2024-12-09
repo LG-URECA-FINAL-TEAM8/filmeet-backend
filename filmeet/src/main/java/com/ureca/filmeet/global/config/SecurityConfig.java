@@ -7,7 +7,7 @@ import com.ureca.filmeet.global.security.CustomAccessDeniedHandler;
 import com.ureca.filmeet.global.security.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.ureca.filmeet.global.security.JwtAuthenticationEntryPoint;
 import com.ureca.filmeet.global.security.OAuth2AuthenticationSuccessHandler;
-import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -95,13 +95,27 @@ public class SecurityConfig {
         return http.build();
     }
 
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(true); // 쿠키를 받을건지
+//        configuration.addAllowedOriginPattern("*");
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
+//        configuration.addAllowedHeader("*");
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true); // 쿠키를 받을건지
-        configuration.addAllowedOriginPattern("*");
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
-        configuration.addAllowedHeader("*");
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:5173")); // 허용할 Origin
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
