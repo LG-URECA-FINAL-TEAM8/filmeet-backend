@@ -2,8 +2,6 @@ package com.ureca.filmeet.domain.movie.dto.response;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.entity.Movie;
-import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
-import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,7 +23,6 @@ public record MovieDetailResponse(
         List<GenreType> genres,
         List<PersonnelInfoResponse> personnels,
         List<String> galleryImages,
-        SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses,
         List<RatingDistributionResponse> ratingDistribution
 ) {
 
@@ -34,7 +31,6 @@ public record MovieDetailResponse(
                                            List<String> countries, List<GenreType> genres,
                                            List<PersonnelInfoResponse> personnels,
                                            List<String> galleryImages,
-                                           SliceResponseDto<GetMovieReviewsResponse> movieReviewsResponses,
                                            List<RatingDistributionResponse> ratingDistribution) {
 
         return new MovieDetailResponse(
@@ -54,7 +50,6 @@ public record MovieDetailResponse(
                 genres,
                 personnels,
                 galleryImages,
-                movieReviewsResponses,
                 ratingDistribution
         );
     }
