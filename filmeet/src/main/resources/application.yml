@@ -67,7 +67,9 @@ omdb:
   apikey: ${OMDB_APIKEY}
 
 front:
-  redirect-url: ${FRONT_REDIRECT_URL}
+  redirect-url:
+    default: http://localhost:5173/
+    first-login: http://localhost:5173/genre
 
 logging:
   level:
