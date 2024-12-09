@@ -1,21 +1,34 @@
 package com.ureca.filmeet.domain.movie.controller.query;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
-import com.ureca.filmeet.domain.movie.dto.response.*;
+import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
+import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
+import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
 import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
-import com.ureca.filmeet.domain.movie.service.query.*;
+import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MovieRankingsQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/movies")
@@ -94,7 +107,7 @@ public class MovieQueryController {
         return ApiResponse.ok(movieDetail);
     }
 
-    @GetMapping
+    @GetMapping("/rating")
     public ResponseEntity<ApiResponse<SliceResponseDto<MoviesResponse>>> getMoviesByGenre(
             @RequestParam(value = "genreType", required = false) GenreType genreType,
             @RequestParam(defaultValue = "0") int page,
