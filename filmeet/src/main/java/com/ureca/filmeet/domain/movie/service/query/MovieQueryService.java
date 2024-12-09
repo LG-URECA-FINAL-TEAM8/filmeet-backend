@@ -4,6 +4,7 @@ import com.ureca.filmeet.domain.admin.dto.response.AdminMovieResponse;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.MovieGenreRepository;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRandomResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MyMovieRating;
 import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
@@ -146,5 +147,10 @@ public class MovieQueryService {
     public Slice<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return movieRepository.findMoviesByGenre(genreType, pageable);
+    }
+
+    public Slice<MoviesRandomResponse> getRandomMovies(Pageable pageable) {
+        return movieRepository.findMoviesBy(pageable)
+                .map(MoviesRandomResponse::of);
     }
 }

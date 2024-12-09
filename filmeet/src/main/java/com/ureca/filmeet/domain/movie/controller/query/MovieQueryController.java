@@ -3,6 +3,7 @@ package com.ureca.filmeet.domain.movie.controller.query;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRandomResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
@@ -21,7 +22,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -114,5 +117,14 @@ public class MovieQueryController {
             @RequestParam(defaultValue = "10") int size) {
         Slice<MoviesResponse> moviesByGenre = movieQueryService.getMoviesByGenre(genreType, page, size);
         return ApiResponse.ok(SliceResponseDto.of(moviesByGenre));
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<ApiResponse<SliceResponseDto<MoviesRandomResponse>>> getRandomMovies(
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+
+        Slice<MoviesRandomResponse> moviesRandomResponses = movieQueryService.getRandomMovies(pageable);
+        return ApiResponse.ok(SliceResponseDto.of(moviesRandomResponses));
     }
 }
