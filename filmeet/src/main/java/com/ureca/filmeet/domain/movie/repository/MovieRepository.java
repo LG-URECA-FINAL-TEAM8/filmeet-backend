@@ -95,7 +95,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     List<Movie> findMoviesByPreferredGenresAndNotInteracted(
             @Param("genreIds") List<Long> genreIds,
             @Param("userId") Long userId,
-            @Param("top10MovieIds") List<Long> top10MovieIds
+            @Param("top10MovieIds") List<Long> top10MovieIds,
+            Pageable pageable
     );
 
     @Query("SELECT m FROM Movie m " +

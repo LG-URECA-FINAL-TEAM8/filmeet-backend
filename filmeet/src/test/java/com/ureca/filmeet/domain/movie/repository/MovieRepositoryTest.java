@@ -329,7 +329,8 @@ class MovieRepositoryTest {
         List<Movie> result = movieRepository.findMoviesByPreferredGenresAndNotInteracted(
                 genreIds,
                 user.getId(),
-                top10MovieIds
+                top10MovieIds,
+                null
         );
 
         // then
@@ -395,7 +396,8 @@ class MovieRepositoryTest {
         List<Movie> result = movieRepository.findMoviesByPreferredGenresAndNotInteracted(
                 genreIds,
                 user.getId(),
-                top10MovieIds
+                top10MovieIds,
+                null
         );
 
         // then

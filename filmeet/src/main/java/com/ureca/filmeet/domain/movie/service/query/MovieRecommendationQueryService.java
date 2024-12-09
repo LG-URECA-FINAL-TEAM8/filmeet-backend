@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,17 +21,21 @@ public class MovieRecommendationQueryService {
     private final MovieScoreService movieScoreService;
     private final GenreScoreRepository genreScoreRepository;
 
-    public List<RecommendationMoviesResponse> getMoviesRecommendation(Long userId, int size) {
+    public List<RecommendationMoviesResponse> getMoviesRecommendation(Long userId, Pageable pageable) {
         List<Long> top10MovieIds = getTop10MovieIds();
         List<Long> genreIds = genreScoreRepository.findTop10GenreIdsByMemberId(userId);
-        List<Movie> preferredMovies = movieRepository.findMoviesByPreferredGenresAndNotInteracted(genreIds, userId,
-                top10MovieIds);
+        List<Movie> preferredMovies = movieRepository.findMoviesByPreferredGenresAndNotInteracted(
+                genreIds,
+                userId,
+                top10MovieIds,
+                pageable
+        );
         Map<Movie, Double> movieScores = movieScoreService.calculateMovieScores(preferredMovies);
 
         return movieScores.entrySet()
                 .stream()
                 .sorted(Map.Entry.<Movie, Double>comparingByValue().reversed())
-                .limit(size)
+                .limit(20)
                 .map(entry -> RecommendationMoviesResponse.of(entry.getKey()))
                 .collect(Collectors.toList());
     }
