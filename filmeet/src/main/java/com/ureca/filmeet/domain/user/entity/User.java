@@ -6,21 +6,14 @@ import com.ureca.filmeet.domain.movie.entity.MovieLikes;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.review.entity.Review;
 import com.ureca.filmeet.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -53,6 +46,8 @@ public class User extends BaseTimeEntity {
     private String mbti;
 
     private String profileImage;
+
+    private boolean isFirstLogin = true;
 
     private int likeActivityScore = 3;
 
@@ -142,6 +137,10 @@ public class User extends BaseTimeEntity {
         gameActivityScore = calculateScore(totalGames, maxGames, minGames, averageGameCount);
         collectionActivityScore = calculateScore(totalCollections, maxCollections, minCollections,
                 averageCollectionCount);
+    }
+
+    public void setFirstLoginFalse() {
+        this.isFirstLogin = false;
     }
 
     private int calculateScore(int actionCount, int maxAction, int minAction, double averageActionCount) {
