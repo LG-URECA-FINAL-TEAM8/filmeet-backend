@@ -48,8 +48,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // Refresh Token을 HttpOnly 쿠키에 저장
         Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.refreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
+        refreshTokenCookie.setHttpOnly(false);
+//        refreshTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
+        refreshTokenCookie.setSecure(false); // 프론트 배포되면 변경
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(10 * 60); // 10분 만료
         response.addCookie(refreshTokenCookie);
@@ -57,7 +58,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // Access Token은 일반 쿠키에 저장 (옵션)
         Cookie accessTokenCookie = new Cookie("accessToken", tokens.accessToken());
         accessTokenCookie.setHttpOnly(false); // 프론트엔드에서 접근 가능
-        accessTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
+//        accessTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
+        accessTokenCookie.setSecure(true); // 프론트 배포되면 변경
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge(10 * 60); // 10분 만료
         response.addCookie(accessTokenCookie);
