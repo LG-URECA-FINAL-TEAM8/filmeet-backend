@@ -1,7 +1,6 @@
 package com.ureca.filmeet.domain.admin.dto.response;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
-import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 
 import java.math.BigDecimal;
@@ -15,8 +14,8 @@ public record AdminMovieResponse(
         Integer likeCounts,
         BigDecimal averageRating,
         List<GenreType> genreTypes,
-        LocalDate releaseDate,
-        List<String> galleries
+        LocalDate releaseDate
+//        List<String> galleries
 ) {
     public static AdminMovieResponse fromEntity(Movie movie) {
         return new AdminMovieResponse(
@@ -28,10 +27,10 @@ public record AdminMovieResponse(
                 movie.getMovieGenres().stream()
                         .map(movieGenre -> movieGenre.getGenre().getGenreType())
                         .toList(),
-                movie.getReleaseDate(),
-                movie.getGalleries().stream()
-                        .map(Gallery::getImageUrl)
-                        .toList()
+                movie.getReleaseDate()
+//                movie.getGalleries().stream()
+//                        .map(Gallery::getImageUrl)
+//                        .toList()
         );
     }
 }
