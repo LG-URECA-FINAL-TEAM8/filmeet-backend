@@ -58,13 +58,12 @@ public class CollectionCommentCommandService {
 
     @DistributedLock(key = "'collectionComment:' + #collectionCommentDeleteRequest.collectionId")
     public void deleteCollectionComment(CollectionCommentDeleteRequest collectionCommentDeleteRequest, Long userId) {
-        CollectionComment collectionComment = collectionCommentRepository.findCollectionCommentWrittenUserBy(
+        CollectionComment collectionComment = collectionCommentRepository.findCollectionCommentWithCollectionBy(
                         userId, collectionCommentDeleteRequest.collectionCommentId())
                 .orElseThrow(CollectionCommentNotFoundException::new);
         collectionComment.delete();
 
-        Collection collection = collectionRepository.findById(collectionCommentDeleteRequest.collectionId())
-                .orElseThrow(CollectionNotFoundException::new);
+        Collection collection = collectionComment.getCollection();
         collection.decrementCommentCounts();
     }
 }
