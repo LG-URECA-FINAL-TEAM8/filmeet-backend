@@ -11,9 +11,9 @@ import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
 import com.ureca.filmeet.domain.movie.repository.cache.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
-import com.ureca.filmeet.domain.movie.service.query.MovieRankingsQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
+import com.ureca.filmeet.domain.movie.service.query.MoviesRankingsRedisQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
@@ -42,8 +42,8 @@ public class MovieQueryController {
     private final BoxOfficeCacheStore boxOfficeCacheStore;
     private final MoviesSearchService moviesSearchService;
     private final MovieUpcomingQueryService movieUpcomingQueryService;
-    private final MovieRankingsQueryService movieRankingsQueryService;
     private final MovieRecommendationQueryService movieRecommendationQueryService;
+    private final MoviesRankingsRedisQueryService moviesRankingsRedisQueryService;
 
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<SliceResponseDto<UpcomingMoviesResponse>>> getUpcomingMovies(
@@ -65,7 +65,7 @@ public class MovieQueryController {
 
     @GetMapping("/rankings")
     public ResponseEntity<ApiResponse<List<MoviesRankingsResponse>>> getMoviesRankings() {
-        List<MoviesRankingsResponse> moviesRankings = movieRankingsQueryService.getMoviesRankings();
+        List<MoviesRankingsResponse> moviesRankings = moviesRankingsRedisQueryService.getMoviesRankings();
         return ApiResponse.ok(moviesRankings);
     }
 
