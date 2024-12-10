@@ -128,8 +128,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             nativeQuery = true)
     List<Movie> findRandomMovies(@Param("totalRounds") Integer totalRounds);
 
-    Optional<Movie> findMovieByTitle(String movieName);
-
     @Query(value = "SELECT * FROM movie m " +
             "WHERE MATCH(m.title) AGAINST(:search) > 0",
             nativeQuery = true)
@@ -143,9 +141,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             "LEFT JOIN FETCH mg.genre " +
             "WHERE m IN :movies")
     List<Movie> findMoviesWithGenres(@Param("movies") List<Movie> movies);
-
-
-    Optional<Movie> findMovieByTitle(String movieName);
 
     @Query("""
                 SELECT new com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse(
