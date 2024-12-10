@@ -25,8 +25,14 @@ public class MoviesSearchService {
         return movieRepository.searchMoviesByGenre(genreTypes, pageable);
     }
 
-    public Slice<MovieSearchByTitleResponse> searchMoviesByTitle(String title, int page, int size) {
+    public Slice<MovieSearchByTitleResponse> searchMoviesByTitleV1(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return movieRepository.searchMoviesByTitle(title, pageable);
+    }
+
+    public Slice<MovieSearchByTitleResponse> searchMoviesByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return movieRepository.findMoviesByTitle(title, pageable)
+                .map(MovieSearchByTitleResponse::of);
     }
 }
