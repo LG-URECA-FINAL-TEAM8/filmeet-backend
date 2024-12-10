@@ -1,8 +1,9 @@
-package com.ureca.filmeet.domain.movie.repository;
+package com.ureca.filmeet.domain.movie.repository.cache;
 
 import static java.util.stream.Collectors.toList;
 
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.infra.kobis.KobisOpenAPIRestService;
 import java.util.ArrayList;
 import java.util.List;

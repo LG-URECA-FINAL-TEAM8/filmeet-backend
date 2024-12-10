@@ -2,6 +2,8 @@ package com.ureca.filmeet.domain.movie.repository;
 
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.repository.querydsl.MovieCustomRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
