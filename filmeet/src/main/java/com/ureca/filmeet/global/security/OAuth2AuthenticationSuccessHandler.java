@@ -6,7 +6,6 @@ import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.service.query.UserQueryService;
 import com.ureca.filmeet.global.util.jwt.TokenService;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,32 +45,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // JWT 발급
         TokenResponse tokens = tokenService.generateTokens(user.getUsername(), user.getRole());
 
-        // Refresh Token을 HttpOnly 쿠키에 저장
-        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.refreshToken());
-        refreshTokenCookie.setHttpOnly(false);
-//        refreshTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
-        refreshTokenCookie.setSecure(false); // 프론트 배포되면 변경
-        refreshTokenCookie.setDomain("localhost");
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(10 * 60); // 10분 만료
-        response.addCookie(refreshTokenCookie);
-
-        // Access Token은 일반 쿠키에 저장 (옵션)
-        Cookie accessTokenCookie = new Cookie("accessToken", tokens.accessToken());
-        accessTokenCookie.setHttpOnly(false); // 프론트엔드에서 접근 가능
-//        accessTokenCookie.setSecure(true); // HTTPS 사용 환경에서만 활성화
-        accessTokenCookie.setSecure(true); // 프론트 배포되면 변경
-        refreshTokenCookie.setDomain("localhost");
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(10 * 60); // 10분 만료
-        response.addCookie(accessTokenCookie);
+        // URL에 토큰 포함
+        String redirectUrl = user.isFirstLogin() ? firstLoginRedirectUrl : defaultRedirectUrl;
+        redirectUrl = String.format("%s?accessToken=%s&refreshToken=%s",
+                redirectUrl,
+                tokens.accessToken(),
+                tokens.refreshToken());
 
         // 프론트엔드로 리다이렉트
-        if (user.isFirstLogin()) {
-            response.sendRedirect(firstLoginRedirectUrl);
-        } else {
-            response.sendRedirect(defaultRedirectUrl);
-        }
+        response.sendRedirect(redirectUrl);
 
         clearAuthenticationAttributes(request);
     }
