@@ -1,4 +1,4 @@
-package com.ureca.filmeet.domain.movie.repository;
+package com.ureca.filmeet.domain.movie.repository.querydsl;
 
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;

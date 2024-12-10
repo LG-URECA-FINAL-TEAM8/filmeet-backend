@@ -2,6 +2,7 @@ package com.ureca.filmeet.domain.movie.repository;
 
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.repository.querydsl.MovieCustomRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
