@@ -1,4 +1,4 @@
-package com.ureca.filmeet.domain.movie.repository;
+package com.ureca.filmeet.domain.movie.repository.querydsl;
 
 import static com.ureca.filmeet.domain.genre.entity.QGenre.genre;
 import static com.ureca.filmeet.domain.genre.entity.QMovieGenre.movieGenre;
