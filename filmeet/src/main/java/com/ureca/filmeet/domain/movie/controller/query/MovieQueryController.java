@@ -9,7 +9,7 @@ import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
-import com.ureca.filmeet.domain.movie.repository.BoxOfficeCacheStore;
+import com.ureca.filmeet.domain.movie.repository.cache.BoxOfficeCacheStore;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRankingsQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
