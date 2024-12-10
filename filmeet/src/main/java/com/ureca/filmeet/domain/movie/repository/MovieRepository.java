@@ -169,4 +169,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     Slice<Movie> findMoviesBy(
             Pageable pageable
     );
+
+    @Query("SELECT m FROM Movie m WHERE m.title IN :titles")
+    List<Movie> findMoviesByTitles(@Param("titles") List<String> titles);
 }
