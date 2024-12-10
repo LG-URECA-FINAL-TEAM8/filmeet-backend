@@ -57,7 +57,8 @@ public class UserCommandService {
                 savedUser.getUsername(),
                 savedUser.getRole(),
                 savedUser.getNickname(),
-                savedUser.getProfileImage()
+                savedUser.getProfileImage(),
+                savedUser.isFirstLogin()
         );
     }
 

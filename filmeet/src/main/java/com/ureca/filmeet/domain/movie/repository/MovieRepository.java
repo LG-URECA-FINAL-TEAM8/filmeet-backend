@@ -144,6 +144,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             "WHERE m IN :movies")
     List<Movie> findMoviesWithGenres(@Param("movies") List<Movie> movies);
 
+
+    Optional<Movie> findMovieByTitle(String movieName);
+
     @Query("""
                 SELECT new com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse(
                     m.id,
@@ -169,4 +172,15 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @EntityGraph(attributePaths = {"movieGenres.genre"})
     Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    @Query(
+            "SELECT m FROM Movie m " +
+                    "WHERE m.isDeleted = false "
+    )
+    Slice<Movie> findMoviesBy(
+            Pageable pageable
+    );
+
+    @Query("SELECT m FROM Movie m WHERE m.title IN :titles")
+    List<Movie> findMoviesByTitles(@Param("titles") List<String> titles);
 }

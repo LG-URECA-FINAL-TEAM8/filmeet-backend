@@ -34,7 +34,7 @@ spring:
               - openid
               - profile
               - email
-            redirect-uri: "https://filmeet.net/api/login/oauth2/code/google"
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
             authorization-grant-type: authorization_code
             client-name: Google
             client-authentication-method: client_secret_post
@@ -46,7 +46,7 @@ spring:
               - name
               - email
               - profile_image
-            redirect-uri: "https://filmeet.net/api/login/oauth2/code/naver"
+            redirect-uri: "{baseUrl}/login/oauth2/code/naver"
             authorization-grant-type: authorization_code
             client-name: Naver
             client-authentication-method: client_secret_post
@@ -67,13 +67,16 @@ omdb:
   apikey: ${OMDB_APIKEY}
 
 front:
-  redirect-url: ${FRONT_REDIRECT_URL}
+  redirect-url:
+    default: http://localhost:5173/
+    first-login: http://localhost:5173/genre
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
     org.springframework.security: debug
+    org.springframework.web.client.RestTemplate: DEBUG
 
 management:
   endpoints:
@@ -94,6 +97,12 @@ server:
   port: 8080
   servlet:
     context-path: /api
+  forward-headers-strategy: native
+  tomcat:
+    threads:
+      max: 200          # 최대 스레드 수
+      min-spare: 20     # 최소 여유 스레드 수
+    connection-timeout: 20000 # 클라이언트와의 연결 타임아웃
 ---
 
 # Dev 환경 설정
@@ -107,11 +116,23 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 10       # 최소 유지할 커넥션 수
+      maximum-pool-size: 50  # 최대 커넥션 수
+      idle-timeout: 30000    # 유휴 커넥션을 유지하는 시간 (ms)
+      max-lifetime: 1800000  # 커넥션 최대 생존 시간 (ms)
+      connection-timeout: 20000 # 커넥션 타임아웃 (ms)
 
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST}
       port: ${SPRING_DATA_REDIS_PORT}
+      lettuce:
+        pool:
+          max-active: 100   # 최대 커넥션 수
+          max-idle: 20      # 유휴 상태의 최대 커넥션 수
+          min-idle: 10      # 유휴 상태의 최소 커넥션 수
+      timeout: 5000         # Redis 연결 타임아웃 (ms)
 
 firebase:
   config: ${FIREBASE_CONFIG}

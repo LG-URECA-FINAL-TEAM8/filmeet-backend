@@ -8,5 +8,6 @@ public record UserDetailResponse(
         String username,
         Role role,
         String nickname,
-        String profileImage) {
+        String profileImage,
+        boolean isFirstLogin) {
 }

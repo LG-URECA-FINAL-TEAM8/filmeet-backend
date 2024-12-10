@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.auth.controller.command;
 
 import com.ureca.filmeet.domain.auth.dto.request.LoginRequest;
+import com.ureca.filmeet.domain.auth.dto.response.LoginResponse;
 import com.ureca.filmeet.domain.auth.dto.response.TokenResponse;
 import com.ureca.filmeet.domain.auth.service.IdPwAuthenticationService;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -23,8 +24,8 @@ public class AuthCommandController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        TokenResponse tokens = idPwAuthenticationService.authenticate(request);
-        return ApiResponse.ok(tokens);
+        LoginResponse response = idPwAuthenticationService.authenticate(request);
+        return ApiResponse.ok(response);
     }
 
     @PostMapping("/refresh")

@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.auth.service;
 
 import com.ureca.filmeet.domain.auth.dto.request.LoginRequest;
+import com.ureca.filmeet.domain.auth.dto.response.LoginResponse;
 import com.ureca.filmeet.domain.auth.dto.response.TokenResponse;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.service.query.UserQueryService;
@@ -21,16 +22,19 @@ public class IdPwAuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    public TokenResponse authenticate(LoginRequest request) {
+    public LoginResponse authenticate(LoginRequest request) {
         User user = userQueryService.findByUsername(request.username());
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new InvalidPasswordException("Password is not matched");
         }
-
-        // Access/Refresh Token 생성
-        return tokenService.generateTokens(
+        TokenResponse tokens = tokenService.generateTokens(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getRole().getAuthorities())
         );
+        LoginResponse loginResponse = new LoginResponse(user.isFirstLogin(), tokens);
+        user.setFirstLoginFalse();
+
+        // Access/Refresh Token 생성
+        return loginResponse;
     }
 }
