@@ -2,16 +2,16 @@ package com.ureca.filmeet.domain.movie.repository;
 
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustomRepository {
 
@@ -162,10 +162,10 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             """)
     List<MoviesRoundmatchResponse> findSimilarMoviesByGenre(@Param("movieId") Long movieId);
 
-    @EntityGraph(attributePaths = {"movieGenres.genre"})
+    //    @EntityGraph(attributePaths = {"movieGenres.genre"})
     Page<Movie> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"movieGenres.genre"})
+    //    @EntityGraph(attributePaths = {"movieGenres.genre"})
     Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
     @Query(
