@@ -113,10 +113,10 @@ public class MovieRatingsCommandService {
     }
 
     @DistributedLock(key = "'evaluateMovie:' + #deleteMovieRatingRequest.movieId")
-    public void deleteMovieRating(DeleteMovieRatingRequest deleteMovieRatingRequest) {
+    public void deleteMovieRating(DeleteMovieRatingRequest deleteMovieRatingRequest, Long userId) {
         MovieRatings movieRatings = movieRatingsRepository.findMovieRatingBy(
                         deleteMovieRatingRequest.movieId(),
-                        deleteMovieRatingRequest.userId()
+                        userId
                 )
                 .orElseThrow(MovieRatingNotFoundException::new);
         BigDecimal ratingScoreToDelete = movieRatings.getRatingScore();
@@ -126,7 +126,7 @@ public class MovieRatingsCommandService {
                 .orElseThrow(MovieNotFoundException::new);
 
         updateGenreScoresForUser(
-                deleteMovieRatingRequest.userId(),
+                userId,
                 movie,
                 GenreScoreAction.RATING_DELETE,
                 ratingScoreToDelete

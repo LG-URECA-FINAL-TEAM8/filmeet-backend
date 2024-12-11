@@ -88,10 +88,10 @@ public class MovieRatingLockTest {
         // 취소 작업
         for (int i = 1; i <= numberOfThreads; i++) {
             int num = 79 + i;
-            DeleteMovieRatingRequest deleteMovieRatingRequest = new DeleteMovieRatingRequest(1L, (long) num);
+            DeleteMovieRatingRequest deleteMovieRatingRequest = new DeleteMovieRatingRequest(1L);
             executorService.submit(() -> {
                 try {
-                    movieRatingsCommandService.deleteMovieRating(deleteMovieRatingRequest);
+                    movieRatingsCommandService.deleteMovieRating(deleteMovieRatingRequest, (long) num);
                 } finally {
                     cancelLatch.countDown();
                 }

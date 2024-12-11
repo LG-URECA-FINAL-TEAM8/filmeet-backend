@@ -254,8 +254,8 @@ class MovieRatingsCommandServiceTest {
         em.flush();
         em.clear();
 
-        DeleteMovieRatingRequest deleteRequest = new DeleteMovieRatingRequest(movie1.getId(), user.getId());
-        movieRatingsCommandService.deleteMovieRating(deleteRequest);
+        DeleteMovieRatingRequest deleteRequest = new DeleteMovieRatingRequest(movie1.getId());
+        movieRatingsCommandService.deleteMovieRating(deleteRequest, user.getId());
 
         Optional<MovieRatings> deletedRating = movieRatingsRepository.findMovieRatingBy(movie1.getId(), user.getId());
         Movie updatedMovie = movieRepository.findById(movie1.getId()).orElseThrow();

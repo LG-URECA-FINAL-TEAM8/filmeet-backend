@@ -44,9 +44,10 @@ public class MovieRatingsCommandController {
 
     @DeleteMapping
     public ResponseEntity<ApiResponse<String>> deleteMovieRating(
-            @RequestBody DeleteMovieRatingRequest deleteMovieRatingRequest
+            @RequestBody DeleteMovieRatingRequest deleteMovieRatingRequest,
+            @AuthenticationPrincipal User user
     ) {
-        movieRatingsCommandService.deleteMovieRating(deleteMovieRatingRequest);
+        movieRatingsCommandService.deleteMovieRating(deleteMovieRatingRequest, user.getId());
         return ApiResponse.ok("평점을 삭제 했습니다.");
     }
 }
