@@ -45,6 +45,7 @@ public class User extends BaseTimeEntity {
     @Column(length = 4)
     private String mbti;
 
+    @Column(length = 500)
     private String profileImage;
 
     private boolean isFirstLogin = true;
