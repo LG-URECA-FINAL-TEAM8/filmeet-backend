@@ -14,6 +14,7 @@ import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import com.ureca.filmeet.global.annotation.DistributedLock;
+import com.ureca.filmeet.global.util.string.BadWordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class ReviewCommentCommandService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewCommentRepository reviewCommentRepository;
+    private final BadWordService badWordService;
 
     @DistributedLock(key = "'reviewComment:' + #createCommentRequest.reviewId")
     public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest, Long userId) {
@@ -37,7 +39,7 @@ public class ReviewCommentCommandService {
         ReviewComment reviewComment = ReviewComment.builder()
                 .review(review)
                 .user(user)
-                .content(createCommentRequest.content())
+                .content(badWordService.maskText(createCommentRequest.content()))
                 .build();
         ReviewComment savedReviewComment = reviewCommentRepository.save(reviewComment);
 
@@ -51,7 +53,7 @@ public class ReviewCommentCommandService {
         ReviewComment reviewComment = reviewCommentRepository.findById(modifyCommentRequest.reviewCommentId())
                 .orElseThrow(ReviewCommentNotFoundException::new);
 
-        reviewComment.modifyReviewComment(modifyCommentRequest.content());
+        reviewComment.modifyReviewComment(badWordService.maskText(modifyCommentRequest.content()));
 
         return ModifyCommentResponse.of(reviewComment.getId());
     }

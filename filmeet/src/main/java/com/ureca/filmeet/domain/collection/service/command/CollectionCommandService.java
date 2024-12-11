@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.ureca.filmeet.global.util.string.BadWordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ public class CollectionCommandService {
     private final CollectionMovieRepository collectionMovieRepository;
     private final CollectionMovieBulkRepository collectionMovieBulkRepository;
     private final GenreScoreRepository genreScoreRepository;
+    private final BadWordService badWordService;
 
     public Long createCollection(CollectionCreateRequest collectionCreateRequest, Long userId) {
         User user = userRepository.findById(userId)
@@ -45,8 +48,8 @@ public class CollectionCommandService {
         }
 
         Collection collection = Collection.builder()
-                .title(collectionCreateRequest.title())
-                .content(collectionCreateRequest.content())
+                .title(badWordService.maskText(collectionCreateRequest.title()))
+                .content(badWordService.maskText(collectionCreateRequest.content()))
                 .user(user)
                 .build();
         Collection savedCollection = collectionRepository.save(collection);
@@ -68,7 +71,8 @@ public class CollectionCommandService {
                 .orElseThrow(CollectionNotFoundException::new);
 
         // 2. 컬렉션 제목과 내용 수정
-        collection.modifyCollection(modifyRequest.title(), modifyRequest.content());
+        collection.modifyCollection(badWordService.maskText(modifyRequest.title()),
+                badWordService.maskText(modifyRequest.content()));
 
         // 3. 기존에 저장된 영화 ID 목록 가져오기
         List<Long> existingMovieIds = collectionMovieRepository.findMovieIdsByCollectionId(collection.getId());

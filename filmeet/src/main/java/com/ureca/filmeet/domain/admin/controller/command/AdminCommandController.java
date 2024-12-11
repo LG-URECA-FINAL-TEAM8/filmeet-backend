@@ -7,11 +7,14 @@ import com.ureca.filmeet.domain.movie.service.command.MovieCommandService;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.review.service.command.ReviewCommandService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
+import com.ureca.filmeet.global.util.string.BadWordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -22,6 +25,7 @@ public class AdminCommandController {
     private final MovieQueryService movieQueryService;
     private final MovieCommandService movieCommandService;
     private final ReviewCommandService reviewCommandService;
+    private final BadWordService badWordService;
 
     @PostMapping("/movies/add")
     @PreAuthorize("hasAuthority('MOVIE_CREATE_AUTHORITY')")
@@ -57,6 +61,13 @@ public class AdminCommandController {
         reviewCommandService.blindReview(reviewId);
         return ApiResponse.okWithoutData();
     }
+
+    @PostMapping("upload/trie")
+    public ResponseEntity<?> uploadTrie() throws IOException {
+        badWordService.buildAndSaveTrie("trie_data.dat");
+        return ApiResponse.okWithoutData();
+    }
+
 
     // TODO [eastsage]: 영화 순위 가중치 수정 기능
 }
