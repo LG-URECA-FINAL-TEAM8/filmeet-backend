@@ -42,12 +42,11 @@ public class MovieRatingLockTest {
             System.out.println("ratingScore: " + ratingScore);
             EvaluateMovieRatingRequest evaluateMovieRatingRequest = new EvaluateMovieRatingRequest(
                     1L,
-                    (long) num,
                     ratingScore
             );
             executorService.submit(() -> {
                 try {
-                    movieRatingsCommandService.evaluateMovieRating(evaluateMovieRatingRequest);
+                    movieRatingsCommandService.evaluateMovieRating(evaluateMovieRatingRequest, (long) num);
                 } finally {
                     latch.countDown();
                 }
@@ -72,11 +71,11 @@ public class MovieRatingLockTest {
         // 좋아요 작업
         for (int i = 1; i <= numberOfThreads; i++) {
             int num = 79 + i;
-            EvaluateMovieRatingRequest evaluateMovieRatingRequest = new EvaluateMovieRatingRequest(1L, (long) num,
+            EvaluateMovieRatingRequest evaluateMovieRatingRequest = new EvaluateMovieRatingRequest(1L,
                     BigDecimal.valueOf(4.5));
             executorService.submit(() -> {
                 try {
-                    movieRatingsCommandService.evaluateMovieRating(evaluateMovieRatingRequest);
+                    movieRatingsCommandService.evaluateMovieRating(evaluateMovieRatingRequest, (long) num);
                 } finally {
                     likeLatch.countDown();
                 }

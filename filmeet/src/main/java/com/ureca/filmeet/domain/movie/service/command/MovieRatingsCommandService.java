@@ -35,15 +35,15 @@ public class MovieRatingsCommandService {
     private final GenreScoreRepository genreScoreRepository;
 
     @DistributedLock(key = "'evaluateMovie:' + #evaluateMovieRatingRequest.movieId")
-    public void evaluateMovieRating(EvaluateMovieRatingRequest evaluateMovieRatingRequest) {
+    public void evaluateMovieRating(EvaluateMovieRatingRequest evaluateMovieRatingRequest, Long userId) {
         boolean isAlreadyRating = movieRatingsRepository.existsByMovieIdAndUserId(evaluateMovieRatingRequest.movieId(),
-                evaluateMovieRatingRequest.userId());
+                userId);
         if (isAlreadyRating) {
-            modifyMovieRating(evaluateMovieRatingRequest);
+            modifyMovieRating(evaluateMovieRatingRequest, userId);
             return;
         }
 
-        User user = userRepository.findById(evaluateMovieRatingRequest.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(MovieUserNotFoundException::new);
         Movie movie = movieRepository.findMovieWithGenreByMovieId(evaluateMovieRatingRequest.movieId())
                 .orElseThrow(MovieNotFoundException::new);
@@ -58,17 +58,17 @@ public class MovieRatingsCommandService {
         movie.evaluateMovieRating(ratingScore);
 
         updateGenreScoresForUser(
-                evaluateMovieRatingRequest.userId(),
+                userId,
                 movie,
                 GenreScoreAction.RATING,
                 ratingScore
         );
     }
 
-    private void modifyMovieRating(EvaluateMovieRatingRequest modifyRatingRequest) {
+    private void modifyMovieRating(EvaluateMovieRatingRequest modifyRatingRequest, Long userId) {
         MovieRatings movieRatings = movieRatingsRepository.findMovieRatingBy(
                         modifyRatingRequest.movieId(),
-                        modifyRatingRequest.userId()
+                        userId
                 )
                 .orElseThrow(MovieRatingNotFoundException::new);
         BigDecimal oldRatingScore = movieRatings.getRatingScore();
@@ -80,7 +80,7 @@ public class MovieRatingsCommandService {
         movie.modifyMovieRating(oldRatingScore, newRatingScore);
 
         updateGenreScoresForUser(
-                modifyRatingRequest.userId(),
+                userId,
                 movie,
                 GenreScoreAction.RATING_UPDATE,
                 newRatingScore.subtract(oldRatingScore)
