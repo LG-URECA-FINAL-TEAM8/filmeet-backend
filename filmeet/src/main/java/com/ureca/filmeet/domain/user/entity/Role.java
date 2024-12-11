@@ -12,8 +12,12 @@ import static com.ureca.filmeet.domain.user.entity.PrivilegeSets.*;
 
 @Getter
 public enum Role {
-    ROLE_USER(
+    ROLE_MINOR_USER(
             USER_COMMON_PRIVILEGES
+    ),
+    ROLE_ADULT_USER(
+            Stream.of(USER_COMMON_PRIVILEGES, ADULT_USER_PRIVILEGES)
+                    .flatMap(Set::stream).collect(Collectors.toSet())
     ),
     ROLE_MOVIE_ADMIN(
             Stream.of(USER_COMMON_PRIVILEGES, ADMIN_MOVIE_PRIVILEGES, ADMIN_EXTERNAL_API_PRIVILEGES)
