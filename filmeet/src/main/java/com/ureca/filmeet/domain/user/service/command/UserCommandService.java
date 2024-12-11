@@ -46,7 +46,7 @@ public class UserCommandService {
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
                 .nickname(request.nickname())
-                .role(Role.ROLE_USER)
+                .role(Role.ROLE_MINOR_USER)
                 .profileImage("https://filmeet-images.s3.ap-northeast-2.amazonaws.com/2024/12/03/1e928cad-c203-41e7-9184-8e46e6bf1ee0_default_profile.svg")
                 .build();
         User savedUser = userRepository.save(newUser);
@@ -69,7 +69,7 @@ public class UserCommandService {
                 .provider(provider)
                 .nickname(name) // 이름
                 .profileImage(profileImage)
-                .role(Role.ROLE_USER)
+                .role(Role.ROLE_MINOR_USER)
                 .build();
         User savedUser = userRepository.save(tempUser);
 
@@ -87,6 +87,7 @@ public class UserCommandService {
     @Transactional
     public void updatePreference(UpdatePreferenceRequest request, User loginUser) {
         User user = userQueryService.findById(loginUser.getId());
+        // 성인이면 권한 업데이트
         user.updatePreference(request.mbti(), request.age());
 
         genreScoreRepository.bulkUpdateGenreScores(

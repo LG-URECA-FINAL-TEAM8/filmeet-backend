@@ -127,14 +127,13 @@ public class SecurityConfig {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
 
         // 계층 설정
-        // SUPER_ADMIN > MOVIE_ADMIN > USER
-        // SUPER_ADMIN > REVIEW_ADMIN > USER
         String hierarchy = """
-                ROLE_SUPER_ADMIN > ROLE_MOVIE_ADMIN
-                ROLE_SUPER_ADMIN > ROLE_REVIEW_ADMIN
-                ROLE_MOVIE_ADMIN > ROLE_USER
-                ROLE_REVIEW_ADMIN > ROLE_USER
-                """;
+            ROLE_SUPER_ADMIN > ROLE_MOVIE_ADMIN
+            ROLE_SUPER_ADMIN > ROLE_REVIEW_ADMIN
+            ROLE_MOVIE_ADMIN > ROLE_ADULT_USER
+            ROLE_REVIEW_ADMIN > ROLE_ADULT_USER
+            ROLE_ADULT_USER > ROLE_MINOR_USER
+            """;
 
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
