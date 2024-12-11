@@ -85,7 +85,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/movies/*").permitAll()               // 영화 상세 조회
                         .requestMatchers(HttpMethod.GET, "/movies/search/genre").permitAll()    // 장르 검색
                         .requestMatchers(HttpMethod.GET, "/movies/search/title").permitAll()    // 제목 검색
-                        .requestMatchers(HttpMethod.GET, "/movies/rating").permitAll()          // 평가할 영화 조회
                         .requestMatchers(HttpMethod.GET, "/movies/random").permitAll()          // 랜덤 영화 조회
                         .requestMatchers(HttpMethod.GET, "/movies/recommendation/users/**").permitAll()
 
