@@ -104,7 +104,7 @@ public class MovieQueryController {
         return ApiResponse.ok(SliceResponseDto.of(movieSearchByTitleResponses));
     }
 
-    @GetMapping("/{movieId}")
+    @GetMapping("/detail/{movieId}")
     public ResponseEntity<ApiResponse<MovieDetailResponse>> getMovieDetail(
             @PathVariable("movieId") Long movieId,
             @AuthenticationPrincipal User user
