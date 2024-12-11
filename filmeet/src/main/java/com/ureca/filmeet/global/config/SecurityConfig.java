@@ -111,9 +111,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(
-                List.of("http://localhost:5173", "https://prod.d1qmm7ivgtvew4.amplifyapp.com",
-                        "https://filmeet.net")); // 허용할 Origin
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:5173")); // 허용할 Origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
