@@ -54,7 +54,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // 프론트엔드로 리다이렉트
         response.sendRedirect(redirectUrl);
-
+        user.setFirstLoginFalse();
         clearAuthenticationAttributes(request);
     }
 }

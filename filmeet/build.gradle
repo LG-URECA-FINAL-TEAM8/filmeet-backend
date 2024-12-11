@@ -147,6 +147,8 @@ dependencies {
 
     /* firebase */
     implementation 'com.google.firebase:firebase-admin:9.4.1'
+
+    implementation("com.hankcs:aho-corasick-double-array-trie:1.2.2")
 }
 
 tasks.named('test') {

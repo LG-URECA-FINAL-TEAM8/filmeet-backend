@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -102,5 +104,17 @@ public class S3CommandService {
                 UUID.randomUUID(),
                 file.getOriginalFilename()
         );
+    }
+
+    // 직렬화된 Trie 업로드
+    public void uploadSerializedTrie(String fileName, byte[] data) throws IOException {
+        try (InputStream inputStream = new ByteArrayInputStream(data)) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(data.length);
+            metadata.setContentType("application/octet-stream");
+
+            amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, metadata)
+                    .withCannedAcl(CannedAccessControlList.Private));
+        }
     }
 }
