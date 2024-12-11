@@ -144,9 +144,9 @@ public class MovieQueryService {
         );
     }
 
-    public Slice<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size) {
+    public Slice<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size, Long userId) {
         Pageable pageable = PageRequest.of(page, size);
-        return movieRepository.findMoviesByGenre(genreType, pageable);
+        return movieRepository.findMoviesByGenre(genreType, pageable, userId);
     }
 
     public Slice<MoviesRandomResponse> getRandomMovies(Pageable pageable) {

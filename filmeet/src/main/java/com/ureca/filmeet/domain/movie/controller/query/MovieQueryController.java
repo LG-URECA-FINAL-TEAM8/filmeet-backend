@@ -118,9 +118,10 @@ public class MovieQueryController {
     public ResponseEntity<ApiResponse<SliceResponseDto<MoviesResponse>>> getMoviesByGenre(
             @RequestParam(value = "genreType", required = false) GenreType genreType,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal User user
     ) {
-        Slice<MoviesResponse> moviesByGenre = movieQueryService.getMoviesByGenre(genreType, page, size);
+        Slice<MoviesResponse> moviesByGenre = movieQueryService.getMoviesByGenre(genreType, page, size, user.getId());
         return ApiResponse.ok(SliceResponseDto.of(moviesByGenre));
     }
 
