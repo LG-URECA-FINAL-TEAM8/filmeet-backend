@@ -74,7 +74,7 @@ public class SecurityConfig {
                         // 리뷰 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
                         .requestMatchers(HttpMethod.GET, "/reviews/movies/*").permitAll() // 영화 리뷰 목록 조회
-                        .requestMatchers(HttpMethod.GET, "/reviews/*").permitAll()       // 리뷰 상세 조회
+                        .requestMatchers(HttpMethod.GET, "/reviews/*").permitAll()        // 리뷰 상세 조회
                         .requestMatchers(HttpMethod.GET, "/reviews/users")
                         .permitAll() // 지금 뜨는 리뷰 조회 (쿼리 파라미터는 컨트롤러에서 검증)
 
@@ -82,7 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/movies/upcoming").permitAll()        // 공개 예정작
                         .requestMatchers(HttpMethod.GET, "/movies/boxoffice").permitAll()       // 박스오피스 순위
                         .requestMatchers(HttpMethod.GET, "/movies/rankings").permitAll()        // TOP 10 영화
-                        .requestMatchers(HttpMethod.GET, "/movies/*").permitAll()               // 영화 상세 조회
+                        .requestMatchers(HttpMethod.GET, "/movies/detail/*").permitAll()        // 영화 상세 조회
                         .requestMatchers(HttpMethod.GET, "/movies/search/genre").permitAll()    // 장르 검색
                         .requestMatchers(HttpMethod.GET, "/movies/search/title").permitAll()    // 제목 검색
                         .requestMatchers(HttpMethod.GET, "/movies/random").permitAll()          // 랜덤 영화 조회
