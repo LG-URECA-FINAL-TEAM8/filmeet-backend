@@ -37,7 +37,7 @@ public class Movie extends BaseEntity {
     @Column(nullable = false)
     private Integer runtime;
 
-    @Column(length = 200)
+    @Column(length = 500)
     private String posterUrl;
 
     private Integer likeCounts = 0;
