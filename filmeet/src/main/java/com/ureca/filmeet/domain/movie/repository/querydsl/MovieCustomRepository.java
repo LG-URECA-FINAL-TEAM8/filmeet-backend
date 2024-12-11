@@ -14,5 +14,5 @@ public interface MovieCustomRepository {
 
     Slice<MovieSearchByTitleResponse> searchMoviesByTitle(String title, Pageable pageable);
 
-    Slice<MoviesResponse> findMoviesByGenre(GenreType genreType, Pageable pageable, Long userId);
+    SliceWithCount<MoviesResponse> findMoviesByGenre(GenreType genreType, Pageable pageable, Long userId);
 }

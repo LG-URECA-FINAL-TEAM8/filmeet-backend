@@ -152,7 +152,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
     }
 
     @Override
-    public Slice<MoviesResponse> findMoviesByGenre(GenreType genreType, Pageable pageable, Long userId) {
+    public SliceWithCount<MoviesResponse> findMoviesByGenre(GenreType genreType, Pageable pageable, Long userId) {
         boolean isGenreFilterActive = genreType != null;
 
         JPQLQuery<MoviesResponse> query = queryFactory
@@ -179,7 +179,10 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
             movies = movies.subList(0, pageable.getPageSize());
         }
 
-        return new SliceImpl<>(movies, pageable, hasNext);
+        // 사용자 평가한 영화 개수 가져오기
+        long ratedMovieCount = getRatedMovieCount(userId);
+
+        return new SliceWithCount<>(movies, pageable, hasNext, ratedMovieCount);
     }
 
     private void addJoinAndWhereClause(JPQLQuery<?> query, boolean isGenreFilterActive, GenreType genreType) {
@@ -198,5 +201,13 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
 
     private BooleanExpression excludeRatedMoviesByLeftJoin() {
         return movieRatings.id.isNull();
+    }
+
+    private long getRatedMovieCount(Long userId) {
+        return queryFactory
+                .select(movieRatings.movie.count())
+                .from(movieRatings)
+                .where(movieRatings.user.id.eq(userId))
+                .fetchOne();
     }
 }

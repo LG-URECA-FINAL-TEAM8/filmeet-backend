@@ -17,6 +17,7 @@ import com.ureca.filmeet.domain.movie.repository.MovieCountriesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
+import com.ureca.filmeet.domain.movie.repository.querydsl.SliceWithCount;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -144,7 +145,7 @@ public class MovieQueryService {
         );
     }
 
-    public Slice<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size, Long userId) {
+    public SliceWithCount<MoviesResponse> getMoviesByGenre(GenreType genreType, int page, int size, Long userId) {
         Pageable pageable = PageRequest.of(page, size);
         return movieRepository.findMoviesByGenre(genreType, pageable, userId);
     }
