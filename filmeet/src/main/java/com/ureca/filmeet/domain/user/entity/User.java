@@ -103,6 +103,9 @@ public class User extends BaseTimeEntity {
     public void updatePreference(String mbti, Integer age) {
         this.mbti = mbti;
         this.age = age;
+        if (age >= 20) {
+            this.role = Role.ROLE_ADULT_USER;
+        }
     }
 
     public void addTotalMovieLikes() {
