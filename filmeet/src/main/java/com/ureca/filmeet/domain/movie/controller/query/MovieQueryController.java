@@ -5,11 +5,13 @@ import com.ureca.filmeet.domain.movie.dto.response.MovieDetailResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MovieSearchByTitleResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRandomResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRatingWithRatingCountResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
 import com.ureca.filmeet.domain.movie.repository.cache.BoxOfficeCacheStore;
+import com.ureca.filmeet.domain.movie.repository.querydsl.SliceWithCount;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
@@ -115,13 +117,21 @@ public class MovieQueryController {
     }
 
     @GetMapping("/rating")
-    public ResponseEntity<ApiResponse<SliceResponseDto<MoviesResponse>>> getMoviesByGenre(
+    public ResponseEntity<ApiResponse<MoviesRatingWithRatingCountResponse>> getMoviesByGenre(
             @RequestParam(value = "genreType", required = false) GenreType genreType,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal User user
     ) {
-        Slice<MoviesResponse> moviesByGenre = movieQueryService.getMoviesByGenre(genreType, page, size);
-        return ApiResponse.ok(SliceResponseDto.of(moviesByGenre));
+        SliceWithCount<MoviesResponse> moviesResponse = movieQueryService.getMoviesByGenre(
+                genreType,
+                page,
+                size,
+                user.getId()
+        );
+        MoviesRatingWithRatingCountResponse moviesRatingWithRatingCountResponse = MoviesRatingWithRatingCountResponse.of(
+                moviesResponse);
+        return ApiResponse.ok(moviesRatingWithRatingCountResponse);
     }
 
     @GetMapping("/random")
