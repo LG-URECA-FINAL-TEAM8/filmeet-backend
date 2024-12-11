@@ -17,11 +17,15 @@ import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import com.ureca.filmeet.global.notification.service.command.NotificationCommandService;
+import com.ureca.filmeet.global.util.string.BadWordService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -33,6 +37,7 @@ public class ReviewCommandService {
     private final ReviewRepository reviewRepository;
     private final FollowRepository followRepository;
     private final NotificationCommandService notificationCommandService;
+    private final BadWordService badWordService;
 
     public CreateReviewResponse createReview(CreateReviewRequest createReviewRequest, Long userId) {
         boolean isAlreadyReview = reviewRepository.existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(
@@ -49,7 +54,7 @@ public class ReviewCommandService {
                 .orElseThrow(ReviewMovieNotFoundException::new);
 
         Review review = Review.builder()
-                .content(createReviewRequest.content())
+                .content(badWordService.maskText(createReviewRequest.content()))
                 .movie(movie)
                 .user(user)
                 .build();
@@ -71,7 +76,7 @@ public class ReviewCommandService {
         Review review = reviewRepository.findReviewBy(modifyReviewRequest.reviewId())
                 .orElseThrow(ReviewNotFoundException::new);
 
-        review.modifyReview(modifyReviewRequest.content());
+        review.modifyReview(badWordService.maskText(modifyReviewRequest.content()));
 
         return ModifyReviewResponse.of(review.getId());
     }

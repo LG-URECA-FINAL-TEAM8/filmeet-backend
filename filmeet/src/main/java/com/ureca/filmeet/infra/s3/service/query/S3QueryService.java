@@ -2,6 +2,7 @@ package com.ureca.filmeet.infra.s3.service.query;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.ureca.filmeet.infra.s3.dto.S3DownloadResponse;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -114,5 +116,13 @@ public class S3QueryService {
             case "webp" -> "image/webp";
             default -> MediaType.APPLICATION_OCTET_STREAM_VALUE;
         };
+    }
+
+    // 직렬화된 Trie 다운로드
+    public byte[] downloadSerializedFile(String fileName) throws IOException {
+        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucket, fileName));
+        try (InputStream inputStream = s3Object.getObjectContent()) {
+            return inputStream.readAllBytes();
+        }
     }
 }
