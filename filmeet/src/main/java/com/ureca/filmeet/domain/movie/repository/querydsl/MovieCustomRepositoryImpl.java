@@ -3,6 +3,7 @@ package com.ureca.filmeet.domain.movie.repository.querydsl;
 import static com.ureca.filmeet.domain.genre.entity.QGenre.genre;
 import static com.ureca.filmeet.domain.genre.entity.QMovieGenre.movieGenre;
 import static com.ureca.filmeet.domain.movie.entity.QMovie.movie;
+import static com.ureca.filmeet.domain.movie.entity.QMovieRatings.movieRatings;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -151,7 +152,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
     }
 
     @Override
-    public Slice<MoviesResponse> findMoviesByGenre(GenreType genreType, Pageable pageable) {
+    public SliceWithCount<MoviesResponse> findMoviesByGenre(GenreType genreType, Pageable pageable, Long userId) {
         boolean isGenreFilterActive = genreType != null;
 
         JPQLQuery<MoviesResponse> query = queryFactory
@@ -161,10 +162,13 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
                         movie.posterUrl,
                         movie.releaseDate
                 ))
-                .from(movie);
+                .from(movie)
+                .leftJoin(movieRatings).on(movieRatings.movie.id.eq(movie.id).and(movieRatings.user.id.eq(userId)));
 
         // 장르 필터에 따라 조건 추가
         addJoinAndWhereClause(query, isGenreFilterActive, genreType);
+        query.where(excludeRatedMoviesByLeftJoin());
+
         List<MoviesResponse> movies = query
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
@@ -175,7 +179,10 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
             movies = movies.subList(0, pageable.getPageSize());
         }
 
-        return new SliceImpl<>(movies, pageable, hasNext);
+        // 사용자 평가한 영화 개수 가져오기
+        long ratedMovieCount = getRatedMovieCount(userId);
+
+        return new SliceWithCount<>(movies, pageable, hasNext, ratedMovieCount);
     }
 
     private void addJoinAndWhereClause(JPQLQuery<?> query, boolean isGenreFilterActive, GenreType genreType) {
@@ -190,5 +197,17 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
 
     private BooleanExpression genreTypeEquals(GenreType genreType) {
         return genreType == null ? null : genre.genreType.eq(genreType);
+    }
+
+    private BooleanExpression excludeRatedMoviesByLeftJoin() {
+        return movieRatings.id.isNull();
+    }
+
+    private long getRatedMovieCount(Long userId) {
+        return queryFactory
+                .select(movieRatings.movie.count())
+                .from(movieRatings)
+                .where(movieRatings.user.id.eq(userId))
+                .fetchOne();
     }
 }

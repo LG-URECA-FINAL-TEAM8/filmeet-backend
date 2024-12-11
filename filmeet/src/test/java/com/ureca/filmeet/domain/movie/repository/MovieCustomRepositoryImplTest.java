@@ -184,7 +184,7 @@ class MovieCustomRepositoryImplTest {
 
         // when
         movieRepository.saveAll(List.of(movie1, movie2));
-        Slice<MoviesResponse> result = movieRepository.findMoviesByGenre(null, pageable);
+        Slice<MoviesResponse> result = movieRepository.findMoviesByGenre(null, pageable, 1L);
 
         // then
         assertThat(result.getContent())
@@ -216,7 +216,7 @@ class MovieCustomRepositoryImplTest {
         movieRepository.saveAll(List.of(movie1, movie2, movie3));
         genreRepository.saveAll(List.of(genre1, genre2, genre3));
         movieGenreRepository.saveAll(List.of(movieGenre1, movieGenre2, movieGenre3, movieGenre4));
-        Slice<MoviesResponse> result = movieRepository.findMoviesByGenre(GenreType.ACTION, pageable);
+        Slice<MoviesResponse> result = movieRepository.findMoviesByGenre(GenreType.ACTION, pageable, 1L);
 
         // then
         assertThat(result.getContent())
