@@ -99,17 +99,17 @@ class MovieRatingsCommandServiceTest {
         genreRepository.saveAll(List.of(genre1, genre2, genre3, genre4));
         movieGenreRepository.saveAll(List.of(movieGenre1, movieGenre2, movieGenre3, movieGenre4));
         genreScoreRepository.saveAll(List.of(genreScore1, genreScore2, genreScore3, genreScore4));
-        EvaluateMovieRatingRequest request1 = new EvaluateMovieRatingRequest(movie1.getId(), user.getId(),
+        EvaluateMovieRatingRequest request1 = new EvaluateMovieRatingRequest(movie1.getId(),
                 BigDecimal.valueOf(4.5));
-        EvaluateMovieRatingRequest request2 = new EvaluateMovieRatingRequest(movie2.getId(), user.getId(),
+        EvaluateMovieRatingRequest request2 = new EvaluateMovieRatingRequest(movie2.getId(),
                 BigDecimal.valueOf(3.5));
-        EvaluateMovieRatingRequest request3 = new EvaluateMovieRatingRequest(movie3.getId(), user.getId(),
+        EvaluateMovieRatingRequest request3 = new EvaluateMovieRatingRequest(movie3.getId(),
                 BigDecimal.valueOf(2.5));
         em.flush();
         em.clear();
-        movieRatingsCommandService.evaluateMovieRating(request1);
-        movieRatingsCommandService.evaluateMovieRating(request2);
-        movieRatingsCommandService.evaluateMovieRating(request3);
+        movieRatingsCommandService.evaluateMovieRating(request1, user.getId());
+        movieRatingsCommandService.evaluateMovieRating(request2, user.getId());
+        movieRatingsCommandService.evaluateMovieRating(request3, user.getId());
         boolean isRated1 = movieRatingsRepository.existsByMovieIdAndUserId(movie1.getId(), user.getId());
         boolean isRated2 = movieRatingsRepository.existsByMovieIdAndUserId(movie2.getId(), user.getId());
         boolean isRated3 = movieRatingsRepository.existsByMovieIdAndUserId(movie3.getId(), user.getId());
@@ -142,11 +142,10 @@ class MovieRatingsCommandServiceTest {
         userRepository.save(user);
         movieRepository.save(movie);
         movieRatingsRepository.save(movieRatings);
-        EvaluateMovieRatingRequest request = new EvaluateMovieRatingRequest(movie.getId(), user.getId(),
-                BigDecimal.valueOf(4.5));
+        EvaluateMovieRatingRequest request = new EvaluateMovieRatingRequest(movie.getId(), BigDecimal.valueOf(4.5));
 
         // then
-        assertThatThrownBy(() -> movieRatingsCommandService.evaluateMovieRating(request))
+        assertThatThrownBy(() -> movieRatingsCommandService.evaluateMovieRating(request, user.getId()))
                 .isInstanceOf(MovieRatingAlreadyExistsException.class);
     }
 
@@ -255,8 +254,8 @@ class MovieRatingsCommandServiceTest {
         em.flush();
         em.clear();
 
-        DeleteMovieRatingRequest deleteRequest = new DeleteMovieRatingRequest(movie1.getId(), user.getId());
-        movieRatingsCommandService.deleteMovieRating(deleteRequest);
+        DeleteMovieRatingRequest deleteRequest = new DeleteMovieRatingRequest(movie1.getId());
+        movieRatingsCommandService.deleteMovieRating(deleteRequest, user.getId());
 
         Optional<MovieRatings> deletedRating = movieRatingsRepository.findMovieRatingBy(movie1.getId(), user.getId());
         Movie updatedMovie = movieRepository.findById(movie1.getId()).orElseThrow();

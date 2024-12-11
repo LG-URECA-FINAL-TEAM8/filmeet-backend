@@ -17,12 +17,11 @@ import com.ureca.filmeet.domain.review.repository.ReviewRepository;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import com.ureca.filmeet.global.notification.service.command.NotificationCommandService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -35,15 +34,15 @@ public class ReviewCommandService {
     private final FollowRepository followRepository;
     private final NotificationCommandService notificationCommandService;
 
-    public CreateReviewResponse createReview(CreateReviewRequest createReviewRequest) {
+    public CreateReviewResponse createReview(CreateReviewRequest createReviewRequest, Long userId) {
         boolean isAlreadyReview = reviewRepository.existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(
-                createReviewRequest.userId(),
+                userId,
                 createReviewRequest.movieId());
         if (isAlreadyReview) {
             throw new ReviewAlreadyExistsException();
         }
 
-        User user = userRepository.findById(createReviewRequest.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(ReviewUserNotFoundException::new);
 
         Movie movie = movieRepository.findById(createReviewRequest.movieId())

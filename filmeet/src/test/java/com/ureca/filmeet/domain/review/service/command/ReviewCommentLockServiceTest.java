@@ -37,10 +37,10 @@ public class ReviewCommentLockServiceTest {
 
         for (int i = 1; i <= numberOfThreads; i++) {
             int num = 138 + i;
-            CreateCommentRequest createCommentRequest = new CreateCommentRequest(63L, (long) num, "내용" + num);
+            CreateCommentRequest createCommentRequest = new CreateCommentRequest(63L, "내용" + num);
             executorService.submit(() -> {
                 try {
-                    reviewCommentCommandService.createComment(createCommentRequest);
+                    reviewCommentCommandService.createComment(createCommentRequest, (long) num);
                 } finally {
                     latch.countDown();
                 }
@@ -65,10 +65,11 @@ public class ReviewCommentLockServiceTest {
 
         for (int i = 1; i <= numberOfThreads; i++) {
             int num = 128 + i;
-            CreateCommentRequest createCommentRequest = new CreateCommentRequest(63L, (long) num, "내용");
+            CreateCommentRequest createCommentRequest = new CreateCommentRequest(63L, "내용");
             executorService.submit(() -> {
                 try {
-                    CreateCommentResponse comment = reviewCommentCommandService.createComment(createCommentRequest);
+                    CreateCommentResponse comment = reviewCommentCommandService.createComment(createCommentRequest,
+                            (long) num);
                     commentIds.add(comment.reviewCommentId());
                 } finally {
                     likeLatch.countDown();
