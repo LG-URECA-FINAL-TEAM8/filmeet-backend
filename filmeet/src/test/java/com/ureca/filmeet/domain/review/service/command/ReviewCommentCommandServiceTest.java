@@ -66,8 +66,8 @@ class ReviewCommentCommandServiceTest {
         userRepository.save(user);
         movieRepository.save(movie);
         reviewRepository.save(review);
-        CreateCommentRequest request = new CreateCommentRequest(review.getId(), user.getId(), "댓글 내용");
-        CreateCommentResponse response = reviewCommentCommandService.createComment(request);
+        CreateCommentRequest request = new CreateCommentRequest(review.getId(), "댓글 내용");
+        CreateCommentResponse response = reviewCommentCommandService.createComment(request, user.getId());
         Optional<ReviewComment> savedComment = reviewCommentRepository.findById(response.reviewCommentId());
 
         // then
@@ -89,10 +89,10 @@ class ReviewCommentCommandServiceTest {
 
         // when
         userRepository.save(user);
-        CreateCommentRequest request = new CreateCommentRequest(999L, user.getId(), "댓글 내용");
+        CreateCommentRequest request = new CreateCommentRequest(999L, "댓글 내용");
 
         // then
-        assertThatThrownBy(() -> reviewCommentCommandService.createComment(request))
+        assertThatThrownBy(() -> reviewCommentCommandService.createComment(request, user.getId()))
                 .isInstanceOf(ReviewNotFoundException.class);
     }
 
@@ -106,10 +106,10 @@ class ReviewCommentCommandServiceTest {
         // when
         movieRepository.save(movie);
         reviewRepository.save(review);
-        CreateCommentRequest request = new CreateCommentRequest(review.getId(), 999L, "댓글 내용");
+        CreateCommentRequest request = new CreateCommentRequest(review.getId(), "댓글 내용");
 
         // then
-        assertThatThrownBy(() -> reviewCommentCommandService.createComment(request))
+        assertThatThrownBy(() -> reviewCommentCommandService.createComment(request, 999L))
                 .isInstanceOf(ReviewUserNotFoundException.class);
     }
 

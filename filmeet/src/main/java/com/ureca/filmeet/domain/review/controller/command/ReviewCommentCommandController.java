@@ -5,9 +5,11 @@ import com.ureca.filmeet.domain.review.dto.request.ModifyCommentRequest;
 import com.ureca.filmeet.domain.review.dto.response.CreateCommentResponse;
 import com.ureca.filmeet.domain.review.dto.response.ModifyCommentResponse;
 import com.ureca.filmeet.domain.review.service.command.ReviewCommentCommandService;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +27,12 @@ public class ReviewCommentCommandController {
 
     @PostMapping("/comments")
     public ResponseEntity<ApiResponse<CreateCommentResponse>> createComment(
-            @RequestBody CreateCommentRequest createCommentRequest
+            @RequestBody CreateCommentRequest createCommentRequest,
+            @AuthenticationPrincipal User user
     ) {
 
-        CreateCommentResponse reviewComment = reviewCommentCommandService.createComment(createCommentRequest);
+        CreateCommentResponse reviewComment = reviewCommentCommandService.createComment(createCommentRequest,
+                user.getId());
         return ApiResponse.ok(reviewComment);
     }
 
