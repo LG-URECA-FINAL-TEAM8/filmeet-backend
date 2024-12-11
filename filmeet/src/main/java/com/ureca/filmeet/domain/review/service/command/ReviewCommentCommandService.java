@@ -27,11 +27,11 @@ public class ReviewCommentCommandService {
     private final ReviewCommentRepository reviewCommentRepository;
 
     @DistributedLock(key = "'reviewComment:' + #createCommentRequest.reviewId")
-    public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest) {
+    public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest, Long userId) {
         Review review = reviewRepository.findReviewBy(createCommentRequest.reviewId())
                 .orElseThrow(ReviewNotFoundException::new);
 
-        User user = userRepository.findById(createCommentRequest.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(ReviewUserNotFoundException::new);
 
         ReviewComment reviewComment = ReviewComment.builder()
