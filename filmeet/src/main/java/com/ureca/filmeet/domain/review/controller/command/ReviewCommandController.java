@@ -5,9 +5,11 @@ import com.ureca.filmeet.domain.review.dto.request.ModifyReviewRequest;
 import com.ureca.filmeet.domain.review.dto.response.CreateReviewResponse;
 import com.ureca.filmeet.domain.review.dto.response.ModifyReviewResponse;
 import com.ureca.filmeet.domain.review.service.command.ReviewCommandService;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +27,10 @@ public class ReviewCommandController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CreateReviewResponse>> createReview(
-            @RequestBody CreateReviewRequest createReviewRequest) {
-        return ApiResponse.ok(reviewCommandService.createReview(createReviewRequest));
+            @RequestBody CreateReviewRequest createReviewRequest,
+            @AuthenticationPrincipal User user
+    ) {
+        return ApiResponse.ok(reviewCommandService.createReview(createReviewRequest, user.getId()));
     }
 
     @PatchMapping
