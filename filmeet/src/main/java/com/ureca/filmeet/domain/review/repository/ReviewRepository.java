@@ -4,18 +4,18 @@ import com.ureca.filmeet.domain.review.dto.response.GetMovieReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.dto.response.trending.ReviewResponse;
 import com.ureca.filmeet.domain.review.entity.Review;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
 public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCustomRepository {
 
     @Query("SELECT r " +
             "FROM Review r " +
+            "JOIN FETCH r.user u " +
             "WHERE r.movie.id = :movieId AND r.user.id = :userId AND r.isDeleted = false AND r.isVisible = true ")
     Optional<Review> findReviewBy(
             @Param("movieId") Long movieId,
@@ -117,6 +117,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCus
 
     @Query("SELECT SUM(r.commentCounts) FROM Review r WHERE r.movie.id = :movieId")
     Integer findTotalCommentCountsByMovieId(@Param("movieId") Long movieId);
-  
+
     boolean existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(Long userId, Long movieId);
 }
