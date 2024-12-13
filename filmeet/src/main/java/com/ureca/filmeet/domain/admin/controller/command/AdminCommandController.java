@@ -62,12 +62,9 @@ public class AdminCommandController {
         return ApiResponse.okWithoutData();
     }
 
-    @PostMapping("upload/trie")
+    @PostMapping("/upload/trie")
     public ResponseEntity<?> uploadTrie() throws IOException {
         badWordService.buildAndSaveTrie("trie_data.dat");
         return ApiResponse.okWithoutData();
     }
-
-
-    // TODO [eastsage]: 영화 순위 가중치 수정 기능
 }
