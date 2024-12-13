@@ -9,5 +9,10 @@ public record UserDetailResponse(
         Role role,
         String nickname,
         String profileImage,
-        boolean isFirstLogin) {
+        boolean isFirstLogin,
+        Integer age,
+        String mbti,
+        int totalMovieLikes,
+        int totalCollections,
+        int totalGames) {
 }

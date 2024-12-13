@@ -28,7 +28,7 @@ public class Gallery extends BaseTimeEntity {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 500, nullable = false)
     private String imageUrl;
 
     public Gallery(Movie movie, String imageUrl) {
