@@ -170,6 +170,13 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     //    @EntityGraph(attributePaths = {"movieGenres.genre"})
     Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
+    @Query("""
+            SELECT m FROM Movie m
+            WHERE m.isDeleted = false AND 
+            m.id = :id
+            """)
+    Optional<Movie> findById(Long id);
+
     @Query(
             "SELECT m FROM Movie m " +
                     "WHERE m.isDeleted = false "
