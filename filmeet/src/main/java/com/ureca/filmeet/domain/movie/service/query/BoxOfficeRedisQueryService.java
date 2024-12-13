@@ -1,50 +1,44 @@
-package com.ureca.filmeet.domain.movie.repository.cache;
+package com.ureca.filmeet.domain.movie.service.query;
 
 import static java.util.stream.Collectors.toList;
 
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.infra.kobis.KobisOpenAPIRestService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class BoxOfficeCacheStore {
+public class BoxOfficeRedisQueryService {
 
-    private final CopyOnWriteArrayList<Map<String, String>> cachedBoxOfficeMovies = new CopyOnWriteArrayList<>();
+    private static final String MOVIE_BOX_OFFICE = "MOVIE:BOX:OFFICE";
+
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final MovieRepository movieRepository;
     private final KobisOpenAPIRestService kobisOpenAPIRestService;
 
     @Scheduled(cron = "0 0 * * * ?")
-//    @Scheduled(cron = "0 0 8 * * ?")
     public void updateBoxOfficeMovies() {
         try {
             log.info("Update box office data...");
             List<Map<String, String>> boxOfficeMovies = fetchBoxOfficeMovies();
-            cachedBoxOfficeMovies.clear();
-            cachedBoxOfficeMovies.addAll(boxOfficeMovies);
+            redisTemplate.opsForValue().set(MOVIE_BOX_OFFICE, boxOfficeMovies);
             log.info("Successfully updated box office data in cache.");
         } catch (Exception e) {
-            log.error("Failed to update box office data", e);
+            log.error("Failed to update box office data in Redis. Error: {}", e.getMessage(), e);
         }
     }
 
-    //    @Retryable(
-//            retryFor = {RuntimeException.class},
-//            maxAttempts = 3,
-//            backoff = @Backoff(delay = 2000)
-//    )
-    public List<Map<String, String>> fetchBoxOfficeMovies() {
+    private List<Map<String, String>> fetchBoxOfficeMovies() {
         try {
             log.info("Fetching box office data...");
             List<Map<String, String>> boxOfficeMovies = kobisOpenAPIRestService.fetchDailyBoxOffice();
@@ -91,10 +85,26 @@ public class BoxOfficeCacheStore {
     }
 
     public List<Map<String, String>> getBoxOfficeMovies() {
-        if (cachedBoxOfficeMovies.isEmpty()) {
-            log.warn("Box office cache is empty.");
-            return List.of();
+        List<Map<String, String>> moviesBoxOffice = getMoviesBoxOfficeFromRedis();
+        if (moviesBoxOffice == null) {
+            log.info("Fetching movies box office from kobis ...");
+            List<Map<String, String>> findMoviesBoxOffice = fetchBoxOfficeMovies();
+            saveMoviesBoxOffice(findMoviesBoxOffice);
+            log.info("Fetched movies box office from kobis");
+            return findMoviesBoxOffice;
         }
-        return new ArrayList<>(cachedBoxOfficeMovies);
+
+        log.info("Fetched movies box office from Redis");
+        return moviesBoxOffice;
+    }
+
+    private void saveMoviesBoxOffice(List<Map<String, String>> moviesBoxOffice) {
+        redisTemplate.opsForValue().set(MOVIE_BOX_OFFICE, moviesBoxOffice);
+        log.info("saveMoviesBoxOffice : Movies box office saved to Redis");
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, String>> getMoviesBoxOfficeFromRedis() {
+        return (List<Map<String, String>>) redisTemplate.opsForValue().get(MOVIE_BOX_OFFICE);
     }
 }
