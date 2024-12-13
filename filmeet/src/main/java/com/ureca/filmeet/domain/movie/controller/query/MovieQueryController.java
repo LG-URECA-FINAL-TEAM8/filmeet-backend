@@ -10,7 +10,7 @@ import com.ureca.filmeet.domain.movie.dto.response.MoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesSearchByGenreResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UpcomingMoviesResponse;
-import com.ureca.filmeet.domain.movie.repository.cache.BoxOfficeCacheStore;
+import com.ureca.filmeet.domain.movie.repository.cache.BoxOfficeRedisQueryService;
 import com.ureca.filmeet.domain.movie.repository.querydsl.SliceWithCount;
 import com.ureca.filmeet.domain.movie.service.query.MovieQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MovieRecommendationQueryService;
@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieQueryController {
 
     private final MovieQueryService movieQueryService;
-    private final BoxOfficeCacheStore boxOfficeCacheStore;
+    private final BoxOfficeRedisQueryService boxOfficeRedisQueryService;
     private final MoviesSearchService moviesSearchService;
     private final MovieUpcomingQueryService movieUpcomingQueryService;
     private final MovieRecommendationQueryService movieRecommendationQueryService;
@@ -61,7 +61,7 @@ public class MovieQueryController {
 
     @GetMapping("/boxoffice")
     public ResponseEntity<ApiResponse<List<Map<String, String>>>> getBoxOfficeMovies() {
-        List<Map<String, String>> boxOfficeMovies = boxOfficeCacheStore.getBoxOfficeMovies();
+        List<Map<String, String>> boxOfficeMovies = boxOfficeRedisQueryService.getBoxOfficeMovies();
         return ApiResponse.ok(boxOfficeMovies);
     }
 
