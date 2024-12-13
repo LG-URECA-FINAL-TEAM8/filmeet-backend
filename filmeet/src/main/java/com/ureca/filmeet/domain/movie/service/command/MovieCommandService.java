@@ -78,7 +78,7 @@ public class MovieCommandService {
             addMovieCountryToMovie(nations, movie);
 
             // 7. Genre 저장
-            List<GenreType> genreTypes = Arrays.stream(request.genre().trim().split(","))
+            List<GenreType> genreTypes = Arrays.stream(request.genre().trim().split("[,/]"))
                     .map(GenreType::fromName) // GenreType으로 변환
                     .distinct()
                     .toList();
@@ -124,7 +124,7 @@ public class MovieCommandService {
 
     private LocalDate parseReleaseDate(String releaseDate) {
         if (releaseDate == null || releaseDate.isBlank()) {
-            return LocalDate.of(1111, 11, 11);
+            return LocalDate.of(2010, 10, 10);
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDate.parse(releaseDate, formatter);

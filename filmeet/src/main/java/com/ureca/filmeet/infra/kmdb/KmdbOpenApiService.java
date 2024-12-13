@@ -31,7 +31,7 @@ public class KmdbOpenApiService {
     public List<KmdbApiResponse> searchMovies(String director, String query, String actor) {
         // URL 생성
         StringBuilder urlBuilder = new StringBuilder(
-                String.format("%s?collection=kmdb_new2&detail=Y&ServiceKey=%s", kmdbApiUrl, serviceKey)
+                String.format("%s?collection=kmdb_new2&detail=Y&ServiceKey=%s&listCount=20", kmdbApiUrl, serviceKey)
         );
         if (director == null && query == null && actor == null) {
             throw new IllegalArgumentException("하나 이상의 파라미터를 제공해야 합니다.");
