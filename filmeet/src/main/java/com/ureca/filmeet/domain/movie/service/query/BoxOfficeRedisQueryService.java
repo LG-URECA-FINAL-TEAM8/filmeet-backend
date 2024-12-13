@@ -1,4 +1,4 @@
-package com.ureca.filmeet.domain.movie.repository.cache;
+package com.ureca.filmeet.domain.movie.service.query;
 
 import static java.util.stream.Collectors.toList;
 
