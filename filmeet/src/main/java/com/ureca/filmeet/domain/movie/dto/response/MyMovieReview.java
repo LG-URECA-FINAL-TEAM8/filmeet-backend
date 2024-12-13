@@ -11,8 +11,8 @@ public record MyMovieReview(
     public static MyMovieReview of(Review review) {
         return new MyMovieReview(
                 review.getId(),
-                review.getContent()
-                , review.getUser().getProfileImage()
+                review.getContent(),
+                review.getUser().getProfileImage()
         );
     }
 }
