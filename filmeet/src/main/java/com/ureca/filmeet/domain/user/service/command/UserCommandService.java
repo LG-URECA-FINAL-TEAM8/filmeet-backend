@@ -58,7 +58,12 @@ public class UserCommandService {
                 savedUser.getRole(),
                 savedUser.getNickname(),
                 savedUser.getProfileImage(),
-                savedUser.isFirstLogin()
+                savedUser.isFirstLogin(),
+                savedUser.getAge(),
+                savedUser.getMbti(),
+                savedUser.getTotalMovieLikes(),
+                savedUser.getTotalCollections(),
+                savedUser.getTotalGames()
         );
     }
 
