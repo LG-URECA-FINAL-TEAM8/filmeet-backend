@@ -3,7 +3,9 @@ package com.ureca.filmeet.domain.movie.repository;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.querydsl.MovieCustomRepository;
-
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -11,16 +13,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustomRepository {
 
     @Query("""
                 SELECT m.title
                 FROM Movie m
-                WHERE m.title IN :titles
+                WHERE m.title IN :titles AND m.isDeleted = false
             """)
     List<String> findExistingTitlesByTitleIn(@Param("titles") List<String> titles);
 
@@ -124,14 +122,15 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query(value =
             "SELECT * FROM movie " +
-                    "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) " +
+                    "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) AND m.is_deleted = false "
+                    +
                     "ORDER BY movie_id " +
                     "LIMIT :totalRounds",
             nativeQuery = true)
     List<Movie> findRandomMovies(@Param("totalRounds") Integer totalRounds);
 
     @Query(value = "SELECT * FROM movie m " +
-            "WHERE MATCH(m.title) AGAINST(:search) > 0",
+            "WHERE MATCH(m.title) AGAINST(:search) > 0 AND m.is_deleted = false",
             nativeQuery = true)
     Slice<Movie> findMoviesByTitle(
             @Param("search") String search,
@@ -141,7 +140,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     @Query("SELECT DISTINCT m FROM Movie m " +
             "LEFT JOIN FETCH m.movieGenres mg " +
             "LEFT JOIN FETCH mg.genre " +
-            "WHERE m IN :movies")
+            "WHERE m IN :movies AND m.isDeleted = false ")
     List<Movie> findMoviesWithGenres(@Param("movies") List<Movie> movies);
 
     @Query("""
@@ -157,23 +156,22 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
                 INNER JOIN MovieGenre mg ON m.id = mg.movie.id
                 INNER JOIN MovieGenre targetMg ON targetMg.movie.id = :movieId AND mg.genre.id = targetMg.genre.id
                 LEFT JOIN Review r ON r.movie.id = m.id
-                WHERE m.id != :movieId
+                WHERE m.id != :movieId AND m.isDeleted = false
                 GROUP BY m.id, m.title, m.posterUrl, m.likeCounts, m.ratingCounts
                 ORDER BY COUNT(mg.genre.id) DESC, m.likeCounts DESC
                 limit 6
             """)
     List<MoviesRoundmatchResponse> findSimilarMoviesByGenre(@Param("movieId") Long movieId);
 
-    //    @EntityGraph(attributePaths = {"movieGenres.genre"})
+    @Query("SELECT m FROM Movie m WHERE m.isDeleted = false")
     Page<Movie> findAll(Pageable pageable);
 
-    //    @EntityGraph(attributePaths = {"movieGenres.genre"})
-    Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    @Query("SELECT m FROM Movie m WHERE m.isDeleted = false AND LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    Page<Movie> findByTitleContainingIgnoreCase(@Param("title") String title, Pageable pageable);
 
     @Query("""
             SELECT m FROM Movie m
-            WHERE m.isDeleted = false AND 
-            m.id = :id
+            WHERE m.isDeleted = false AND m.id = :id
             """)
     Optional<Movie> findById(Long id);
 
@@ -185,6 +183,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             Pageable pageable
     );
 
-    @Query("SELECT m FROM Movie m WHERE m.title IN :titles")
+    @Query("SELECT m FROM Movie m WHERE m.title IN :titles AND m.isDeleted = false ")
     List<Movie> findMoviesByTitles(@Param("titles") List<String> titles);
 }

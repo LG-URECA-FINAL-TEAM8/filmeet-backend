@@ -109,7 +109,7 @@ public class MovieQueryService {
 
         MyMovieReview myMovieReview = reviewRepository.findReviewBy(movieId, userId)
                 .map(MyMovieReview::of)
-                .orElse(new MyMovieReview(null, null));
+                .orElse(new MyMovieReview(null, null, null));
 
         MyMovieRating myMovieRating = movieRatingsRepository.findMovieRatingBy(movieId, userId)
                 .map(MyMovieRating::of)
