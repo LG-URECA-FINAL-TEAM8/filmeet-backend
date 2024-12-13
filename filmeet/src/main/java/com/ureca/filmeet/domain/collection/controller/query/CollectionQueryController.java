@@ -6,12 +6,14 @@ import com.ureca.filmeet.domain.collection.dto.response.CollectionMovieInfoRespo
 import com.ureca.filmeet.domain.collection.dto.response.CollectionSearchByTitleResponse;
 import com.ureca.filmeet.domain.collection.dto.response.CollectionsResponse;
 import com.ureca.filmeet.domain.collection.service.service.CollectionQueryService;
+import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,10 +40,11 @@ public class CollectionQueryController {
 
     @GetMapping("/{collectionId}")
     public ResponseEntity<ApiResponse<CollectionDetailResponse>> getCollection(
-            @PathVariable("collectionId") Long collectionId
+            @PathVariable("collectionId") Long collectionId,
+            @AuthenticationPrincipal User user
     ) {
 
-        CollectionDetailResponse collectionsResponse = collectionQueryService.getCollection(collectionId);
+        CollectionDetailResponse collectionsResponse = collectionQueryService.getCollection(collectionId, user.getId());
         return ApiResponse.ok(collectionsResponse);
     }
 
