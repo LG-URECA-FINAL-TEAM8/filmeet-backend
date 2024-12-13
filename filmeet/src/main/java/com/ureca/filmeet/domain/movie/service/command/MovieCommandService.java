@@ -91,11 +91,8 @@ public class MovieCommandService {
 
     @Transactional
     public void deleteMovie(Long id) {
-        try {
-            movieRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new MovieNotFoundException();
-        }
+        Movie movie = movieRepository.findById(id).orElseThrow(MovieNotFoundException::new);
+        movie.delete();
     }
 
     @Transactional
