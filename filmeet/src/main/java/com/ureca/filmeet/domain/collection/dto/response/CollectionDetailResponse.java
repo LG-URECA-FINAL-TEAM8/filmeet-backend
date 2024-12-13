@@ -9,10 +9,11 @@ public record CollectionDetailResponse(
         String nickname,
         String userProfileImage,
         Integer likeCounts,
-        Integer commentCounts
+        Integer commentCounts,
+        Boolean isLiked
 ) {
 
-    public static CollectionDetailResponse of(Collection collection) {
+    public static CollectionDetailResponse from(Collection collection, Boolean existsCollectionLike) {
         return new CollectionDetailResponse(
                 collection.getId(),
                 collection.getTitle(),
@@ -20,7 +21,8 @@ public record CollectionDetailResponse(
                 collection.getUser().getNickname(),
                 collection.getUser().getProfileImage(),
                 collection.getLikeCounts(),
-                collection.getCommentCounts()
+                collection.getCommentCounts(),
+                existsCollectionLike
         );
     }
 }

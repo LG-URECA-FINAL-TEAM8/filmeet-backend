@@ -10,6 +10,7 @@ import com.ureca.filmeet.domain.collection.entity.CollectionMovie;
 import com.ureca.filmeet.domain.collection.exception.CollectionNotFoundException;
 import com.ureca.filmeet.domain.collection.exception.CollectionUserNotFoundException;
 import com.ureca.filmeet.domain.collection.repository.CollectionCommentRepository;
+import com.ureca.filmeet.domain.collection.repository.CollectionLikeRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionMovieRepository;
 import com.ureca.filmeet.domain.collection.repository.CollectionRepository;
 import com.ureca.filmeet.domain.user.entity.User;
@@ -29,6 +30,7 @@ public class CollectionQueryService {
     private final UserRepository userRepository;
     private final CollectionRepository collectionRepository;
     private final CollectionMovieRepository collectionMovieRepository;
+    private final CollectionLikeRepository collectionLikeRepository;
     private final CollectionCommentRepository collectionCommentRepository;
 
     public Slice<CollectionsResponse> getCollections(Long userId, int page, int size) {
@@ -70,11 +72,13 @@ public class CollectionQueryService {
                 .toList();
     }
 
-    public CollectionDetailResponse getCollection(Long collectionId) {
+    public CollectionDetailResponse getCollection(Long collectionId, Long userId) {
         Collection collection = collectionRepository.findCollectionByCollectionIdAndUserId(collectionId)
                 .orElseThrow(CollectionNotFoundException::new);
 
-        return CollectionDetailResponse.of(collection);
+        boolean existsCollectionLike = collectionLikeRepository.existsByCollectionIdAndUserId(collectionId, userId);
+
+        return CollectionDetailResponse.from(collection, existsCollectionLike);
     }
 
     public Slice<CollectionMovieInfoResponse> getCollectionMovies(Long collectionId, Pageable pageable) {
