@@ -123,7 +123,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query(value =
             "SELECT * FROM movie " +
-                    "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) AND m.is_deleted = false "
+                    "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) AND is_deleted = false "
                     +
                     "ORDER BY movie_id " +
                     "LIMIT :totalRounds",
