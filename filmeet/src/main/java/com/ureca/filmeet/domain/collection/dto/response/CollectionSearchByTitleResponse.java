@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.collection.dto.response;
 
-import com.ureca.filmeet.domain.collection.entity.Collection;
+
+import java.math.BigInteger;
 
 public record CollectionSearchByTitleResponse(
 
@@ -12,14 +13,14 @@ public record CollectionSearchByTitleResponse(
         String profileImage
 ) {
 
-    public static CollectionSearchByTitleResponse of(Collection collection) {
+    public static CollectionSearchByTitleResponse of(Object[] result) {
         return new CollectionSearchByTitleResponse(
-                collection.getId(),
-                collection.getUser().getId(),
-                collection.getTitle(),
-                collection.getContent(),
-                collection.getUser().getNickname(),
-                collection.getUser().getProfileImage()
+                ((BigInteger) result[0]).longValue(), // collection_id
+                ((BigInteger) result[1]).longValue(), // member_id
+                (String) result[2],                  // title
+                (String) result[3],                  // content
+                (String) result[4],                  // nickname
+                (String) result[5]                   // profile_image
         );
     }
 }
