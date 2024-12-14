@@ -10,6 +10,7 @@ import com.ureca.filmeet.domain.movie.dto.response.MyMovieRating;
 import com.ureca.filmeet.domain.movie.dto.response.MyMovieReview;
 import com.ureca.filmeet.domain.movie.dto.response.PersonnelInfoResponse;
 import com.ureca.filmeet.domain.movie.dto.response.RatingDistributionResponse;
+import com.ureca.filmeet.domain.movie.dto.response.UserMovieInteractionResponse;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
@@ -97,11 +98,18 @@ public class MovieQueryService {
 
         List<String> galleryImages = getGalleryImages(movie);
 
-        return MovieDetailResponse.from(movie, false, null, null, countries, genres, personnels, galleryImages,
-                null);
+        return MovieDetailResponse.from(
+                movie,
+                null,
+                countries,
+                genres,
+                personnels,
+                galleryImages,
+                null
+        );
     }
 
-    public MovieDetailResponse getMovieDetail(Long movieId, Long userId) {
+    public MovieDetailResponse getMovieDetailV2(Long movieId, Long userId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
                 .orElseThrow(MovieNotFoundException::new);
 
@@ -134,9 +142,10 @@ public class MovieQueryService {
 
         return MovieDetailResponse.from(
                 movie,
-                isLiked,
-                myMovieReview,
-                myMovieRating,
+                null,
+//                isLiked,
+//                myMovieReview,
+//                myMovieRating,
                 countries,
                 genres,
                 personnels,
@@ -153,5 +162,41 @@ public class MovieQueryService {
     public Slice<MoviesRandomResponse> getRandomMovies(Pageable pageable) {
         return movieRepository.findMoviesBy(pageable)
                 .map(MoviesRandomResponse::of);
+    }
+
+    public MovieDetailResponse getMovieDetail(Long movieId, Long userId) {
+        Movie movie = movieRepository.findMovieDetailInfo(movieId)
+                .orElseThrow(MovieNotFoundException::new);
+
+        UserMovieInteractionResponse userMovieInteraction = movieRepository.findUserMovieReviewAndRating(movieId,
+                        userId)
+                .orElseThrow(() -> new RuntimeException("no review and rating"));
+
+        List<String> countries = movieCountriesRepository.findMovieCountriesByMovieId(movieId)
+                .stream()
+                .map(movieCountries -> movieCountries.getCountry().getNation())
+                .toList();
+
+        List<GenreType> genres = movieGenreRepository.findMovieGenresByMovieId(movieId)
+                .stream()
+                .map(movieGenre -> movieGenre.getGenre().getGenreType())
+                .toList();
+
+        List<PersonnelInfoResponse> personnels = getPersonnelInfoResponses(movie);
+
+        List<String> galleryImages = getGalleryImages(movie);
+
+        List<RatingDistributionResponse> ratingDistribution = movieRatingsRepository.findRatingDistributionByMovieId(
+                movieId);
+
+        return MovieDetailResponse.from(
+                movie,
+                userMovieInteraction,
+                countries,
+                genres,
+                personnels,
+                galleryImages,
+                ratingDistribution
+        );
     }
 }
