@@ -93,7 +93,7 @@ public class CollectionQueryService {
 
     public Slice<CollectionSearchByTitleResponse> searchCollectionByTitle(String titleKeyword, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "created_at");
         return collectionRepository.findCollectionsByTitleKeyword(titleKeyword, pageable)
                 .map(CollectionSearchByTitleResponse::of);
     }

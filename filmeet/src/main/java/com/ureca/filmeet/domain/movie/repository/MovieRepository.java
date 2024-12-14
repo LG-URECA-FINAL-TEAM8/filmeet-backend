@@ -1,6 +1,7 @@
 package com.ureca.filmeet.domain.movie.repository;
 
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
+import com.ureca.filmeet.domain.movie.dto.response.UserMovieInteractionResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.repository.querydsl.MovieCustomRepository;
 import java.time.LocalDate;
@@ -122,7 +123,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query(value =
             "SELECT * FROM movie " +
-                    "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) AND m.is_deleted = false "
+                    "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) AND is_deleted = false "
                     +
                     "ORDER BY movie_id " +
                     "LIMIT :totalRounds",
@@ -185,4 +186,25 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
 
     @Query("SELECT m FROM Movie m WHERE m.title IN :titles AND m.isDeleted = false ")
     List<Movie> findMoviesByTitles(@Param("titles") List<String> titles);
+
+    @Query("""
+                SELECT new com.ureca.filmeet.domain.movie.dto.response.UserMovieInteractionResponse(
+                    mr.id,
+                    mr.ratingScore,
+                    r.id,
+                    r.content,
+                    u.profileImage,
+                    CASE WHEN ml.id IS NOT NULL THEN true ELSE false END
+                )
+                FROM Movie m
+                LEFT JOIN MovieRatings mr ON mr.movie.id = m.id AND mr.user.id = :userId
+                LEFT JOIN Review r ON r.movie.id = m.id AND r.user.id = :userId AND r.isDeleted = false
+                LEFT JOIN User u ON u.id = :userId
+                LEFT JOIN MovieLikes ml ON ml.movie.id = m.id AND ml.user.id = :userId
+                WHERE m.id = :movieId AND m.isDeleted = false
+            """)
+    Optional<UserMovieInteractionResponse> findUserMovieReviewAndRating(
+            @Param("movieId") Long movieId,
+            @Param("userId") Long userId
+    );
 }

@@ -16,9 +16,7 @@ public record MovieDetailResponse(
         Integer likeCounts,
         Integer ratingCounts,
         BigDecimal averageRating,
-        boolean isLiked,
-        MyMovieReview myMovieReview,
-        MyMovieRating myMovieRating,
+        UserMovieInteractionResponse userMovieInteractionResponse,
         List<String> countries,
         List<GenreType> genres,
         List<PersonnelInfoResponse> personnels,
@@ -26,12 +24,14 @@ public record MovieDetailResponse(
         List<RatingDistributionResponse> ratingDistribution
 ) {
 
-    public static MovieDetailResponse from(Movie movie, boolean isLiked, MyMovieReview myMovieReview,
-                                           MyMovieRating myMovieRating,
-                                           List<String> countries, List<GenreType> genres,
-                                           List<PersonnelInfoResponse> personnels,
-                                           List<String> galleryImages,
-                                           List<RatingDistributionResponse> ratingDistribution) {
+    public static MovieDetailResponse from(
+            Movie movie,
+            UserMovieInteractionResponse userMovieInteractionResponse,
+            List<String> countries, List<GenreType> genres,
+            List<PersonnelInfoResponse> personnels,
+            List<String> galleryImages,
+            List<RatingDistributionResponse> ratingDistribution
+    ) {
 
         return new MovieDetailResponse(
                 movie.getId(),
@@ -43,9 +43,7 @@ public record MovieDetailResponse(
                 movie.getLikeCounts(),
                 movie.getRatingCounts(),
                 movie.getAverageRating(),
-                isLiked,
-                myMovieReview,
-                myMovieRating,
+                userMovieInteractionResponse,
                 countries,
                 genres,
                 personnels,
