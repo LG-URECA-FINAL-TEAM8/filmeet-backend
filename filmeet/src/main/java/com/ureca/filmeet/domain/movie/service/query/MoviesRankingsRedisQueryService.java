@@ -3,16 +3,18 @@ package com.ureca.filmeet.domain.movie.service.query;
 import static java.util.stream.Collectors.toList;
 
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
 public class MoviesRankingsRedisQueryService {
 
@@ -52,7 +54,7 @@ public class MoviesRankingsRedisQueryService {
                 .collect(toList());
     }
 
-    private void saveMoviesRankings(List<MoviesRankingsResponse> moviesRankings) {
+    public void saveMoviesRankings(List<MoviesRankingsResponse> moviesRankings) {
         List<Map<String, String>> rankingsCacheData = toMaps(moviesRankings);
         redisTemplate.opsForValue().set(MOVIE_RANKINGS, rankingsCacheData);
         log.info("saveMoviesRankings : Movies rankings saved to Redis");
@@ -67,5 +69,19 @@ public class MoviesRankingsRedisQueryService {
     @SuppressWarnings("unchecked")
     private List<Map<String, String>> getMoviesRankingsFromRedis() {
         return (List<Map<String, String>>) redisTemplate.opsForValue().get(MOVIE_RANKINGS);
+    }
+
+    public List<Long> getTop10MovieIds() {
+        List<Map<String, String>> moviesRankings = getMoviesRankingsFromRedis();
+        // moviesRankings가 null인 경우 빈 리스트 반환
+        if (moviesRankings == null) {
+            return Collections.emptyList();
+        }
+        // null이 아닌 경우 기존 로직 수행
+        return moviesRankings.stream()
+                .map(movie -> movie.get("movieId"))
+                .filter(Objects::nonNull)
+                .map(Long::valueOf)
+                .collect(toList());
     }
 }
