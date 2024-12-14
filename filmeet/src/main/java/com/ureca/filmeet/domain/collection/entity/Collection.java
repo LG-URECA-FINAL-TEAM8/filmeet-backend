@@ -24,6 +24,9 @@ public class Collection extends BaseEntity {
     @Column(length = 50)
     private String title;
 
+    @Column(length = 50, insertable = false, updatable = false)
+    private String lowerTitle;
+
     @Column(length = 100)
     private String content;
 
