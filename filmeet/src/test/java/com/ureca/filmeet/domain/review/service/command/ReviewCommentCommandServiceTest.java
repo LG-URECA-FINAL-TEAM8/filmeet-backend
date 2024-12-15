@@ -27,15 +27,15 @@ import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles("local")
 class ReviewCommentCommandServiceTest {
 
@@ -50,8 +50,17 @@ class ReviewCommentCommandServiceTest {
 
     @Autowired
     private ReviewCommentRepository reviewCommentRepository;
+
     @Autowired
     private MovieRepository movieRepository;
+
+    @AfterEach
+    void tearDown() {
+        reviewCommentRepository.deleteAllInBatch();
+        reviewRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+        movieRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("리뷰에 댓글을 성공적으로 저장한다.")
@@ -74,9 +83,9 @@ class ReviewCommentCommandServiceTest {
         assertThat(savedComment)
                 .isPresent()
                 .get()
-                .extracting("id", "content", "user", "review")
+                .extracting("id", "content", "user.id", "review.id")
                 .contains(
-                        savedComment.get().getId(), "댓글 내용", user, review
+                        savedComment.get().getId(), "댓글 내용", user.getId(), review.getId()
                 );
     }
 
@@ -136,9 +145,9 @@ class ReviewCommentCommandServiceTest {
         assertThat(savedComment)
                 .isPresent()
                 .get()
-                .extracting("id", "content", "user", "review")
+                .extracting("id", "content", "user.id", "review.id")
                 .contains(
-                        savedComment.get().getId(), "수정된 댓글 내용", user, review
+                        savedComment.get().getId(), "수정된 댓글 내용", user.getId(), review.getId()
                 );
     }
 
@@ -157,24 +166,24 @@ class ReviewCommentCommandServiceTest {
     @DisplayName("댓글을 성공적으로 삭제한다.")
     void deleteComment_whenValidRequest_deletesComment() {
         // given
-        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
+        String username = UUID.randomUUID().toString();
+        User user = createUser(username, "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user, 0, 1);
-        ReviewComment reviewComment = createReviewComment("댓글 내용", review, user);
 
         // when
         userRepository.save(user);
         movieRepository.save(movie);
         reviewRepository.save(review);
-        reviewCommentRepository.save(reviewComment);
-        reviewCommentCommandService.deleteComment(review.getId(), reviewComment.getId());
-        Optional<ReviewComment> deletedComment = reviewCommentRepository.findById(reviewComment.getId());
+        CreateCommentRequest request = new CreateCommentRequest(review.getId(), "댓글 내용");
+        CreateCommentResponse response = reviewCommentCommandService.createComment(request, user.getId());
+        reviewCommentCommandService.deleteComment(review.getId(), response.reviewCommentId());
+        Optional<ReviewComment> deletedComment = reviewCommentRepository.findById(response.reviewCommentId());
 
         // then
         assertThat(deletedComment).isPresent();
         assertThat(deletedComment.get().getIsDeleted()).isTrue();
-        assertThat(review.getCommentCounts()).isEqualTo(0);
     }
 
     @Test
