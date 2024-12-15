@@ -46,7 +46,7 @@ class ReviewLikesRepositoryTest {
     void saveReviewLikesSuccessfully() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         ReviewLikes reviewLikes = createReviewLikes(review, user);
@@ -69,7 +69,7 @@ class ReviewLikesRepositoryTest {
     void deleteReviewLikesSuccessfully() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         ReviewLikes reviewLikes = createReviewLikes(review, user);
@@ -101,7 +101,7 @@ class ReviewLikesRepositoryTest {
     void existsByReviewIdAndUserId_whenExists_returnsTrue() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         ReviewLikes reviewLikes = createReviewLikes(review, user);

@@ -49,7 +49,7 @@ class CollectionCommentCommandServiceTest {
     @Test
     void createCollectionComment_whenValidRequest_savesComment() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -88,7 +88,7 @@ class CollectionCommentCommandServiceTest {
     @DisplayName("존재하지 않는 컬렉션에 댓글을 작성하려고 하면 CollectionNotFoundException 이 발생한다.")
     void createCollectionComment_whenCollectionNotFound_throwsException() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         CollectionCommentCreateRequest request = new CollectionCommentCreateRequest(999L, "댓글 내용");
 
@@ -104,7 +104,7 @@ class CollectionCommentCommandServiceTest {
     @DisplayName("사용자가 자신의 댓글을 성공적으로 수정한다.")
     void modifyCollectionComment_whenValidRequest_updatesComment() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment comment = createCollectionComment("댓글 내용", user, collection);
@@ -141,7 +141,7 @@ class CollectionCommentCommandServiceTest {
     @DisplayName("사용자가 자신의 댓글을 성공적으로 삭제한다.")
     void deleteCollectionComment_whenValidRequest_deletesComment() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment comment = createCollectionComment("댓글 내용", user, collection);
@@ -176,7 +176,7 @@ class CollectionCommentCommandServiceTest {
     @DisplayName("사용자가 존재하지 않는 컬렉션의 댓글을 삭제하려고 하면 CollectionNotFoundException 이 발생한다.")
     void deleteCollectionComment_whenCollectionNotFound_throwsException() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment comment = createCollectionComment("댓글 내용", user, collection);

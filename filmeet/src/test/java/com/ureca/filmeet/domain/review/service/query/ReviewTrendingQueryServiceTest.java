@@ -52,7 +52,8 @@ class ReviewTrendingQueryServiceTest {
         LocalDateTime now = LocalDateTime.now();
         String username = UUID.randomUUID() + "";
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
-        User user = createUser(username, "password", Role.ROLE_USER, Provider.NAVER, "닉네임1", "https://profile.url");
+        User user = createUser(username, "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임1",
+                "https://profile.url");
 
         Review lowLikesReview = createReview("좋아요 적음", movie, user, 2, 3);
         Review highLikesReview = createReview("좋아요 많음", movie, user, 3, 3);
@@ -82,7 +83,8 @@ class ReviewTrendingQueryServiceTest {
         LocalDateTime now = LocalDateTime.now();
         String username = UUID.randomUUID() + "";
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
-        User user = createUser(username, "password", Role.ROLE_USER, Provider.NAVER, "닉네임1", "https://profile.url");
+        User user = createUser(username, "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임1",
+                "https://profile.url");
 
         Review lowCommentsReview = createReview("좋아요 적음", movie, user, 3, 3);
         Review highCommentsReview = createReview("좋아요 많음", movie, user, 3, 4);

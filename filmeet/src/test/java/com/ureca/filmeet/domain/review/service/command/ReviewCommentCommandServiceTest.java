@@ -57,7 +57,7 @@ class ReviewCommentCommandServiceTest {
     @DisplayName("리뷰에 댓글을 성공적으로 저장한다.")
     void createComment_whenValidRequest_savesComment() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -84,7 +84,7 @@ class ReviewCommentCommandServiceTest {
     @DisplayName("존재하지 않는 리뷰 ID로 댓글을 생성하면 ReviewNotFoundException 예외가 발생한다.")
     void createComment_whenReviewNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
 
         // when
@@ -117,7 +117,7 @@ class ReviewCommentCommandServiceTest {
     @DisplayName("리뷰에 달려 있는 댓글을 성공적으로 수정한다.")
     void modifyComment_whenValidRequest_updatesComment() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -157,7 +157,7 @@ class ReviewCommentCommandServiceTest {
     @DisplayName("댓글을 성공적으로 삭제한다.")
     void deleteComment_whenValidRequest_deletesComment() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user, 0, 1);
@@ -181,7 +181,7 @@ class ReviewCommentCommandServiceTest {
     @DisplayName("존재하지 않는 리뷰 ID 또는 댓글 ID로 삭제를 시도하면 ReviewCommentNotFoundException 예외가 발생한다.")
     void deleteComment_whenCommentNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);

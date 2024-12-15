@@ -45,9 +45,9 @@ class CollectionLikeCommandServiceTest {
     @Test
     void collectionLikes_whenValidRequest_addsLike() {
         // given
-        User user1 = createUser("username1", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user1 = createUser("username1", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
-        User user2 = createUser("username2", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user2 = createUser("username2", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목1", "컬렉션 내용", user1);
 
@@ -74,7 +74,7 @@ class CollectionLikeCommandServiceTest {
     @DisplayName("이미 좋아요한 컬렉션에 다시 좋아요를 누를 경우 CollectionLikeAlreadyExistsException 예외가 발생한다.")
     void collectionLikes_whenAlreadyLiked_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -92,7 +92,7 @@ class CollectionLikeCommandServiceTest {
     @DisplayName("존재하지 않는 컬렉션 ID로 좋아요를 시도하면 CollectionNotFoundException 예외가 발생한다.")
     void collectionLikes_whenCollectionNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
 
         // when
@@ -121,7 +121,7 @@ class CollectionLikeCommandServiceTest {
     @DisplayName("컬렉션 좋아요 취소를 성공적으로 수행하고 컬렉션의 좋아요 개수가 감소한다.")
     void collectionLikesCancel_whenValidRequest_cancelsLike() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -144,7 +144,7 @@ class CollectionLikeCommandServiceTest {
     @DisplayName("존재하지 않는 컬렉션 ID로 좋아요 취소를 시도하면 CollectionNotFoundException 예외가 발생한다.")
     void collectionLikesCancel_whenLikeNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
 
         // when
@@ -159,7 +159,7 @@ class CollectionLikeCommandServiceTest {
     @DisplayName("존재하지 않는 사용자 ID로 좋아요 취소를 시도하면 CollectionUserNotFoundException 예외가 발생한다.")
     void collectionLikesCancel_whenUserNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 

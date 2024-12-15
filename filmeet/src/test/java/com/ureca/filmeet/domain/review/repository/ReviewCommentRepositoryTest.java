@@ -46,7 +46,7 @@ class ReviewCommentRepositoryTest {
     void findReviewAndReviewCommentById_returnsCorrectReviewAndComment() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         ReviewComment reviewComment = createReviewComment("리뷰 댓글 내용", review, user);
@@ -92,7 +92,7 @@ class ReviewCommentRepositoryTest {
     void findReviewAndReviewCommentById_whenCommentIsDeleted_returnsEmpty() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         ReviewComment reviewComment = createReviewComment("삭제된 댓글 내용", review, user);
@@ -115,7 +115,7 @@ class ReviewCommentRepositoryTest {
     void findReviewAndReviewCommentById_whenReviewIdDoesNotMatch_returnsEmpty() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         Review anotherReview = createReview("다른 리뷰 내용", movie, user);
@@ -143,7 +143,7 @@ class ReviewCommentRepositoryTest {
     void findReviewAndReviewCommentById_whenMultipleCommentsExist_returnsSpecificComment() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         ReviewComment firstComment = createReviewComment("첫 번째 댓글", review, user);
@@ -171,7 +171,7 @@ class ReviewCommentRepositoryTest {
     void findReviewAndReviewCommentById_whenReviewAndCommentAreDeleted_returnsEmpty() {
         // given
         Movie movie = createMovie("제목1", "줄거리", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Review review = createReview("리뷰 내용", movie, user);
         ReviewComment reviewComment = createReviewComment("리뷰 댓글 내용", review, user);

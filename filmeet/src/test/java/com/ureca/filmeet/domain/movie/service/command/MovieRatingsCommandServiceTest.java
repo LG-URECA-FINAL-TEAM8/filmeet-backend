@@ -75,7 +75,7 @@ class MovieRatingsCommandServiceTest {
     @DisplayName("영화에 대해 새로운 평점을 남기고 해당 영화의 장르에 따라 유저의 장르 점수가 업데이트된다..")
     void evaluateMovieRating_whenValidRequest_savesRatingAndUpdatesScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -134,7 +134,7 @@ class MovieRatingsCommandServiceTest {
     @DisplayName("이미 평점을 남긴 영화에 대해 새로운 평점을 남기려고 하면 MovieRatingAlreadyExistsException 예외가 발생한다.")
     void evaluateMovieRating_whenAlreadyRated_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname", "profile.url");
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname", "profile.url");
         Movie movie = createMovie("Test Movie", "Plot", LocalDate.now(), 120, "poster.url", FilmRatings.ALL);
         MovieRatings movieRatings = createMovieRatings(movie, user, BigDecimal.valueOf(4.0));
 
@@ -153,7 +153,7 @@ class MovieRatingsCommandServiceTest {
     @DisplayName("영화 평점을 수정한다.")
     void modifyMovieRating_whenValidRequest_updatesRatingAndScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -232,7 +232,7 @@ class MovieRatingsCommandServiceTest {
     @DisplayName("영화 평점을 삭제하면 평점 및 장르 점수가 올바르게 업데이트된다.")
     void deleteMovieRating_whenValidRequest_deletesRatingAndUpdatesScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname", "profile.url");
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname", "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://poster1.url", FilmRatings.ALL,
                 BigDecimal.valueOf(0.0), 1, 0);
         Genre genre1 = createGenre(GenreType.ACTION);

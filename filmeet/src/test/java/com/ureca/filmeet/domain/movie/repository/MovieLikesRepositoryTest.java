@@ -39,7 +39,7 @@ class MovieLikesRepositoryTest {
     @DisplayName("사용자가 특정 영화에 좋아요를 눌렀는지 확인한다.")
     void findMovieLikesBy_whenValidMovieAndUser_returnsMovieLikes() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
         MovieLikes movieLikes = createMovieLikes(movie, user);
@@ -64,7 +64,7 @@ class MovieLikesRepositoryTest {
     @DisplayName("사용자가 특정 영화에 좋아요를 누르지 않았다면 빈 값을 반환한다.")
     void findMovieLikesBy_whenUserNotLiked_returnsEmpty() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
 
@@ -81,7 +81,7 @@ class MovieLikesRepositoryTest {
     @DisplayName("좋아요 여부 확인 - 사용자가 특정 영화에 좋아요를 누른 경우 true를 반환한다.")
     void existsByMovieIdAndUserId_whenUserLiked_returnsTrue() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
         MovieLikes movieLikes = createMovieLikes(movie, user);
@@ -100,7 +100,7 @@ class MovieLikesRepositoryTest {
     @DisplayName("좋아요 여부 확인 - 사용자가 특정 영화에 좋아요를 누르지 않은 경우 false를 반환한다.")
     void existsByMovieIdAndUserId_whenUserNotLiked_returnsFalse() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
 
@@ -117,7 +117,7 @@ class MovieLikesRepositoryTest {
     @DisplayName("존재하지 않는 영화와 사용자로 조회할 경우 빈 값을 반환한다.")
     void findMovieLikesBy_whenInvalidMovieAndUser_returnsEmpty() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
 

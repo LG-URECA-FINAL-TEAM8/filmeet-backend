@@ -75,7 +75,7 @@ class MovieLikeCommandServiceTest {
     @DisplayName("영화에 좋아요가 성공적으로 저장되고 영화의 장르에 따라 사용자의 장르 점수가 업데이트된다.")
     void movieLikes_whenNotAlreadyLiked_shouldSaveLikeAndUpdateScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -122,7 +122,7 @@ class MovieLikeCommandServiceTest {
     @DisplayName("이미 좋아요한 영화에 대해 좋아요를 시도하면 MovieLikeAlreadyExistsException 예외가 발생한다.")
     void movieLikes_whenAlreadyLiked_shouldThrowException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie = createMovie("Test Movie", "Plot", LocalDate.now(), 120, "poster.url", FilmRatings.ALL);
 
@@ -140,7 +140,7 @@ class MovieLikeCommandServiceTest {
     @DisplayName("좋아요를 취소하면 좋아요가 삭제되고 해당 영화의 장르에 따라 사용자의 장르 점수가 감소한다.")
     void movieLikesCancel_whenLiked_shouldRemoveLikeAndUpdateScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -190,7 +190,7 @@ class MovieLikeCommandServiceTest {
     @DisplayName("좋아요를 취소하려고 하지만 좋아요가 존재하지 않으면 MovieLikeNotFoundException 예외가 발생한다.")
     void movieLikesCancel_whenNotLiked_shouldThrowException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie = createMovie("Test Movie", "Plot", LocalDate.now(), 120, "poster.url", FilmRatings.ALL);
         Genre genre = createGenre(GenreType.ACTION);
@@ -211,7 +211,7 @@ class MovieLikeCommandServiceTest {
     @DisplayName("존재하지 않는 영화에 대해 좋아요를 시도하면 MovieNotFoundException 예외가 발생한다.")
     void movieLikes_whenMovieNotFound_shouldThrowException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
 
         // when
@@ -226,7 +226,7 @@ class MovieLikeCommandServiceTest {
     @DisplayName("존재하지 않는 사용자가 좋아요를 시도하면 MovieUserNotFoundException 예외가 발생한다.")
     void movieLikes_whenUserNotFound_shouldThrowException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie = createMovie("Test Movie", "Plot", LocalDate.now(), 120, "poster.url", FilmRatings.ALL);
         Genre genre = createGenre(GenreType.ACTION);

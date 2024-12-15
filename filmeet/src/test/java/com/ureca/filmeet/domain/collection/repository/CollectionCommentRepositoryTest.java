@@ -44,7 +44,7 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCollectionCommentWrittenByUser_whenValidRequest_returnsComment() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment collectionComment = createCollectionComment("컬렉션 댓글 내용", user, collection);
@@ -70,7 +70,7 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCollectionCommentWrittenByUser_whenInvalidIds_returnsEmpty() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment collectionComment = createCollectionComment("컬렉션 댓글 내용", user, collection);
@@ -93,9 +93,9 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCollectionCommentsWithUsers_whenValidRequest_returnsComments() {
         // given
-        User user1 = createUser("username1", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user1 = createUser("username1", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile.jpg");
-        User user2 = createUser("username2", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임2",
+        User user2 = createUser("username2", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임2",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user1);
         CollectionComment collectionComment1 = createCollectionComment("컬렉션 댓글 내용1", user1, collection);
@@ -128,9 +128,9 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCommentsByCollection_whenInvalidCollectionId_returnsEmpty() {
         // given
-        User user1 = createUser("username1", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user1 = createUser("username1", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile.jpg");
-        User user2 = createUser("username2", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임2",
+        User user2 = createUser("username2", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임2",
                 "https://example.com/profile.jpg");
         CollectionComment collectionComment1 = createCollectionComment("컬렉션 댓글 내용1", user1, null);
         CollectionComment collectionComment2 = createCollectionComment("컬렉션 댓글 내용2", user2, null);
@@ -153,9 +153,9 @@ class CollectionCommentRepositoryTest {
         // given
         String username1 = UUID.randomUUID() + "";
         String username2 = UUID.randomUUID() + "";
-        User user1 = createUser(username1, "password", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user1 = createUser(username1, "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
-        User user2 = createUser(username2, "password", Role.ROLE_USER, Provider.NAVER, "닉네임2",
+        User user2 = createUser(username2, "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임2",
                 "https://example.com/profile2.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user1);
         CollectionComment collectionComment = createCollectionComment("댓글 내용", user2, collection);
@@ -176,7 +176,7 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCommentsBy_whenNoComments_returnsEmpty() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -194,7 +194,7 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCommentsBy_whenMultiplePages_returnsPagedComments() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         List<CollectionComment> comments = IntStream.range(0, 15)
@@ -247,7 +247,7 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCommentsBy_whenCollectionDeleted_returnsEmpty() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment comment = createCollectionComment("댓글 내용", user, collection);
@@ -269,7 +269,7 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCommentsBy_whenCollectionCommentDeleted_returnsEmpty() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment comment = createCollectionComment("댓글 내용", user, collection);
@@ -291,7 +291,7 @@ class CollectionCommentRepositoryTest {
     @Test
     void findCommentsBy_whenSomeCollectionCommentsDeleted_returnsRemainingComments() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment comment1 = createCollectionComment("댓글 내용1", user, collection);

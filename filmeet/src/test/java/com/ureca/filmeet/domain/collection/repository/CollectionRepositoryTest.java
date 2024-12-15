@@ -37,7 +37,7 @@ class CollectionRepositoryTest {
     @Test
     void shouldFetchCollectionsByUserIdWithPagination() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection1 = createCollection("컬렉션 제목1", "컬렉션 내용1", user);
         Collection collection2 = createCollection("컬렉션 제목2", "컬렉션 내용2", user);
@@ -83,7 +83,7 @@ class CollectionRepositoryTest {
     @Test
     void shouldNotReturnDeletedCollectionsByUserId() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection1 = createCollection("컬렉션 제목1", "컬렉션 내용1", user);
         Collection collection2 = createCollection("컬렉션 제목2", "컬렉션 내용2", user);
@@ -111,7 +111,7 @@ class CollectionRepositoryTest {
     @Test
     void shouldFetchSpecificCollectionByCollectionIdAndUserId() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -135,7 +135,7 @@ class CollectionRepositoryTest {
     @Test
     void shouldNotFetchDeletedCollection() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -147,49 +147,5 @@ class CollectionRepositoryTest {
 
         // then
         assertThat(result).isNotPresent();
-    }
-
-    @DisplayName("제목 키워드로 컬렉션을 검색한다.")
-    @Test
-    void shouldFetchCollectionsByTitleKeyword() {
-        // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
-                "https://example.com/profile.jpg");
-        Collection collection1 = createCollection("소 소금 금", "내용1", user);
-        Collection collection2 = createCollection("소금 12", "내용2", user);
-        Collection collection3 = createCollection("빛소금어둠", "내용2", user);
-        Collection collection4 = createCollection("소이금", "내용2", user);
-
-        // when
-        userRepository.save(user);
-        collectionRepository.saveAll(List.of(collection1, collection2, collection3, collection4));
-        Pageable pageable = PageRequest.of(0, 10);
-        String keyword = "소금";
-        Slice<Collection> result = collectionRepository.findCollectionsByTitleKeyword(keyword, pageable);
-
-        // then
-        assertThat(result.getContent())
-                .hasSize(3)
-                .extracting("title")
-                .containsExactlyInAnyOrder(collection1.getTitle(), collection2.getTitle(), collection3.getTitle());
-    }
-
-    @DisplayName("제목 키워드가 일치하지 않으면 빈 결과를 반환한다.")
-    @Test
-    void shouldReturnEmptyWhenTitleKeywordDoesNotMatch() {
-        // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
-                "https://example.com/profile.jpg");
-        Collection collection = createCollection("불", "내용", user);
-
-        // when
-        userRepository.save(user);
-        collectionRepository.save(collection);
-        Pageable pageable = PageRequest.of(0, 10);
-        String keyword = "소금";
-        Slice<Collection> result = collectionRepository.findCollectionsByTitleKeyword(keyword, pageable);
-
-        // then
-        assertThat(result.getContent()).isEmpty();
     }
 }

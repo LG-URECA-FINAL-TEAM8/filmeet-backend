@@ -82,7 +82,7 @@ class CollectionCommandServiceTest {
     @DisplayName("컬렉션 생성 시 영화와 장르 정보를 저장하고 사용자의 장르 점수를 업데이트한다.")
     void createCollection_whenValidRequest_savesCollection() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -147,7 +147,7 @@ class CollectionCommandServiceTest {
     @DisplayName("영화 ID가 유효하지 않을 경우 CollectionMoviesNotFoundException이 발생한다.")
     void createCollection_whenMoviesNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         userRepository.save(user);
 
@@ -162,7 +162,7 @@ class CollectionCommandServiceTest {
     @DisplayName("컬렉션 제목, 내용 및 영화 목록을 성공적으로 수정하며, 사용자의 장르 점수를 업데이트한다.")
     void modifyCollection_whenValidRequest_updatesCollection() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -240,7 +240,7 @@ class CollectionCommandServiceTest {
     @DisplayName("컬렉션을 성공적으로 삭제하고, 사용자의 장르 점수가 업데이트된다.")
     void deleteCollection_whenValidRequest_deletesCollectionAndUpdatesGenreScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);

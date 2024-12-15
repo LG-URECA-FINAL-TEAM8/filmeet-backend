@@ -54,7 +54,7 @@ class ReviewLikesCommandServiceTest {
     @DisplayName("리뷰에 좋아요를 성공적으로 추가한다.")
     void reviewLikes_whenValidRequest_addsLike() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -81,7 +81,7 @@ class ReviewLikesCommandServiceTest {
     @DisplayName("이미 좋아요한 리뷰에 다시 좋아요를 누를 경우 ReviewLikeAlreadyExistsException 예외가 발생한다.")
     void reviewLikes_whenAlreadyLiked_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -101,7 +101,7 @@ class ReviewLikesCommandServiceTest {
     @DisplayName("존재하지 않는 리뷰 ID로 좋아요를 시도하면 ReviewNotFoundException 예외가 발생한다.")
     void reviewLikes_whenReviewNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         userRepository.save(user);
 
@@ -130,7 +130,7 @@ class ReviewLikesCommandServiceTest {
     @DisplayName("리뷰에 좋아요 취소를 성공적으로 수행한다.")
     void reviewLikesCancel_whenValidRequest_cancelsLike() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -153,7 +153,7 @@ class ReviewLikesCommandServiceTest {
     @DisplayName("존재하지 않는 리뷰 ID로 좋아요 취소를 시도하면 ReviewLikeNotFoundException 예외가 발생한다.")
     void reviewLikesCancel_whenLikeNotFound_throwsException() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
 
         // when
