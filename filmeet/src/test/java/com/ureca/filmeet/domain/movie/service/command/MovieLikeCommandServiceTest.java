@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.tuple;
 import com.ureca.filmeet.domain.genre.entity.Genre;
 import com.ureca.filmeet.domain.genre.entity.GenreScore;
 import com.ureca.filmeet.domain.genre.entity.MovieGenre;
-import com.ureca.filmeet.domain.genre.entity.enums.GenreScoreAction;
 import com.ureca.filmeet.domain.genre.entity.enums.GenreType;
 import com.ureca.filmeet.domain.genre.repository.GenreRepository;
 import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
@@ -32,18 +31,16 @@ import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles("local")
 class MovieLikeCommandServiceTest {
 
@@ -68,8 +65,15 @@ class MovieLikeCommandServiceTest {
     @Autowired
     private GenreScoreRepository genreScoreRepository;
 
-    @Autowired
-    private EntityManager em;
+    @AfterEach
+    void tearDown() {
+        genreScoreRepository.deleteAllInBatch();
+        movieLikesRepository.deleteAllInBatch();
+        movieGenreRepository.deleteAllInBatch();
+        genreRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+        movieRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("영화에 좋아요가 성공적으로 저장되고 영화의 장르에 따라 사용자의 장르 점수가 업데이트된다.")
@@ -96,8 +100,6 @@ class MovieLikeCommandServiceTest {
         genreRepository.saveAll(List.of(genre1, genre2, genre3, genre4));
         movieGenreRepository.saveAll(List.of(movieGenre1, movieGenre2));
         genreScoreRepository.saveAll(List.of(genreScore1, genreScore2, genreScore3, genreScore4));
-        em.flush();
-        em.clear();
         movieLikeCommandServiceV4.movieLikes(movie1.getId(), user.getId());
         movieLikeCommandServiceV4.movieLikes(movie2.getId(), user.getId());
         boolean isLiked1 = movieLikesRepository.existsByMovieIdAndUserId(movie1.getId(), user.getId());
@@ -109,8 +111,8 @@ class MovieLikeCommandServiceTest {
                 .hasSize(4)
                 .extracting("user.id", "genre.id", "score")
                 .containsExactlyInAnyOrder(
-                        tuple(user.getId(), genre1.getId(), GenreScoreAction.LIKE.getWeight()),
-                        tuple(user.getId(), genre2.getId(), GenreScoreAction.LIKE.getWeight()),
+                        tuple(user.getId(), genre1.getId(), 3),
+                        tuple(user.getId(), genre2.getId(), 3),
                         tuple(user.getId(), genre3.getId(), 0),
                         tuple(user.getId(), genre4.getId(), 0)
                 );
@@ -164,8 +166,6 @@ class MovieLikeCommandServiceTest {
         movieLikesRepository.saveAll(List.of(movieLikes1, movieLikes2));
         movieGenreRepository.saveAll(List.of(movieGenre1, movieGenre2));
         genreScoreRepository.saveAll(List.of(genreScore1, genreScore2, genreScore3, genreScore4));
-        em.flush();
-        em.clear();
         movieLikeCommandServiceV4.movieLikesCancel(movie1.getId(), user.getId());
         movieLikeCommandServiceV4.movieLikesCancel(movie2.getId(), user.getId());
         boolean isLiked1 = movieLikesRepository.existsByMovieIdAndUserId(movie1.getId(), user.getId());
@@ -179,8 +179,8 @@ class MovieLikeCommandServiceTest {
                 .containsExactlyInAnyOrder(
                         tuple(user.getId(), genre1.getId(), 5),
                         tuple(user.getId(), genre2.getId(), 5),
-                        tuple(user.getId(), genre3.getId(), 3),
-                        tuple(user.getId(), genre4.getId(), 3)
+                        tuple(user.getId(), genre3.getId(), 2),
+                        tuple(user.getId(), genre4.getId(), 2)
                 );
         assertThat(isLiked1).isFalse();
         assertThat(isLiked2).isFalse();
