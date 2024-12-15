@@ -77,7 +77,7 @@ class MovieTest {
 
         // then
         assertThat(movie.getRatingCounts()).isEqualTo(3);
-        assertThat(movie.getAverageRating()).isEqualTo(BigDecimal.valueOf(3.7)); // (3.5*2 + 4.0) / 3
+        assertThat(movie.getAverageRating()).isEqualTo(BigDecimal.valueOf(3.66));
     }
 
     @Test
@@ -96,7 +96,7 @@ class MovieTest {
         movie.modifyMovieRating(oldRating, newRating);
 
         // then
-        assertThat(movie.getAverageRating()).isEqualTo(BigDecimal.valueOf(3.8)); // (4*3 - 4.0 + 3.5) / 3
+        assertThat(movie.getAverageRating()).isEqualTo(BigDecimal.valueOf(3.83));
     }
 
     @Test
@@ -106,15 +106,15 @@ class MovieTest {
         Movie movie = Movie.builder()
                 .title("Movie 1")
                 .ratingCounts(2)
-                .averageRating(BigDecimal.valueOf(4.0))
+                .averageRating(BigDecimal.valueOf(3.42))
                 .build();
 
         // when
-        movie.updateAfterRatingDeletion(BigDecimal.valueOf(4.0));
+        movie.updateAfterRatingDeletion(BigDecimal.valueOf(3.5));
 
         // then
         assertThat(movie.getRatingCounts()).isEqualTo(1);
-        assertThat(movie.getAverageRating()).isEqualTo(BigDecimal.valueOf(4.0)); // 남은 점수 유지
+        assertThat(movie.getAverageRating()).isEqualTo(BigDecimal.valueOf(3.34)); // 남은 점수 유지
     }
 
     @Test
