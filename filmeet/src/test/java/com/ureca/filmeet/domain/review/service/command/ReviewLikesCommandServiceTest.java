@@ -23,15 +23,14 @@ import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles("local")
 class ReviewLikesCommandServiceTest {
 
@@ -49,6 +48,14 @@ class ReviewLikesCommandServiceTest {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @AfterEach
+    void tearDown() {
+        reviewLikesRepository.deleteAllInBatch();
+        reviewRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+        movieRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("리뷰에 좋아요를 성공적으로 추가한다.")
@@ -71,9 +78,9 @@ class ReviewLikesCommandServiceTest {
         assertThat(reviewLikes)
                 .isPresent()
                 .get()
-                .extracting("id", "user", "review", "review.likeCounts")
+                .extracting("id", "user.id", "review.id", "review.likeCounts")
                 .contains(
-                        reviewLikes.get().getId(), user, review, 1
+                        reviewLikes.get().getId(), user.getId(), review.getId(), 1
                 );
     }
 
