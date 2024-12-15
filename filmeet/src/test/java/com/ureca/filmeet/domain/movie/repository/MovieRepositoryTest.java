@@ -255,7 +255,7 @@ class MovieRepositoryTest {
         movieRepository.saveAll(List.of(movie1, movie2, movie3, movie4));
         movie1.addLikeCounts();
         movie2.addLikeCounts();
-        movie3.evaluateMovieRating(BigDecimal.valueOf(4.0));
+        movie3.evaluateMovieRating(BigDecimal.valueOf(4.05));
         List<Movie> result = movieRepository.findMoviesWithStarRatingAndLikesUnion();
 
         // then
@@ -265,7 +265,7 @@ class MovieRepositoryTest {
                 .containsExactlyInAnyOrder(
                         tuple(movie1.getTitle(), 1, BigDecimal.ZERO),
                         tuple(movie2.getTitle(), 1, BigDecimal.ZERO),
-                        tuple(movie3.getTitle(), 0, BigDecimal.valueOf(4.0))
+                        tuple(movie3.getTitle(), 0, BigDecimal.valueOf(4.05))
                 );
     }
 
