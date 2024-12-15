@@ -43,9 +43,9 @@ public class CollectionCommentLockServiceTest {
 
     @AfterEach
     void tearDown() {
-        collectionCommentRepository.deleteAll();
-        collectionRepository.deleteAll(); // Collection 삭제
-        userRepository.deleteAll();       // User 삭제
+        collectionCommentRepository.deleteAllInBatch();
+        collectionRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @DisplayName("댓글 저장 - 댓글_개수_분산락_적용_락_흐름조정_AOP_사용_동시성_1000명_테스트")
