@@ -2,6 +2,14 @@ spring:
   profiles:
     active: dev  # 기본 활성화 프로파일 설정
 
+  cache:
+    type: redis   # Redis를 캐시 매니저로 사용
+    redis:
+      time-to-live: 3600000   # 캐시 TTL 설정 (ms 단위, 1시간)
+      cache-null-values: true # null 값을 캐시할지 여부
+      key-prefix: "filmeet-ranking::" # 캐시 키에 프리픽스 설정
+      use-key-prefix: true
+
   application:
     name: filmeet
 
