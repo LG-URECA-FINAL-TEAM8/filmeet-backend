@@ -18,14 +18,15 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "(SELECT rm FROM RoundMatch rm WHERE rm.user.id = :userId)")
     Slice<Game> findAllByUserId(Long userId, Pageable pageable);
 
-    @Query("SELECT g FROM Game g " +
+    @Query("SELECT DISTINCT g FROM Game g " +
             "LEFT JOIN FETCH g.matches m " +
-            "WHERE g.id = :gameId")
+            "WHERE g.id = :gameId AND m IS NOT NULL")
     Optional<Game> findByIdWithMatches(Long gameId);
 
     List<Game> findByStatus(GameStatus gameStatus);
 
     @Query(value = """
+       
        SELECT
            gr.movie_id AS id,
            m.title AS title,
