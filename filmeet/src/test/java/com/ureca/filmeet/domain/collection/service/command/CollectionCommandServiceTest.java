@@ -125,8 +125,8 @@ class CollectionCommandServiceTest {
                 .hasSize(4)
                 .extracting("user.id", "genre.id", "score")
                 .containsExactlyInAnyOrder(
-                        tuple(user.getId(), genre1.getId(), 4),
-                        tuple(user.getId(), genre2.getId(), 4),
+                        tuple(user.getId(), genre1.getId(), 3),
+                        tuple(user.getId(), genre2.getId(), 3),
                         tuple(user.getId(), genre3.getId(), 0),
                         tuple(user.getId(), genre4.getId(), 0)
                 );
@@ -219,9 +219,9 @@ class CollectionCommandServiceTest {
                 .hasSize(3)
                 .extracting("user.id", "genre.id", "score")
                 .containsExactlyInAnyOrder(
-                        tuple(user.getId(), genre1.getId(), -4), // movie1 제거
+                        tuple(user.getId(), genre1.getId(), -3), // movie1 제거
                         tuple(user.getId(), genre2.getId(), 0),  // movie2 유지
-                        tuple(user.getId(), genre3.getId(), 4)   // movie3 추가
+                        tuple(user.getId(), genre3.getId(), 3)   // movie3 추가
                 );
     }
 
@@ -229,10 +229,15 @@ class CollectionCommandServiceTest {
     @DisplayName("존재하지 않는 컬렉션을 수정하려고 하면 CollectionNotFoundException이 발생한다.")
     void modifyCollection_whenCollectionNotFound_throwsException() {
         // given
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
+                "https://example.com/profile.jpg");
+
+        // when
+        userRepository.save(user);
         CollectionModifyRequest request = new CollectionModifyRequest(999L, "수정된 제목", "수정된 내용", List.of(1L, 2L));
 
-        // when & then
-        assertThatThrownBy(() -> collectionCommandService.modifyCollection(request, 1L))
+        // then
+        assertThatThrownBy(() -> collectionCommandService.modifyCollection(request, user.getId()))
                 .isInstanceOf(CollectionNotFoundException.class);
     }
 
@@ -248,8 +253,8 @@ class CollectionCommandServiceTest {
         Genre genre2 = createGenre(GenreType.SF);
         MovieGenre movieGenre1 = createMovieGenre(movie1, genre1);
         MovieGenre movieGenre2 = createMovieGenre(movie2, genre2);
-        GenreScore genreScore1 = createGenreScore(user, genre1, 4); // 초기 점수
-        GenreScore genreScore2 = createGenreScore(user, genre2, 4); // 초기 점수
+        GenreScore genreScore1 = createGenreScore(user, genre1, 3); // 초기 점수
+        GenreScore genreScore2 = createGenreScore(user, genre2, 3); // 초기 점수
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionMovie collectionMovie1 = createCollectionMovie(movie1, collection);
         CollectionMovie collectionMovie2 = createCollectionMovie(movie2, collection);
@@ -295,10 +300,15 @@ class CollectionCommandServiceTest {
     @DisplayName("존재하지 않는 컬렉션을 삭제하려고 하면 CollectionNotFoundException이 발생한다.")
     void deleteCollection_whenCollectionNotFound_throwsException() {
         // given
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
+                "https://example.com/profile.jpg");
+
+        // given
         CollectionDeleteRequest request = new CollectionDeleteRequest(999L, List.of(1L, 2L));
+        userRepository.save(user);
 
         // when & then
-        assertThatThrownBy(() -> collectionCommandService.deleteCollection(request, 1L))
+        assertThatThrownBy(() -> collectionCommandService.deleteCollection(request, user.getId()))
                 .isInstanceOf(CollectionNotFoundException.class);
     }
 }
