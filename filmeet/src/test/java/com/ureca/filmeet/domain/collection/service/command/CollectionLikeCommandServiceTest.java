@@ -17,15 +17,14 @@ import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles("local")
 class CollectionLikeCommandServiceTest {
 
@@ -40,6 +39,13 @@ class CollectionLikeCommandServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @AfterEach
+    void tearDown() {
+        collectionLikeRepository.deleteAllInBatch();
+        collectionRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+    }
 
     @DisplayName("사용자가 컬렉션에 좋아요를 성공적으로 추가하고 좋아요를 누른 만큼 컬렉션에 좋아요 개수가 증가한다.")
     @Test
@@ -64,9 +70,9 @@ class CollectionLikeCommandServiceTest {
         assertThat(collectionLikes)
                 .isPresent()
                 .get()
-                .extracting("user", "collection", "collection.likeCounts")
+                .extracting("user.id", "collection.id", "collection.likeCounts")
                 .contains(
-                        user1, collection, 2
+                        user1.getId(), collection.getId(), 2
                 );
     }
 
