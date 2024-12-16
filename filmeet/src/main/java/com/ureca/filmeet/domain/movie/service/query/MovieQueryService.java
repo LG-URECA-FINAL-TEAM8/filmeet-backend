@@ -13,6 +13,7 @@ import com.ureca.filmeet.domain.movie.dto.response.RatingDistributionResponse;
 import com.ureca.filmeet.domain.movie.dto.response.UserMovieInteractionResponse;
 import com.ureca.filmeet.domain.movie.entity.Gallery;
 import com.ureca.filmeet.domain.movie.entity.Movie;
+import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
 import com.ureca.filmeet.domain.movie.repository.MovieCountriesRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieLikesRepository;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,6 +114,10 @@ public class MovieQueryService {
     public MovieDetailResponse getMovieDetailV2(Long movieId, Long userId) {
         Movie movie = movieRepository.findMovieDetailInfo(movieId)
                 .orElseThrow(MovieNotFoundException::new);
+        FilmRatings filmRatings = movie.getFilmRatings();
+        if (filmRatings.equals(FilmRatings.ADULT) || filmRatings.equals(FilmRatings.RESTRICTED_RATING)) {
+            throw new AccessDeniedException("성인 유저만 조회 가능합니다.");
+        }
 
         boolean isLiked = movieLikesRepository.findMovieLikesBy(movieId, userId).isPresent();
 

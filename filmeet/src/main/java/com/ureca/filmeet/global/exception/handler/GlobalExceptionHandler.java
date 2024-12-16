@@ -49,7 +49,9 @@ public class GlobalExceptionHandler {
     // 권한 부족 예외 처리
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
-        return ApiResponse.forbidden();
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(ResponseCode.FORBIDDEN, ex.getMessage()));
     }
 
     // Jwt 검증 예외 처리
