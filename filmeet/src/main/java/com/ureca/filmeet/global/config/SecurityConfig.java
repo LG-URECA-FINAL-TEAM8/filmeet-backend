@@ -87,6 +87,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/movies/search/title").permitAll()    // 제목 검색
                         .requestMatchers(HttpMethod.GET, "/movies/random").permitAll()          // 랜덤 영화 조회
                         .requestMatchers(HttpMethod.GET, "/movies/recommendation/users/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/movies/total/ratings").permitAll()
 
                         // 컬렉션 관련 경로 허용
                         .requestMatchers(HttpMethod.GET, "/collections/search/title").permitAll() // 컬렉션 제목 검색
@@ -112,7 +113,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(
-                List.of("http://localhost:5173", "https://prod.d2r305hbtyzes4.amplifyapp.com","https://filmeet.me")); // 허용할 Origin
+                List.of("http://localhost:5173", "https://prod.d2r305hbtyzes4.amplifyapp.com",
+                        "https://filmeet.me")); // 허용할 Origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -128,12 +130,12 @@ public class SecurityConfig {
 
         // 계층 설정
         String hierarchy = """
-            ROLE_SUPER_ADMIN > ROLE_MOVIE_ADMIN
-            ROLE_SUPER_ADMIN > ROLE_REVIEW_ADMIN
-            ROLE_MOVIE_ADMIN > ROLE_ADULT_USER
-            ROLE_REVIEW_ADMIN > ROLE_ADULT_USER
-            ROLE_ADULT_USER > ROLE_MINOR_USER
-            """;
+                ROLE_SUPER_ADMIN > ROLE_MOVIE_ADMIN
+                ROLE_SUPER_ADMIN > ROLE_REVIEW_ADMIN
+                ROLE_MOVIE_ADMIN > ROLE_ADULT_USER
+                ROLE_REVIEW_ADMIN > ROLE_ADULT_USER
+                ROLE_ADULT_USER > ROLE_MINOR_USER
+                """;
 
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
