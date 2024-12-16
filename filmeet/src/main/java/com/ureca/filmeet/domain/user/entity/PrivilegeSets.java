@@ -7,7 +7,8 @@ public class PrivilegeSets {
     public static final Set<Permission> ADMIN_MOVIE_PRIVILEGES = Set.of(
             Permission.MOVIE_CREATE,
             Permission.MOVIE_UPDATE,
-            Permission.MOVIE_DELETE
+            Permission.MOVIE_DELETE,
+            Permission.MOVIE_RECOMMEND
     );
 
     // 관리자용 리뷰 관련 권한 집합

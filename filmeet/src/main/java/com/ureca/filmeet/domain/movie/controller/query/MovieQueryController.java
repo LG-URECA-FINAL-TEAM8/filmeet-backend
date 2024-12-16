@@ -71,6 +71,12 @@ public class MovieQueryController {
         return ApiResponse.ok(moviesRankings);
     }
 
+    @GetMapping("/admin-rankings")
+    public ResponseEntity<ApiResponse<List<MoviesRankingsResponse>>> getAdminMoviesRankings() {
+        List<MoviesRankingsResponse> adminMoviesRankings = moviesRankingsRedisQueryService.getAdminMoviesRankings();
+        return ApiResponse.ok(adminMoviesRankings);
+    }
+
     @GetMapping("/recommendation/users/{userId}")
     public ResponseEntity<ApiResponse<List<RecommendationMoviesResponse>>> getMoviesRecommendation(
             @PathVariable("userId") Long userId,
