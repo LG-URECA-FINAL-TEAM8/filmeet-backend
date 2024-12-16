@@ -211,4 +211,10 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     @Query("SELECT m FROM Movie m WHERE m.id IN :ids AND m.isDeleted = false")
     List<Movie> findMoviesByIds(@Param("ids") List<Long> ids);
 
+    @Query("""
+        SELECT COALESCE(SUM(r.commentCounts), 0)
+        FROM Review r
+        WHERE r.movie.id = :movieId
+    """)
+    Integer findCommentCountsByMovieId(@Param("movieId") Long movieId);
 }
