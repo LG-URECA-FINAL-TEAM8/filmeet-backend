@@ -15,11 +15,13 @@ import com.ureca.filmeet.domain.game.repository.GameRepository;
 import com.ureca.filmeet.domain.game.repository.GameResultRepository;
 import com.ureca.filmeet.domain.game.repository.RoundMatchRepository;
 import com.ureca.filmeet.domain.genre.service.GenreScoreService;
+import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRoundmatchResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.exception.MovieNotFoundException;
 import com.ureca.filmeet.domain.movie.exception.MovieRecommendationException;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
+import com.ureca.filmeet.domain.movie.service.query.MoviesRankingsRedisQueryService;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.global.exception.code.ResponseCode;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class GameCommandService {
     private final GameResultRepository gameResultRepository;
     private final RoundMatchRepository roundMatchRepository;
     private final GenreScoreService genreScoreService;
+    private final MoviesRankingsRedisQueryService moviesRankingsRedisQueryService;
 
 
     @Transactional
@@ -274,9 +277,22 @@ public class GameCommandService {
 
         List<MoviesRoundmatchResponse> recommendations = movieRepository.findSimilarMoviesByGenre(movieId);
 
-        // 추천 결과가 빈 값일 경우 예외 처리
         if (recommendations.isEmpty()) {
-            throw new MovieRecommendationException(ResponseCode.MOVIE_RECOMMENDATION_EMPTY);
+            List<MoviesRankingsResponse> top10Movies = moviesRankingsRedisQueryService.getMoviesRankings();
+            return top10Movies.stream()
+                    .limit(6)
+                    .map(movie -> {
+                        Integer commentCounts = movieRepository.findCommentCountsByMovieId(movie.movieId());
+                        return new MoviesRoundmatchResponse(
+                                movie.movieId(),
+                                movie.title(),
+                                movie.posterUrl(),
+                                movie.likeCounts(),
+                                commentCounts,
+                                movie.ratingCounts()
+                        );
+                    })
+                    .collect(Collectors.toList());
         }
 
         return recommendations;
