@@ -18,13 +18,13 @@ public class MovieRecommendationWriter implements ItemWriter<List<MovieRecommend
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void write(Chunk<? extends List<MovieRecommendation>> chunk) {
+    public void write(Chunk<? extends List<MovieRecommendation>> moviesRecommendation) {
         String updateSql = "UPDATE movie_recommendation SET last_modified_at = CURRENT_TIMESTAMP, movie_id = ? WHERE member_id = ? AND movie_id = ?";
         String insertSql = "INSERT INTO movie_recommendation (member_id, movie_id, created_at, last_modified_at) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
         List<Object[]> updateBatchArgs = new ArrayList<>();
         List<Object[]> insertBatchArgs = new ArrayList<>();
 
-        for (List<MovieRecommendation> recommendations : chunk) {
+        for (List<MovieRecommendation> recommendations : moviesRecommendation) {
             for (MovieRecommendation recommendation : recommendations) {
                 Long userId = recommendation.getUser().getId();
                 Long movieId = recommendation.getMovie().getId();
