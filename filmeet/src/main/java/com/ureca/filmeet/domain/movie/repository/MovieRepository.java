@@ -207,4 +207,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             @Param("movieId") Long movieId,
             @Param("userId") Long userId
     );
+
+    @Query("SELECT m FROM Movie m WHERE m.id IN :ids AND m.isDeleted = false")
+    List<Movie> findMoviesByIds(@Param("ids") List<Long> ids);
+
 }
