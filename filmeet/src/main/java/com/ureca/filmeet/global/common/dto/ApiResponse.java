@@ -61,6 +61,10 @@ public record ApiResponse<T>(
         return new ApiResponse<>(code, code.getMessage());
     }
 
+    public static <T> ApiResponse<T> error(ResponseCode code, String customMessage) {
+        return new ApiResponse<>(code, customMessage);
+    }
+
     public static <T> ResponseEntity<ApiResponse<T>> badRequest() {
         return ResponseEntity.status(ResponseCode.BAD_REQUEST.getStatus())
                 .body(new ApiResponse<>(ResponseCode.BAD_REQUEST));

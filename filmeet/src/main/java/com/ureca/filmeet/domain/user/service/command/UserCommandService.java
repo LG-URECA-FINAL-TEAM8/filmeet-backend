@@ -63,7 +63,11 @@ public class UserCommandService {
                 savedUser.getMbti(),
                 savedUser.getTotalMovieLikes(),
                 savedUser.getTotalCollections(),
-                savedUser.getTotalGames()
+                savedUser.getTotalGames(),
+                0,
+                0,
+                0,
+                0
         );
     }
 

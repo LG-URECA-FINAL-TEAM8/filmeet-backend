@@ -14,5 +14,9 @@ public record UserDetailResponse(
         String mbti,
         int totalMovieLikes,
         int totalCollections,
-        int totalGames) {
+        int totalGames,
+        Integer reviewCount,
+        Integer movieRatingCount,
+        long followerCount,
+        long followingCount) {
 }
