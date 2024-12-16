@@ -37,7 +37,7 @@ class CollectionLikeRepositoryTest {
     @DisplayName("사용자와 컬렉션에 해당하는 좋아요 정보를 성공적으로 조회한다.")
     void findCollectionLikesByCollectionIdAndUserId_whenLikeExists_returnsCollectionLikes() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionLikes collectionLikes = createCollectionLikes(user, collection);
@@ -61,7 +61,7 @@ class CollectionLikeRepositoryTest {
     @DisplayName("존재하지 않는 사용자와 컬렉션에 대해 좋아요 정보를 조회하면 결과가 비어 있다.")
     void findCollectionLikesByCollectionIdAndUserId_whenLikeDoesNotExist_returnsEmpty() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -72,7 +72,7 @@ class CollectionLikeRepositoryTest {
                 collection.getId(), 999L);
         Optional<CollectionLikes> result2 = collectionLikeRepository.findCollectionLikesByCollectionIdAndUserId(
                 999L, user.getId());
-        
+
         // then
         assertThat(result1).isNotPresent();
         assertThat(result2).isNotPresent();
@@ -82,7 +82,7 @@ class CollectionLikeRepositoryTest {
     @DisplayName("컬렉션과 사용자에 대해 좋아요가 존재하는지 확인한다.")
     void existsByCollectionIdAndUserId_whenLikeExists_returnsTrue() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionLikes collectionLikes = createCollectionLikes(user, collection);
@@ -101,7 +101,7 @@ class CollectionLikeRepositoryTest {
     @DisplayName("컬렉션과 사용자에 대해 좋아요가 존재하지 않는 경우 false를 반환한다.")
     void existsByCollectionIdAndUserId_whenLikeDoesNotExist_returnsFalse() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -120,9 +120,9 @@ class CollectionLikeRepositoryTest {
     @DisplayName("컬렉션에 대해 여러 사용자가 좋아요를 한 경우 각각의 정보를 성공적으로 조회한다.")
     void findCollectionLikesByCollectionIdAndUserId_whenMultipleLikesExist_returnsCorrectResults() {
         // given
-        User user1 = createUser("username1", "password", Role.ROLE_USER, Provider.NAVER, "닉네임1",
+        User user1 = createUser("username1", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임1",
                 "https://example.com/profile1.jpg");
-        User user2 = createUser("username2", "password", Role.ROLE_USER, Provider.NAVER, "닉네임2",
+        User user2 = createUser("username2", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임2",
                 "https://example.com/profile2.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user1);
         CollectionLikes like1 = createCollectionLikes(user1, collection);

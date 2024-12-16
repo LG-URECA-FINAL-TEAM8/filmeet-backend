@@ -255,7 +255,7 @@ class MovieRepositoryTest {
         movieRepository.saveAll(List.of(movie1, movie2, movie3, movie4));
         movie1.addLikeCounts();
         movie2.addLikeCounts();
-        movie3.evaluateMovieRating(BigDecimal.valueOf(4.0));
+        movie3.evaluateMovieRating(BigDecimal.valueOf(4.05));
         List<Movie> result = movieRepository.findMoviesWithStarRatingAndLikesUnion();
 
         // then
@@ -265,7 +265,7 @@ class MovieRepositoryTest {
                 .containsExactlyInAnyOrder(
                         tuple(movie1.getTitle(), 1, BigDecimal.ZERO),
                         tuple(movie2.getTitle(), 1, BigDecimal.ZERO),
-                        tuple(movie3.getTitle(), 0, BigDecimal.valueOf(4.0))
+                        tuple(movie3.getTitle(), 0, BigDecimal.valueOf(4.05))
                 );
     }
 
@@ -289,7 +289,7 @@ class MovieRepositoryTest {
     @DisplayName("사용자의 선호 장르의 영화 중에 사용자가 리뷰, 좋아요, 컬렉션, 평점을 남기지 않은 영화를 조회한다.")
     void findMoviesByPreferredGenresAndNotInteracted_whenValidConditions_returnsMovies() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://profile.url");
         Genre genre1 = createGenre(GenreType.ACTION);
         Genre genre2 = createGenre(GenreType.SF);
@@ -346,7 +346,7 @@ class MovieRepositoryTest {
     @DisplayName("사용자의 선호 장르의 영화 중에 사용자가 리뷰, 좋아요, 컬렉션, 평점을 남기지 않은 영화와 TOP 10 영화에 속하지 않는 영화를 조회한다.")
     void findMoviesByPreferredGenresExcludingTop10AndUninteractedMovies_whenValidConditions_returnsExpectedMovies() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://profile.url");
         Genre genre1 = createGenre(GenreType.ACTION);
         Genre genre2 = createGenre(GenreType.SF);

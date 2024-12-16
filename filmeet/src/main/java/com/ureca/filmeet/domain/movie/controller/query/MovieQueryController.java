@@ -142,4 +142,10 @@ public class MovieQueryController {
         Slice<MoviesRandomResponse> moviesRandomResponses = movieQueryService.getRandomMovies(pageable);
         return ApiResponse.ok(SliceResponseDto.of(moviesRandomResponses));
     }
+
+    @GetMapping("/total/ratings")
+    public ResponseEntity<ApiResponse<Long>> getTotalRatings() {
+        long totalRatings = movieQueryService.getTotalRatings();
+        return ApiResponse.ok(totalRatings);
+    }
 }

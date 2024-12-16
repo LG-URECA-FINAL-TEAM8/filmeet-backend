@@ -49,7 +49,7 @@ class CollectionMovieRepositoryTest {
     @Test
     void shouldFetchAllMovieIdsFromCollection() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -81,7 +81,7 @@ class CollectionMovieRepositoryTest {
     @Test
     void shouldFetchOnlyActiveMovieIdsFromCollection() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -116,7 +116,7 @@ class CollectionMovieRepositoryTest {
     void shouldFetchMoviesFromMultipleCollections() {
         // given
         LocalDate releaseDate = LocalDate.now();
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("제목1", "줄거리1", releaseDate, 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", releaseDate, 150, "https://abc", FilmRatings.ADULT);
@@ -167,7 +167,7 @@ class CollectionMovieRepositoryTest {
     void shouldNotFetchMoviesFromDeletedCollection() {
         // given
         LocalDate releaseDate = LocalDate.now();
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("제목1", "줄거리1", releaseDate, 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", releaseDate, 150, "https://abc", FilmRatings.ADULT);
@@ -203,7 +203,7 @@ class CollectionMovieRepositoryTest {
     @Test
     void shouldFetchMoviesByCollectionWithPagination() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         Movie movie1 = createMovie("영화1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -256,7 +256,7 @@ class CollectionMovieRepositoryTest {
     @Test
     void shouldReturnEmptyWhenFetchingMoviesFromDeletedCollection() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         Movie movie1 = createMovie("영화1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -284,7 +284,7 @@ class CollectionMovieRepositoryTest {
     @Test
     void shouldDeleteMoviesByCollectionIdAndMovieIds() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         Movie movie1 = createMovie("영화1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -319,7 +319,7 @@ class CollectionMovieRepositoryTest {
     @Test
     void shouldDoNothingWhenCollectionIdOrMovieIdsDoNotExist() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         Movie movie = createMovie("영화1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);

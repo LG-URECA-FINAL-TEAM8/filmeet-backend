@@ -44,7 +44,7 @@ class MovieRatingsRepositoryTest {
     @DisplayName("사용자가 특정 영화에 대해 남긴 평점을 조회한다.")
     void findMovieRatingBy_whenValidMovieAndUser_returnsMovieRating() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
         MovieRatings movieRatings = createMovieRatings(movie, user, BigDecimal.valueOf(4.5));
@@ -69,7 +69,7 @@ class MovieRatingsRepositoryTest {
     @DisplayName("사용자가 특정 영화에 대해 평점을 남기지 않았다면 빈 값을 반환한다.")
     void findMovieRatingBy_whenUserNotRated_returnsEmpty() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
 
@@ -86,7 +86,7 @@ class MovieRatingsRepositoryTest {
     @DisplayName("특정 사용자가 평가한 모든 영화를 페이징 처리하여 조회한다.")
     void findMoviesWithRatingBy_whenValidUser_returnsPagedRatings() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie1 = createMovie("영화1", "줄거리1", LocalDate.now(), 120, "https://poster1.url", FilmRatings.ADULT);
         Movie movie2 = createMovie("영화2", "줄거리2", LocalDate.now(), 130, "https://poster2.url", FilmRatings.ADULT);
@@ -115,7 +115,7 @@ class MovieRatingsRepositoryTest {
     @DisplayName("사용자가 평가한 영화가 없는 경우 빈 슬라이스를 반환한다.")
     void findMoviesWithRatingBy_whenNoRatings_returnsEmptySlice() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
 
         // when
@@ -131,7 +131,7 @@ class MovieRatingsRepositoryTest {
     @DisplayName("특정 영화에 사용자가 평점을 남기면 true를 반환한다.")
     void existsByMovieIdAndUserId_whenUserRated_returnsTrue() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
         MovieRatings movieRatings = createMovieRatings(movie, user, BigDecimal.valueOf(4.5));
@@ -150,7 +150,7 @@ class MovieRatingsRepositoryTest {
     @DisplayName("특정 영화에 사용자가 평점을 남기지 않으면 false를 반환한다.")
     void existsByMovieIdAndUserId_whenUserNotRated_returnsFalse() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("영화 제목", "영화 줄거리", LocalDate.now(), 120, "https://poster.url", FilmRatings.ADULT);
 
