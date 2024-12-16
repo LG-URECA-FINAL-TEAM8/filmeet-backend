@@ -21,7 +21,7 @@ class CollectionTest {
     @DisplayName("컬렉션이 정상적으로 생성된다.")
     void createCollection_successfullyCreatesCollection() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
 
         // when
@@ -40,7 +40,7 @@ class CollectionTest {
     @DisplayName("컬렉션 제목과 내용을 수정한다.")
     void modifyCollection_updatesTitleAndContent() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("기존 제목", "기존 내용", user);
 
@@ -57,7 +57,7 @@ class CollectionTest {
     @DisplayName("댓글 수가 정상적으로 증가한다.")
     void addCommentCounts_incrementsCommentCounts() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -73,7 +73,7 @@ class CollectionTest {
     @DisplayName("댓글 수가 정상적으로 감소한다.")
     void decrementCommentCounts_decrementsCommentCounts() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -91,7 +91,7 @@ class CollectionTest {
     @DisplayName("댓글 수가 0일 때 감소를 시도해도 0 이하로 내려가지 않는다.")
     void decrementCommentCounts_doesNotGoBelowZero() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -106,7 +106,7 @@ class CollectionTest {
     @DisplayName("좋아요 수가 정상적으로 증가한다.")
     void addLikeCounts_incrementsLikeCounts() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -122,7 +122,7 @@ class CollectionTest {
     @DisplayName("좋아요 수가 정상적으로 감소한다.")
     void decrementLikesCounts_decrementsLikeCounts() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -140,7 +140,7 @@ class CollectionTest {
     @DisplayName("좋아요 수가 0일 때 감소를 시도해도 0 이하로 내려가지 않는다.")
     void decrementLikesCounts_doesNotGoBelowZero() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
 
@@ -155,7 +155,7 @@ class CollectionTest {
     @DisplayName("댓글 목록이 초기화 상태에서 댓글이 추가된다.")
     void collectionComments_initialStateAndAddition() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Collection collection = createCollection("컬렉션 제목", "컬렉션 내용", user);
         CollectionComment comment = createCollectionComment("댓글 내용", user, null);

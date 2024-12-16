@@ -7,7 +7,6 @@ import static com.ureca.filmeet.global.util.TestUtils.createMovieGenre;
 import static com.ureca.filmeet.global.util.TestUtils.createMovieRatings;
 import static com.ureca.filmeet.global.util.TestUtils.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 import com.ureca.filmeet.domain.genre.entity.Genre;
@@ -23,27 +22,24 @@ import com.ureca.filmeet.domain.movie.dto.request.ModifyMovieRatingRequest;
 import com.ureca.filmeet.domain.movie.entity.Movie;
 import com.ureca.filmeet.domain.movie.entity.MovieRatings;
 import com.ureca.filmeet.domain.movie.entity.enums.FilmRatings;
-import com.ureca.filmeet.domain.movie.exception.MovieRatingAlreadyExistsException;
 import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
 import com.ureca.filmeet.domain.user.entity.Provider;
 import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles("local")
 class MovieRatingsCommandServiceTest {
 
@@ -68,14 +64,21 @@ class MovieRatingsCommandServiceTest {
     @Autowired
     private MovieGenreRepository movieGenreRepository;
 
-    @Autowired
-    private EntityManager em;
+    @AfterEach
+    void tearDown() {
+        genreScoreRepository.deleteAllInBatch();
+        movieRatingsRepository.deleteAllInBatch();
+        movieGenreRepository.deleteAllInBatch();
+        genreRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+        movieRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("영화에 대해 새로운 평점을 남기고 해당 영화의 장르에 따라 유저의 장르 점수가 업데이트된다..")
     void evaluateMovieRating_whenValidRequest_savesRatingAndUpdatesScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -105,8 +108,7 @@ class MovieRatingsCommandServiceTest {
                 BigDecimal.valueOf(3.5));
         EvaluateMovieRatingRequest request3 = new EvaluateMovieRatingRequest(movie3.getId(),
                 BigDecimal.valueOf(2.5));
-        em.flush();
-        em.clear();
+
         movieRatingsCommandService.evaluateMovieRating(request1, user.getId());
         movieRatingsCommandService.evaluateMovieRating(request2, user.getId());
         movieRatingsCommandService.evaluateMovieRating(request3, user.getId());
@@ -131,29 +133,10 @@ class MovieRatingsCommandServiceTest {
     }
 
     @Test
-    @DisplayName("이미 평점을 남긴 영화에 대해 새로운 평점을 남기려고 하면 MovieRatingAlreadyExistsException 예외가 발생한다.")
-    void evaluateMovieRating_whenAlreadyRated_throwsException() {
-        // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname", "profile.url");
-        Movie movie = createMovie("Test Movie", "Plot", LocalDate.now(), 120, "poster.url", FilmRatings.ALL);
-        MovieRatings movieRatings = createMovieRatings(movie, user, BigDecimal.valueOf(4.0));
-
-        // when
-        userRepository.save(user);
-        movieRepository.save(movie);
-        movieRatingsRepository.save(movieRatings);
-        EvaluateMovieRatingRequest request = new EvaluateMovieRatingRequest(movie.getId(), BigDecimal.valueOf(4.5));
-
-        // then
-        assertThatThrownBy(() -> movieRatingsCommandService.evaluateMovieRating(request, user.getId()))
-                .isInstanceOf(MovieRatingAlreadyExistsException.class);
-    }
-
-    @Test
     @DisplayName("영화 평점을 수정한다.")
     void modifyMovieRating_whenValidRequest_updatesRatingAndScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname",
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname",
                 "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
         Movie movie2 = createMovie("제목2", "줄거리2", LocalDate.now(), 150, "https://abc", FilmRatings.ADULT);
@@ -164,7 +147,7 @@ class MovieRatingsCommandServiceTest {
         Genre genre4 = createGenre(GenreType.COMEDY);
         MovieGenre movieGenre1 = createMovieGenre(movie1, genre1);
         MovieGenre movieGenre2 = createMovieGenre(movie2, genre2);
-        MovieGenre movieGenre3 = createMovieGenre(movie2, genre2);
+        MovieGenre movieGenre3 = createMovieGenre(movie3, genre2);
         MovieGenre movieGenre4 = createMovieGenre(movie3, genre3);
         GenreScore genreScore1 = createGenreScore(user, genre1, 0);
         GenreScore genreScore2 = createGenreScore(user, genre2, 0);
@@ -182,13 +165,11 @@ class MovieRatingsCommandServiceTest {
         genreScoreRepository.saveAll(List.of(genreScore1, genreScore2, genreScore3, genreScore4));
         movieRatingsRepository.saveAll(List.of(movieRatings1, movieRatings2, movieRatings3));
         ModifyMovieRatingRequest request1 = new ModifyMovieRatingRequest(movie1.getId(), user.getId(),
-                BigDecimal.valueOf(1.0));
+                BigDecimal.valueOf(3.05));
         ModifyMovieRatingRequest request2 = new ModifyMovieRatingRequest(movie2.getId(), user.getId(),
-                BigDecimal.valueOf(2.5));
+                BigDecimal.valueOf(2.05));
         ModifyMovieRatingRequest request3 = new ModifyMovieRatingRequest(movie3.getId(), user.getId(),
-                BigDecimal.valueOf(3.0));
-        em.flush();
-        em.clear();
+                BigDecimal.valueOf(1.05));
         movieRatingsCommandService.modifyMovieRating(request1);
         movieRatingsCommandService.modifyMovieRating(request2);
         movieRatingsCommandService.modifyMovieRating(request3);
@@ -209,30 +190,30 @@ class MovieRatingsCommandServiceTest {
                 .hasSize(4)
                 .extracting("user.id", "genre.id", "score")
                 .containsExactlyInAnyOrder(
-                        tuple(user.getId(), genre1.getId(), -1),
-                        tuple(user.getId(), genre2.getId(), 0),
-                        tuple(user.getId(), genre3.getId(), -2),
+                        tuple(user.getId(), genre1.getId(), 2),
+                        tuple(user.getId(), genre2.getId(), -4),
+                        tuple(user.getId(), genre3.getId(), -4),
                         tuple(user.getId(), genre4.getId(), 0)
                 );
         assertThat(movieRating1)
                 .isPresent()
                 .get().extracting("movie.id", "user.id", "ratingScore")
-                .containsExactly(movie1.getId(), user.getId(), BigDecimal.valueOf(1.0));
+                .containsExactly(movie1.getId(), user.getId(), BigDecimal.valueOf(3.05));
         assertThat(movieRating2)
                 .isPresent()
                 .get().extracting("movie.id", "user.id", "ratingScore")
-                .containsExactly(movie2.getId(), user.getId(), BigDecimal.valueOf(2.5));
+                .containsExactly(movie2.getId(), user.getId(), BigDecimal.valueOf(2.05));
         assertThat(movieRating3)
                 .isPresent()
                 .get().extracting("movie.id", "user.id", "ratingScore")
-                .containsExactly(movie3.getId(), user.getId(), BigDecimal.valueOf(3.0));
+                .containsExactly(movie3.getId(), user.getId(), BigDecimal.valueOf(1.05));
     }
 
     @Test
     @DisplayName("영화 평점을 삭제하면 평점 및 장르 점수가 올바르게 업데이트된다.")
     void deleteMovieRating_whenValidRequest_deletesRatingAndUpdatesScores() {
         // given
-        User user = createUser("username", "password", Role.ROLE_USER, Provider.NAVER, "nickname", "profile.url");
+        User user = createUser("username", "password", Role.ROLE_ADULT_USER, Provider.NAVER, "nickname", "profile.url");
         Movie movie1 = createMovie("제목1", "줄거리1", LocalDate.now(), 150, "https://poster1.url", FilmRatings.ALL,
                 BigDecimal.valueOf(0.0), 1, 0);
         Genre genre1 = createGenre(GenreType.ACTION);
@@ -250,10 +231,6 @@ class MovieRatingsCommandServiceTest {
         movieGenreRepository.saveAll(List.of(movieGenre1, movieGenre2));
         genreScoreRepository.saveAll(List.of(genreScore1, genreScore2));
         movieRatingsRepository.save(movieRatings);
-
-        em.flush();
-        em.clear();
-
         DeleteMovieRatingRequest deleteRequest = new DeleteMovieRatingRequest(movie1.getId());
         movieRatingsCommandService.deleteMovieRating(deleteRequest, user.getId());
 

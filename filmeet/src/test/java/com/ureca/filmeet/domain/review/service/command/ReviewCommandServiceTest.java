@@ -53,15 +53,15 @@ class ReviewCommandServiceTest {
     @DisplayName("리뷰를 성공적으로 저장한다")
     void createReview_whenValidRequest_savesReview() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
 
         // when
         userRepository.save(user);
         movieRepository.save(movie);
-        CreateReviewRequest request = new CreateReviewRequest(movie.getId(), user.getId(), "리뷰 내용");
-        CreateReviewResponse response = reviewCommandService.createReview(request);
+        CreateReviewRequest request = new CreateReviewRequest(movie.getId(), "리뷰 내용");
+        CreateReviewResponse response = reviewCommandService.createReview(request, user.getId());
         Optional<Review> review = reviewRepository.findById(response.reviewId());
 
         // then
@@ -79,7 +79,7 @@ class ReviewCommandServiceTest {
     @DisplayName("영화에 리뷰를 중복으로 생성하면 ReviewAlreadyExistsException 예외가 발생한다.")
     void createReview_whenDuplicateReview_throwsException() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -88,10 +88,10 @@ class ReviewCommandServiceTest {
         userRepository.save(user);
         movieRepository.save(movie);
         reviewRepository.save(review);
-        CreateReviewRequest request = new CreateReviewRequest(movie.getId(), user.getId(), "새로운 리뷰 내용");
+        CreateReviewRequest request = new CreateReviewRequest(movie.getId(), "새로운 리뷰 내용");
 
         // then
-        assertThatThrownBy(() -> reviewCommandService.createReview(request))
+        assertThatThrownBy(() -> reviewCommandService.createReview(request, user.getId()))
                 .isInstanceOf(ReviewAlreadyExistsException.class);
     }
 
@@ -103,10 +103,10 @@ class ReviewCommandServiceTest {
 
         // when
         movieRepository.save(movie);
-        CreateReviewRequest request = new CreateReviewRequest(movie.getId(), 999L, "리뷰 내용");
+        CreateReviewRequest request = new CreateReviewRequest(movie.getId(), "리뷰 내용");
 
         // then
-        assertThatThrownBy(() -> reviewCommandService.createReview(request))
+        assertThatThrownBy(() -> reviewCommandService.createReview(request, 999L))
                 .isInstanceOf(ReviewUserNotFoundException.class);
     }
 
@@ -114,15 +114,15 @@ class ReviewCommandServiceTest {
     @DisplayName("존재하지 않는 영화 ID에 리뷰를 작성할 경우 ReviewMovieNotFoundException 예외가 발생한다.")
     void createReview_whenMovieNotFound_throwsException() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
 
         // when
         userRepository.save(user);
-        CreateReviewRequest request = new CreateReviewRequest(999L, user.getId(), "리뷰 내용");
+        CreateReviewRequest request = new CreateReviewRequest(999L, "리뷰 내용");
 
         // then
-        assertThatThrownBy(() -> reviewCommandService.createReview(request))
+        assertThatThrownBy(() -> reviewCommandService.createReview(request, user.getId()))
                 .isInstanceOf(ReviewMovieNotFoundException.class);
     }
 
@@ -130,7 +130,7 @@ class ReviewCommandServiceTest {
     @DisplayName("리뷰를 성공적으로 수정한다.")
     void modifyReview_whenValidRequest_updatesReview() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -169,7 +169,7 @@ class ReviewCommandServiceTest {
     @DisplayName("리뷰를 성공적으로 삭제한다.")
     void deleteReview_whenValidRequest_updatesVisibility() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
         Review review = createReview("리뷰 내용", movie, user);
@@ -190,7 +190,7 @@ class ReviewCommandServiceTest {
     @DisplayName("존재하지 않는 리뷰 ID를 삭제하면 ReviewNotFoundException 가 발생한다. ")
     void deleteReview_whenReviewNotFound_throwsException() {
         // given
-        User user = createUser("username", "securePassword", Role.ROLE_USER, Provider.NAVER, "닉네임",
+        User user = createUser("username", "securePassword", Role.ROLE_ADULT_USER, Provider.NAVER, "닉네임",
                 "https://example.com/profile.jpg");
         Movie movie = createMovie("제목", "줄거리", LocalDate.now(), 150, "https://poster.jpg", FilmRatings.ADULT);
 
