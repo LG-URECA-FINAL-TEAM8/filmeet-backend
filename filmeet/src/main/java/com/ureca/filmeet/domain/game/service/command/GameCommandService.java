@@ -53,8 +53,9 @@ public class GameCommandService {
 
         game = gameRepository.save(game);
 
+        int candidateCount = request.totalRounds() * 3;
         // 16강에는 16개의 영화가 필요하므로
-        List<Movie> candidates = movieRepository.findRandomMovies(request.totalRounds());
+        List<Movie> candidates = movieRepository.findRandomMovies(candidateCount);
 
         // 장르 정보 함께 로딩
         List<Movie> moviesWithGenres = movieRepository.findMoviesWithGenres(candidates);
