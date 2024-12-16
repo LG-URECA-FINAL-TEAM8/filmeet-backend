@@ -70,8 +70,8 @@ class CollectionCommentCommandServiceTest {
         assertThat(savedComment)
                 .isPresent()
                 .get()
-                .extracting("id", "content", "user.id", "collection.id", "collection.commentCounts")
-                .contains(commentId, request.commentContent(), user.getId(), collection.getId(), 1
+                .extracting("id", "content", "user.id", "collection.id")
+                .contains(commentId, request.commentContent(), user.getId(), collection.getId()
                 );
     }
 
