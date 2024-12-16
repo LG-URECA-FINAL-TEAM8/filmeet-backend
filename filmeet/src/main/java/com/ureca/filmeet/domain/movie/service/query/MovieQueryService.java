@@ -205,4 +205,8 @@ public class MovieQueryService {
                 ratingDistribution
         );
     }
+
+    public long getTotalRatings() {
+        return movieRatingsRepository.countAllRatings();
+    }
 }
