@@ -33,19 +33,14 @@ public class UserQueryController {
 
     @GetMapping("/info")
     public ResponseEntity<?> userInfo(@AuthenticationPrincipal User user) {
-        return ApiResponse.ok(new UserDetailResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getRole(),
-                user.getNickname(),
-                user.getProfileImage(),
-                user.isFirstLogin(),
-                user.getAge(),
-                user.getMbti(),
-                user.getTotalMovieLikes(),
-                user.getTotalCollections(),
-                user.getTotalGames()
-        ));
+        UserDetailResponse response = userQueryService.getUserDetailByUser(user);
+        return ApiResponse.ok(response);
+    }
+
+    @GetMapping("/{userId}/info")
+    public ResponseEntity<?> userInfoByUserId(@PathVariable Long userId) {
+        UserDetailResponse response = userQueryService.getUserDetailById(userId);
+        return ApiResponse.ok(response);
     }
 
     @GetMapping("/{userId}/reviews")
