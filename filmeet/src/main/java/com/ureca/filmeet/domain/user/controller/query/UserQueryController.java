@@ -6,18 +6,18 @@ import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.service.query.ReviewQueryService;
 import com.ureca.filmeet.domain.user.dto.response.UserDetailResponse;
 import com.ureca.filmeet.domain.user.entity.User;
-import com.ureca.filmeet.global.common.dto.SliceResponseDto;
-import java.util.Map;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import com.ureca.filmeet.domain.user.service.command.UserCommandService;
 import com.ureca.filmeet.domain.user.service.query.UserQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
+import com.ureca.filmeet.global.common.dto.SliceResponseDto;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,26 +48,26 @@ public class UserQueryController {
         ));
     }
 
-    @GetMapping("/reviews")
+    @GetMapping("/{userId}/reviews")
     public ResponseEntity<ApiResponse<SliceResponseDto<UserReviewsResponse>>> getUserReviews(
-            @AuthenticationPrincipal User user,
+            @PathVariable("userId") Long userId,
             Pageable pageable
     ) {
-        Slice<UserReviewsResponse> userReviews = reviewQueryService.getUserReviews(user.getId(), pageable);
+        Slice<UserReviewsResponse> userReviews = reviewQueryService.getUserReviews(userId, pageable);
         return ApiResponse.ok(SliceResponseDto.of(userReviews));
     }
 
-    @GetMapping("/movies/ratings")
+    @GetMapping("/{userId}/movies/ratings")
     public ResponseEntity<ApiResponse<SliceResponseDto<MoviesRatingResponse>>> getMoviesWithUserRatings(
-            @AuthenticationPrincipal User user,
+            @PathVariable("userId") Long userId,
             Pageable pageable
     ) {
         Slice<MoviesRatingResponse> moviesWithUserRatings = movieRatingQueryService.getMoviesWithUserRatings(
-                user.getId(),
+                userId,
                 pageable);
         return ApiResponse.ok(SliceResponseDto.of(moviesWithUserRatings));
-    }  
-      
+    }
+
     @GetMapping("/check-username")
     public ResponseEntity<?> checkDuplicateUsername(@RequestParam String username) {
         Boolean isAvailable = userQueryService.existsByUsername(username);
