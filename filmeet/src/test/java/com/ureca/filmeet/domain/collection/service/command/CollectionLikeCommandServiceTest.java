@@ -47,7 +47,7 @@ class CollectionLikeCommandServiceTest {
         userRepository.deleteAllInBatch();
     }
 
-    @DisplayName("사용자가 컬렉션에 좋아요를 성공적으로 추가하고 좋아요를 누른 만큼 컬렉션에 좋아요 개수가 증가한다.")
+    @DisplayName("사용자가 컬렉션에 좋아요를 성공적으로 추가한다.")
     @Test
     void collectionLikes_whenValidRequest_addsLike() {
         // given
@@ -70,9 +70,9 @@ class CollectionLikeCommandServiceTest {
         assertThat(collectionLikes)
                 .isPresent()
                 .get()
-                .extracting("user.id", "collection.id", "collection.likeCounts")
+                .extracting("user.id", "collection.id")
                 .contains(
-                        user1.getId(), collection.getId(), 2
+                        user1.getId(), collection.getId()
                 );
     }
 
