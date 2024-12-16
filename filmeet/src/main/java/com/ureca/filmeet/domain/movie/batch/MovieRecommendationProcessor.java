@@ -1,55 +1,42 @@
-package com.ureca.filmeet.domain.movie.service.query;
+package com.ureca.filmeet.domain.movie.batch;
 
 import com.ureca.filmeet.domain.genre.repository.GenreScoreRepository;
 import com.ureca.filmeet.domain.movie.dto.response.MoviesRankingsResponse;
-import com.ureca.filmeet.domain.movie.dto.response.RecommendationMoviesResponse;
 import com.ureca.filmeet.domain.movie.entity.Movie;
-import com.ureca.filmeet.domain.movie.repository.MovieRecommendationRepository;
+import com.ureca.filmeet.domain.movie.entity.MovieRecommendation;
 import com.ureca.filmeet.domain.movie.repository.MovieRepository;
+import com.ureca.filmeet.domain.movie.service.query.MovieScoreService;
+import com.ureca.filmeet.domain.movie.service.query.MoviesRankingsRedisQueryService;
+import com.ureca.filmeet.domain.user.entity.User;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class MovieRecommendationQueryService {
+public class MovieRecommendationProcessor implements ItemProcessor<User, List<MovieRecommendation>> {
 
     private final MovieRepository movieRepository;
-    private final MovieScoreService movieScoreService;
     private final GenreScoreRepository genreScoreRepository;
+    private final MovieScoreService movieScoreService;
     private final MoviesRankingsRedisQueryService moviesRankingsRedisQueryService;
-    private final MovieRecommendationRepository movieRecommendationRepository;
 
-    public List<RecommendationMoviesResponse> getMoviesRecommendation(Long userId, Pageable pageable) {
-        List<RecommendationMoviesResponse> recommendations = movieRecommendationRepository.findMovieRecommendationByUserId(
-                        userId, pageable)
-                .stream()
-                .map(movieRecommendation -> RecommendationMoviesResponse.of(movieRecommendation.getMovie()))
-                .toList();
-
-        if (recommendations.isEmpty()) {
-            return getMoviesRecommendationV1(userId, pageable);
-        }
-
-        return recommendations;
-    }
-
-    public List<RecommendationMoviesResponse> getMoviesRecommendationV1(Long userId, Pageable pageable) {
+    @Override
+    public List<MovieRecommendation> process(User user) {
         List<Long> top10MovieIds = getTop10MovieIds();
-        List<Long> genreIds = genreScoreRepository.findTop10GenreIdsByMemberId(userId);
+        List<Long> genreIds = genreScoreRepository.findTop10GenreIdsByMemberId(user.getId());
         List<Movie> preferredMovies = movieRepository.findMoviesByPreferredGenresAndNotInteracted(
                 genreIds,
-                userId,
+                user.getId(),
                 top10MovieIds,
-                pageable
+                PageRequest.of(0, 100)
         );
         Map<Movie, Double> movieScores = movieScoreService.calculateMovieScores(preferredMovies);
 
@@ -57,8 +44,11 @@ public class MovieRecommendationQueryService {
                 .stream()
                 .sorted(Map.Entry.<Movie, Double>comparingByValue().reversed())
                 .limit(20)
-                .map(entry -> RecommendationMoviesResponse.of(entry.getKey()))
-                .collect(Collectors.toList());
+                .map(entry -> MovieRecommendation.builder()
+                        .user(user)
+                        .movie(entry.getKey())
+                        .build())
+                .toList();
     }
 
     /**
