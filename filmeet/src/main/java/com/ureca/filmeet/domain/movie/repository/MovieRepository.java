@@ -125,7 +125,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             "SELECT * FROM movie " +
                     "WHERE movie_id >= (SELECT FLOOR(RAND() * (SELECT MAX(movie_id) FROM movie))) AND is_deleted = false "
                     +
-                    "ORDER BY movie_id " +
+                    "ORDER BY release_date DESC " +
                     "LIMIT :totalRounds",
             nativeQuery = true)
     List<Movie> findRandomMovies(@Param("totalRounds") Integer totalRounds);
@@ -222,4 +222,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
             @Param("excludedMovieIds") List<Long> excludedMovieIds,
             Pageable pageable
     );
+
+    @Query("""
+        SELECT COALESCE(SUM(r.commentCounts), 0)
+        FROM Review r
+        WHERE r.movie.id = :movieId
+    """)
+    Integer findCommentCountsByMovieId(@Param("movieId") Long movieId);
 }
