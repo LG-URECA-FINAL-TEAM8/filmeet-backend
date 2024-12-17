@@ -7,6 +7,7 @@ public record CollectionCommentsResponse(
 
         Long collectionCommentId,
         String commentContent,
+        Long commentUserId,
         String nickname,
         String profileImage,
         LocalDateTime createdAt
@@ -16,6 +17,7 @@ public record CollectionCommentsResponse(
         return new CollectionCommentsResponse(
                 collectionComment.getId(),
                 collectionComment.getContent(),
+                collectionComment.getUser().getId(),
                 collectionComment.getUser().getNickname(),
                 collectionComment.getUser().getProfileImage(),
                 collectionComment.getCreatedAt()

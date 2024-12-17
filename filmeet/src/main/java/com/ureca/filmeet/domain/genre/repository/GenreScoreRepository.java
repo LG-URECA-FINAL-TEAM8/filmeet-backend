@@ -25,13 +25,26 @@ public interface GenreScoreRepository extends JpaRepository<GenreScore, Long> {
 
     @Modifying
     @Query("UPDATE GenreScore gs " +
-            "SET gs.score = gs.score + :weight " +
+            "SET gs.score = gs.score + " +
+            "CASE " +
+            "    WHEN gs.score >= 900 THEN CAST(:weight * 0.1 AS integer) " +
+            "    WHEN gs.score >= 800 THEN CAST(:weight * 0.2 AS integer) " +
+            "    WHEN gs.score >= 700 THEN CAST(:weight * 0.3 AS integer) " +
+            "    WHEN gs.score >= 600 THEN CAST(:weight * 0.4 AS integer) " +
+            "    WHEN gs.score >= 500 THEN CAST(:weight * 0.5 AS integer) " +
+            "    WHEN gs.score >= 400 THEN CAST(:weight * 0.6 AS integer) " +
+            "    WHEN gs.score >= 300 THEN CAST(:weight * 0.7 AS integer) " +
+            "    WHEN gs.score >= 200 THEN CAST(:weight * 0.8 AS integer) " +
+            "    WHEN gs.score >= 100 THEN CAST(:weight * 0.9 AS integer) " +
+            "    ELSE :weight " +
+            "END " +
             "WHERE gs.genre.id IN :genreIds AND gs.user.id = :userId")
     void bulkUpdateGenreScores(
             @Param("weight") int weight,
             @Param("genreIds") List<Long> genreIds,
             @Param("userId") Long userId
     );
+
 
     @Query("SELECT gs FROM GenreScore gs WHERE gs.user = :user AND gs.genre = :genre")
     Optional<GenreScore> findByUserAndGenre(@Param("user") User user, @Param("genre") Genre genre);

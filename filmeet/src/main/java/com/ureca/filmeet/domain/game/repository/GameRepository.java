@@ -46,6 +46,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
        INNER JOIN movie m ON gr.movie_id = m.movie_id
        GROUP BY gr.movie_id, m.title, m.poster_url
        ORDER BY victoryRatio DESC, winRate DESC
+       LIMIT 10
        """, nativeQuery = true)
     List<Object[]> findAllMovieRankings();
 
