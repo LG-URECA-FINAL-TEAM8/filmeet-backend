@@ -39,7 +39,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 사용자 정보 매핑
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String providerId;
-        String email;
         String name;
         String profileImage;
 
@@ -47,7 +46,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             case NAVER -> {
                 Map<String, Object> response = (Map<String, Object>) attributes.get("response");
                 providerId = provider.getName() + "_" + response.get("id");
-                email = (String) response.get("email");
                 name = (String) response.get("name");
                 profileImage = (String) response.get("profile_image");
             }

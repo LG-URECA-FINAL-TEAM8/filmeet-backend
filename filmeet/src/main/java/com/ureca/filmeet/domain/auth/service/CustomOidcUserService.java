@@ -35,28 +35,27 @@ public class CustomOidcUserService extends OidcUserService {
         OidcUser oidcUser = super.loadUser(userRequest);
         log.info("oidcUser: {}", oidcUser);
 
+        // ID 토큰과 claims 추출
         OidcIdToken idToken = oidcUser.getIdToken();
         Map<String, Object> claims = idToken.getClaims();
 
+        // iss 값으로 Provider 확인
         String issuer = claims.get("iss").toString();
-        String tmpProviderId = claims.get("sub").toString();
-        String email = claims.get("email").toString();
-        String name = claims.get("name").toString();
-        String picture = claims.get("picture").toString();
+        Provider provider = Provider.fromIssuer(issuer);
 
-        Provider provider = Arrays.stream(Provider.values())
-                .filter(Provider::isOidcProvider)
-                .filter(cur -> issuer.contains(cur.getName()))
-                .findFirst()
-                .orElseThrow(() -> new OAuth2AuthenticationException("No matching issuers found" + issuer));
+        // Provider에서 nameKey 가져와서 사용자 이름 동적 추출
+        String tmpProviderId = claims.get("sub").toString();
+        String name = claims.getOrDefault(provider.getNameKey(), "name").toString();
+        String picture = claims.getOrDefault("picture", "profile_image").toString();
 
         String providerId = provider.getName() + "_" + tmpProviderId;
 
-
+        // 사용자 조회 또는 임시 사용자 생성
         User user = userRepository.findByUsername(providerId)
                 .orElseGet(() -> userCommandService.createTemporaryUser(
-                        providerId, name, Provider.GOOGLE,picture));
+                        providerId, name, provider, picture));
 
+        // 권한 설정
         Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
 
         return new CustomOidcUser(
