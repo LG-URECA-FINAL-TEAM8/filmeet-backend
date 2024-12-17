@@ -1,16 +1,16 @@
 package com.ureca.filmeet.domain.user.service.query;
 
+import com.ureca.filmeet.domain.follow.repository.FollowRepository;
 import com.ureca.filmeet.domain.follow.service.query.FollowQueryService;
 import com.ureca.filmeet.domain.movie.repository.MovieRatingsRepository;
 import com.ureca.filmeet.domain.review.repository.ReviewRepository;
+import com.ureca.filmeet.domain.user.dto.response.TargetUserDetailResponse;
 import com.ureca.filmeet.domain.user.dto.response.UserDetailResponse;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +19,7 @@ public class UserQueryService {
     private final ReviewRepository reviewRepository;
     private final MovieRatingsRepository movieRatingsRepository;
     private final FollowQueryService followQueryService;
+    private final FollowRepository followRepository;
 
     public User findById(Long id) {
         return userRepository.findById(id)
@@ -34,28 +35,30 @@ public class UserQueryService {
         return userRepository.existsByUsername(username);
     }
 
-    public UserDetailResponse getUserDetailById(Long userId) {
-        User user = findById(userId);
+    public TargetUserDetailResponse getUserDetailById(Long userId, User user) {
+        User targeUser = findById(userId);
         Integer reviewCount = reviewRepository.countByUserId(userId);
         Integer movieRatingCount = movieRatingsRepository.countByUserId(userId);
         long followerCount = followQueryService.getFollowerCount(userId);
         long followingCount = followQueryService.getFollowingCount(userId);
-        return new UserDetailResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getRole(),
-                user.getNickname(),
-                user.getProfileImage(),
-                user.isFirstLogin(),
-                user.getAge(),
-                user.getMbti(),
-                user.getTotalMovieLikes(),
-                user.getTotalCollections(),
-                user.getTotalGames(),
+        boolean isFollowed = followRepository.existsByFollowerAndFollowing(user, targeUser);
+        return new TargetUserDetailResponse(
+                targeUser.getId(),
+                targeUser.getUsername(),
+                targeUser.getRole(),
+                targeUser.getNickname(),
+                targeUser.getProfileImage(),
+                targeUser.isFirstLogin(),
+                targeUser.getAge(),
+                targeUser.getMbti(),
+                targeUser.getTotalMovieLikes(),
+                targeUser.getTotalCollections(),
+                targeUser.getTotalGames(),
                 reviewCount,
                 movieRatingCount,
                 followerCount,
-                followingCount
+                followingCount,
+                isFollowed
         );
     }
 
