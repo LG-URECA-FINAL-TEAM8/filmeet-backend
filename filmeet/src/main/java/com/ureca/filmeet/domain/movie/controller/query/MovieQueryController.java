@@ -18,6 +18,7 @@ import com.ureca.filmeet.domain.movie.service.query.MovieUpcomingQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesRankingsRedisQueryService;
 import com.ureca.filmeet.domain.movie.service.query.MoviesSearchService;
 import com.ureca.filmeet.domain.user.entity.User;
+import com.ureca.filmeet.domain.user.service.query.UserFollowRecommendationQueryService;
 import com.ureca.filmeet.global.common.dto.ApiResponse;
 import com.ureca.filmeet.global.common.dto.SliceResponseDto;
 import java.time.LocalDate;
@@ -46,6 +47,7 @@ public class MovieQueryController {
     private final MovieUpcomingQueryService movieUpcomingQueryService;
     private final MovieRecommendationQueryService movieRecommendationQueryService;
     private final MoviesRankingsRedisQueryService moviesRankingsRedisQueryService;
+    private final UserFollowRecommendationQueryService userFollowRecommendationQueryService;
 
     @GetMapping("/upcoming")
     public ResponseEntity<ApiResponse<SliceResponseDto<UpcomingMoviesResponse>>> getUpcomingMovies(
@@ -153,5 +155,17 @@ public class MovieQueryController {
     public ResponseEntity<ApiResponse<Long>> getTotalRatings() {
         long totalRatings = movieQueryService.getTotalRatings();
         return ApiResponse.ok(totalRatings);
+    }
+
+    @GetMapping("/following/{followerId}/preference")
+    public ResponseEntity<ApiResponse<List<RecommendationMoviesResponse>>> getMoviesFollowingPreference(
+            @PathVariable("followerId") Long followerId,
+            @RequestParam("movieIds") List<Long> movieIds
+    ) {
+        List<RecommendationMoviesResponse> moviesFollowingPreference = userFollowRecommendationQueryService.getMoviesFollowingPreference(
+                followerId,
+                movieIds
+        );
+        return ApiResponse.ok(moviesFollowingPreference);
     }
 }
