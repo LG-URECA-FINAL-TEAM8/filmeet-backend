@@ -4,6 +4,7 @@ import com.ureca.filmeet.domain.movie.dto.response.MoviesRatingResponse;
 import com.ureca.filmeet.domain.movie.service.query.MovieRatingQueryService;
 import com.ureca.filmeet.domain.review.dto.response.UserReviewsResponse;
 import com.ureca.filmeet.domain.review.service.query.ReviewQueryService;
+import com.ureca.filmeet.domain.user.dto.response.TargetUserDetailResponse;
 import com.ureca.filmeet.domain.user.dto.response.UserDetailResponse;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.service.command.UserCommandService;
@@ -38,8 +39,8 @@ public class UserQueryController {
     }
 
     @GetMapping("/{userId}/info")
-    public ResponseEntity<?> userInfoByUserId(@PathVariable Long userId) {
-        UserDetailResponse response = userQueryService.getUserDetailById(userId);
+    public ResponseEntity<?> userInfoByUserId(@PathVariable Long userId, @AuthenticationPrincipal User user) {
+        TargetUserDetailResponse response = userQueryService.getUserDetailById(userId, user);
         return ApiResponse.ok(response);
     }
 
