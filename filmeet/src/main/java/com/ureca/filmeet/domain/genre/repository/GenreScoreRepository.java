@@ -3,13 +3,13 @@ package com.ureca.filmeet.domain.genre.repository;
 import com.ureca.filmeet.domain.genre.entity.Genre;
 import com.ureca.filmeet.domain.genre.entity.GenreScore;
 import com.ureca.filmeet.domain.user.entity.User;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface GenreScoreRepository extends JpaRepository<GenreScore, Long> {
 
@@ -17,7 +17,7 @@ public interface GenreScoreRepository extends JpaRepository<GenreScore, Long> {
             "FROM genre_score gs " +
             "WHERE gs.member_id = :memberId " +
             "ORDER BY gs.score DESC " +
-            "LIMIT 5",
+            "LIMIT 10",
             nativeQuery = true)
     List<Long> findTop10GenreIdsByMemberId(
             @Param("memberId") Long memberId
@@ -42,4 +42,15 @@ public interface GenreScoreRepository extends JpaRepository<GenreScore, Long> {
             "WHERE gs.user = :user " +
             "ORDER BY gs.score DESC")
     List<GenreScore> findTopGenresByUser(User user);
+
+    @Query("SELECT gs.genre.id " +
+            "FROM GenreScore gs " +
+            "WHERE gs.user.id IN :userIds " +
+            "GROUP BY gs.genre.id " +
+            "ORDER BY SUM(gs.score) DESC"
+    )
+    List<Long> findTopGenresBySimilarUsersIds(
+            @Param("userIds") List<Long> userIds,
+            Pageable pageable
+    );
 }

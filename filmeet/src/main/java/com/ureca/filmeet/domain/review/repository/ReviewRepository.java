@@ -113,9 +113,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCus
             Pageable pageable
     );
 
-    boolean existsByUserIdAndMovieId(Long userId, Long movieId);
-
-    @Query("SELECT SUM(r.commentCounts) FROM Review r WHERE r.movie.id = :movieId")
+    @Query("SELECT SUM(r.commentCounts) FROM Review r WHERE r.movie.id = :movieId AND r.isDeleted = false AND r.isVisible = true ")
     Integer findTotalCommentCountsByMovieId(@Param("movieId") Long movieId);
 
     boolean existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(Long userId, Long movieId);
