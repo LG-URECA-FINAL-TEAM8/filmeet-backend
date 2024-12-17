@@ -118,6 +118,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCus
 
     boolean existsByUserIdAndMovieIdAndIsDeletedFalseAndIsVisibleTrue(Long userId, Long movieId);
 
-    @Query("SELECT COUNT(r) FROM Review r WHERE r.user.id = :userId AND r.isDeleted = false AND r.isVisible = true ")
-    Integer countByUserId(@Param("userId") Long userId);
+    @Query("SELECT COUNT(r) " +
+            "FROM Review r " +
+            "WHERE r.user.id = :userId AND r.isDeleted = false AND r.isVisible = true "
+    )
+    Integer countByUserId(
+            @Param("userId") Long userId
+    );
 }
