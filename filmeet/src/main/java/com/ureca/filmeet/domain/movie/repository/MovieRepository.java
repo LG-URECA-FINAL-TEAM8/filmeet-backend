@@ -211,4 +211,15 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     @Query("SELECT m FROM Movie m WHERE m.id IN :ids AND m.isDeleted = false")
     List<Movie> findMoviesByIds(@Param("ids") List<Long> ids);
 
+    @Query("SELECT DISTINCT m " +
+            "FROM Movie m " +
+            "JOIN m.movieGenres mg " +
+            "JOIN mg.genre g " +
+            "WHERE g.id = :genreId " +
+            "AND m.id NOT IN :excludedMovieIds")
+    List<Movie> findMoviesBySimilarUsersGenreIds(
+            @Param("genreId") Long genreId,
+            @Param("excludedMovieIds") List<Long> excludedMovieIds,
+            Pageable pageable
+    );
 }

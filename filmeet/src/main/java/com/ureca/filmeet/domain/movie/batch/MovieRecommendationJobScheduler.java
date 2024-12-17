@@ -20,7 +20,7 @@ public class MovieRecommendationJobScheduler {
     private final JobRegistry jobRegistry;
 
     //    @Scheduled(cron = "*/10 * * * * ?")
-    @Scheduled(cron = "0 0 4 * * ?")
+    @Scheduled(cron = "0 0 6 * * ?")
     public void runMovieRecommendationJob() {
         try {
             Job job = jobRegistry.getJob("updateMovieRecommendationJob");
@@ -32,9 +32,7 @@ public class MovieRecommendationJobScheduler {
 
             log.info("Running job: updateMovieRecommendationJob with parameters: {}", jobParameters);
             jobLauncher.run(job, jobParameters);
-
             log.info("Successfully completed job: updateMovieRecommendationJob");
-
         } catch (Exception e) {
             log.error("Failed to run updateMovieRecommendationJob", e);
         }
