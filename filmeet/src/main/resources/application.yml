@@ -1,4 +1,8 @@
 spring:
+  batch:
+    job:
+      enabled: false
+
   profiles:
     active: dev  # 기본 활성화 프로파일 설정
 
@@ -19,7 +23,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+  #    show-sql: true
 
   cloud:
     aws:
