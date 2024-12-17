@@ -50,6 +50,17 @@ spring:
             authorization-grant-type: authorization_code
             client-name: Google
             client-authentication-method: client_secret_post
+          kakao:
+            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_ID}
+            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile_nickname
+              - profile_image
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            authorization-grant-type: authorization_code
+            client-name: Kakao
+            client-authentication-method: client_secret_post
           naver:
             provider: naver
             client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_NAVER_CLIENT_ID}
@@ -63,6 +74,12 @@ spring:
             client-name: Naver
             client-authentication-method: client_secret_post
         provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: sub
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize
             token-uri: https://nid.naver.com/oauth2.0/token
