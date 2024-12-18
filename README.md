@@ -176,7 +176,7 @@ Filmeet에서는 **사용자 경험(UX)을 극대화**하기 위해, **응답 �
 
 ## 🗂️ 시스템 아키텍처
 
-<img src="img/architecture.svg">
+<img src="img/architecture.png" style="width: 100%; height: auto">
 
 <br />
 
