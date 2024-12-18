@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +17,7 @@ public class MovieUpcomingQueryService {
     private final MovieRepository movieRepository;
 
     public Slice<UpcomingMoviesResponse> getUpcomingMovies(int page, int size, LocalDate currentDate) {
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "releaseDate");
+        Pageable pageable = PageRequest.of(page, size, Direction.ASC, "releaseDate");
         return movieRepository.findUpcomingMoviesByDateRange(currentDate, pageable)
                 .map(UpcomingMoviesResponse::of);
     }
