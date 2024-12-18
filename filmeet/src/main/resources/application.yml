@@ -97,8 +97,8 @@ omdb:
 
 front:
   redirect-url:
-    default: http://localhost:5173/bin
-    first-login: http://localhost:5173/genre
+    default: https://filmeet.me/bin
+    first-login: https://filmeet.me/genre
 
 logging:
   level:
