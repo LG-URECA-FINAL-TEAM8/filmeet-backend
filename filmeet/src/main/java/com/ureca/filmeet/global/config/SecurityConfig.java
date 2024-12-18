@@ -82,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/movies/upcoming").permitAll()        // 공개 예정작
                         .requestMatchers(HttpMethod.GET, "/movies/boxoffice").permitAll()       // 박스오피스 순위
                         .requestMatchers(HttpMethod.GET, "/movies/rankings").permitAll()        // TOP 10 영화
+                        .requestMatchers(HttpMethod.GET, "/movies/admin-rankings").permitAll()        // 영화 상세 조회
                         .requestMatchers(HttpMethod.GET, "/movies/detail/*").permitAll()        // 영화 상세 조회
                         .requestMatchers(HttpMethod.GET, "/movies/search/genre").permitAll()    // 장르 검색
                         .requestMatchers(HttpMethod.GET, "/movies/search/title").permitAll()    // 제목 검색
