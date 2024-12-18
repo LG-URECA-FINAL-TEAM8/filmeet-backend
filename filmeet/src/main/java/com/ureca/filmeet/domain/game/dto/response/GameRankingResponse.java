@@ -1,6 +1,5 @@
 package com.ureca.filmeet.domain.game.dto.response;
 
-import com.ureca.filmeet.domain.movie.entity.Movie;
 
 import java.io.Serializable;
 
