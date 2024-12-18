@@ -3,12 +3,14 @@ package com.ureca.filmeet.global.util;
 import com.ureca.filmeet.domain.user.entity.User;
 import com.ureca.filmeet.domain.user.entity.enums.MbtiStatus;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CosineSimilarityUtil {
 
     private CosineSimilarityUtil() {
-        // 유틸리티 클래스는 인스턴스화 방지
     }
 
     /**
@@ -64,23 +66,34 @@ public class CosineSimilarityUtil {
     private static double[] createFeatureVector(User user) {
         List<Double> vector = new ArrayList<>();
 
-        // 1. 나이 정규화 (null 또는 음수인 경우 기본값으로 처리)
+        // 나이 정규화 (기본값: 20)
         Integer age = user.getAge();
-        vector.add(normalizeAge(age != null && age > 0 ? age : 25)); // 기본 나이 20로 설정
+        vector.add(normalizeAge(age != null && age > 0 ? age : 20));
 
-        // 2. MBTI 벡터화 (null 값이면 빈 벡터 반환)
+        // MBTI 벡터화
         String mbti = user.getMbti();
-        double[] mbtiVector = mbti != null ? oneHotEncodeMbti(mbti) : new double[MbtiStatus.values().length];
+        double[] mbtiVector = mbti != null ? oneHotEncodeMbti(mbti) : getDefaultMbtiVector();
         for (double value : mbtiVector) {
             vector.add(value);
         }
 
-        // 3. 행동 점수 추가
-        vector.add((double) user.getGameActivityScore());
-        vector.add((double) user.getLikeActivityScore());
-        vector.add((double) user.getCollectionActivityScore());
+        // 행동 점수 정규화 (기본 최대값: 100)
+        vector.add(normalizeActivityScore(user.getGameActivityScore()));
+        vector.add(normalizeActivityScore(user.getLikeActivityScore()));
+        vector.add(normalizeActivityScore(user.getCollectionActivityScore()));
 
         return vector.stream().mapToDouble(Double::doubleValue).toArray();
+    }
+
+    private static double[] getDefaultMbtiVector() {
+        double[] encoding = new double[MbtiStatus.values().length];
+        Arrays.fill(encoding, 1.0 / MbtiStatus.values().length);
+        return encoding;
+    }
+
+    private static double normalizeActivityScore(int score) {
+        int maxScore = 100;
+        return Math.min(score / (double) maxScore, 1.0);
     }
 
     /**
@@ -111,7 +124,7 @@ public class CosineSimilarityUtil {
             encoding[index] = 1.0;            // 해당 인덱스에 1.0 설정
         } catch (IllegalArgumentException e) {
             // 유효하지 않은 MBTI 값 처리
-            System.err.println("Invalid MBTI type: " + mbti);
+            log.warn("Invalid MBTI type: {}", mbti);
         }
 
         return encoding;
