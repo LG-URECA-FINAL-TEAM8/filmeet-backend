@@ -20,7 +20,6 @@ import com.ureca.filmeet.infra.kmdb.dto.KmdbPlot;
 import com.ureca.filmeet.infra.kmdb.dto.KmdbStaff;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +38,6 @@ public class MovieCommandService {
     private final GenreRepository genreRepository;
     private final PersonnelCommandService personnelCommandService;
     private final MovieQueryService movieQueryService;
-    private final MovieGenreRepository movieGenreRepository;
 
     @Transactional
     public void addMovies(List<AddMoviesRequest> requests) {
