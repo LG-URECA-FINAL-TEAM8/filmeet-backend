@@ -56,8 +56,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     );
 
     @Query("SELECT m FROM Movie m " +
-            "WHERE m.isDeleted = false " +
-            "AND m.releaseDate > :currentDate ")
+            "WHERE m.releaseDate > :currentDate " +
+            "AND m.isDeleted = false "
+    )
     Slice<Movie> findUpcomingMoviesByDateRange(
             @Param("currentDate") LocalDate currentDate,
             Pageable pageable
@@ -224,9 +225,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     );
 
     @Query("""
-        SELECT COALESCE(SUM(r.commentCounts), 0)
-        FROM Review r
-        WHERE r.movie.id = :movieId
-    """)
+                SELECT COALESCE(SUM(r.commentCounts), 0)
+                FROM Review r
+                WHERE r.movie.id = :movieId
+            """)
     Integer findCommentCountsByMovieId(@Param("movieId") Long movieId);
 }
