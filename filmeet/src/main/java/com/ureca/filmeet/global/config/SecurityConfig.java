@@ -2,12 +2,12 @@ package com.ureca.filmeet.global.config;
 
 import com.ureca.filmeet.domain.auth.service.CustomOAuth2UserService;
 import com.ureca.filmeet.domain.auth.service.CustomOidcUserService;
+import com.ureca.filmeet.domain.user.entity.Role;
 import com.ureca.filmeet.global.filter.JwtAuthenticationFilter;
 import com.ureca.filmeet.global.security.CustomAccessDeniedHandler;
 import com.ureca.filmeet.global.security.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.ureca.filmeet.global.security.JwtAuthenticationEntryPoint;
 import com.ureca.filmeet.global.security.OAuth2AuthenticationSuccessHandler;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +21,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -45,12 +48,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+    SecurityFilterChain securityFilterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
                                 .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
@@ -61,10 +66,13 @@ public class SecurityConfig {
                         .successHandler(
                                 (request, response, authentication) -> oAuth2AuthenticationSuccessHandler.onAuthenticationSuccess(
                                         request, response, authentication)))
+
                 .addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class)
+
                 .exceptionHandling(handler -> handler
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler))
+
                 .authorizeHttpRequests(authorize -> authorize
                         // 기본 허용 경로
                         .requestMatchers("/actuator/health").permitAll()
@@ -94,21 +102,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/collections/search/title").permitAll() // 컬렉션 제목 검색
                         .anyRequest().authenticated());
 
+        // 계층 설정이 적용되도록 강제로 추가
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+
         return http.build();
     }
-
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowCredentials(true); // 쿠키를 받을건지
-//        configuration.addAllowedOriginPattern("*");
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
-//        configuration.addAllowedHeader("*");
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -139,23 +138,9 @@ public class SecurityConfig {
                 """;
 
         roleHierarchy.setHierarchy(hierarchy);
+
+        Role.setRoleHierarchy(roleHierarchy);
+
         return roleHierarchy;
     }
 }
-/**
- * [org.springframework.security.web.session.DisableEncodeUrlFilter@5b79457f,
- * org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@43ca23a8,
- * org.springframework.security.web.context.SecurityContextHolderFilter@1fc5aaa5,
- * org.springframework.security.web.header.HeaderWriterFilter@70176150,
- * org.springframework.web.filter.CorsFilter@2528c5eb,
- * org.springframework.security.web.authentication.logout.LogoutFilter@4da18e2c,
- * org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@7ed91434,
- * org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@403683e5,
- * org.springframework.security.web.savedrequest.RequestCacheAwareFilter@ca53bc6,
- * org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@189c55bf,
- * org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2a35af75,
- * org.springframework.security.web.session.SessionManagementFilter@49f640a4,
- * org.springframework.security.web.access.ExceptionTranslationFilter@5926f473,
- * com.ureca.filmeet.global.filter.JwtAuthenticationFilter@76c5599b,
- * org.springframework.security.web.access.intercept.AuthorizationFilter@71d2fac0]
- */

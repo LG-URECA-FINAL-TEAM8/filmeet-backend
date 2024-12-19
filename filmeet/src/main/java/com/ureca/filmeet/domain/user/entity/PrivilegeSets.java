@@ -11,15 +11,15 @@ public class PrivilegeSets {
             Permission.MOVIE_RECOMMEND
     );
 
+    // 관리자용 외부 API 관련 권한 집합
+    public static final Set<Permission> ADMIN_EXTERNAL_API_PRIVILEGES = Set.of(
+            Permission.EXTERNAL_API_READ
+    );
+
     // 관리자용 리뷰 관련 권한 집합
     public static final Set<Permission> ADMIN_REVIEW_PRIVILEGES = Set.of(
             Permission.REVIEW_READ_ALL,
             Permission.REVIEW_BLIND
-    );
-
-    // 관리자용 외부 API 관련 권한 집합
-    public static final Set<Permission> ADMIN_EXTERNAL_API_PRIVILEGES = Set.of(
-            Permission.EXTERNAL_API_READ
     );
 
     // 성인 유저 추가 권한 집합
