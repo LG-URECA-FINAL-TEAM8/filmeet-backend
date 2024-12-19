@@ -20,7 +20,8 @@ public class MovieRecommendationJobScheduler {
     private final JobRegistry jobRegistry;
 
     //    @Scheduled(cron = "*/10 * * * * ?")
-    @Scheduled(cron = "0 0 6 * * ?")
+//    @Scheduled(cron = "0 0 6 * * ?")
+    @Scheduled(cron = "0 0 0,15,17,19 * * ?")
     public void runMovieRecommendationJob() {
         try {
             Job job = jobRegistry.getJob("updateMovieRecommendationJob");

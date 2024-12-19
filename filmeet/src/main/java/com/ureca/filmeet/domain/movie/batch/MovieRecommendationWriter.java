@@ -2,7 +2,10 @@ package com.ureca.filmeet.domain.movie.batch;
 
 import com.ureca.filmeet.domain.movie.entity.MovieRecommendation;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
@@ -19,40 +22,35 @@ public class MovieRecommendationWriter implements ItemWriter<List<MovieRecommend
 
     @Override
     public void write(Chunk<? extends List<MovieRecommendation>> moviesRecommendation) {
-        String updateSql = "UPDATE movie_recommendation SET last_modified_at = CURRENT_TIMESTAMP, movie_id = ? WHERE member_id = ? AND movie_id = ?";
         String insertSql = "INSERT INTO movie_recommendation (member_id, movie_id, created_at, last_modified_at) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
-        List<Object[]> updateBatchArgs = new ArrayList<>();
+        String deleteSql = "DELETE FROM movie_recommendation WHERE member_id IN (%s)";
+
         List<Object[]> insertBatchArgs = new ArrayList<>();
+        Set<Long> deleteMemberIds = new HashSet<>();
 
         for (List<MovieRecommendation> recommendations : moviesRecommendation) {
             for (MovieRecommendation recommendation : recommendations) {
                 Long userId = recommendation.getUser().getId();
                 Long movieId = recommendation.getMovie().getId();
 
-                boolean exists = recommendationExists(userId, movieId);
-
-                if (exists) {
-                    updateBatchArgs.add(new Object[]{movieId, userId, movieId});
-                } else {
-                    insertBatchArgs.add(new Object[]{userId, movieId});
-                }
+                deleteMemberIds.add(userId);
+                insertBatchArgs.add(new Object[]{userId, movieId});
             }
         }
 
-        // Execute batch updates and inserts
-        if (!updateBatchArgs.isEmpty()) {
-            jdbcTemplate.batchUpdate(updateSql, updateBatchArgs);
-            log.info("Updated {} recommendations.", updateBatchArgs.size());
+        if (!deleteMemberIds.isEmpty()) {
+            String inClause = deleteMemberIds.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+
+            jdbcTemplate.update(String.format(deleteSql, inClause));
+            log.info("Deleted recommendations for {} members.", deleteMemberIds.size());
         }
+
         if (!insertBatchArgs.isEmpty()) {
             jdbcTemplate.batchUpdate(insertSql, insertBatchArgs);
             log.info("Inserted {} recommendations.", insertBatchArgs.size());
         }
     }
-
-    private boolean recommendationExists(Long userId, Long movieId) {
-        String query = "SELECT COUNT(*) FROM movie_recommendation WHERE member_id = ? AND movie_id = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, userId, movieId);
-        return count != null && count > 0;
-    }
 }
+
