@@ -113,7 +113,7 @@ public class KobisOpenAPIRestService {
         for (JsonNode boxOffice : boxOfficeList) {
             Map<String, String> movieInfo = new HashMap<>();
             movieInfo.put("rank", boxOffice.path("rnum").asText());
-            movieInfo.put("movieName", boxOffice.path("movieNm").asText());
+            movieInfo.put("movieName", boxOffice.path("movieNm").asText().replaceAll("\\s+", ""));
             movieInfo.put("releaseDate", boxOffice.path("openDt").asText());
             movieInfo.put("dailyAudience", boxOffice.path("audiCnt").asText());
             movieInfo.put("totalAudience", boxOffice.path("audiAcc").asText());
