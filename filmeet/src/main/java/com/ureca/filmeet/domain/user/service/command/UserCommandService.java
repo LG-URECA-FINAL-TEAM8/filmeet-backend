@@ -47,7 +47,7 @@ public class UserCommandService {
                 .password(passwordEncoder.encode(request.password()))
                 .nickname(request.nickname())
                 .role(Role.ROLE_MINOR_USER)
-                .profileImage("https://filmeet-images.s3.ap-northeast-2.amazonaws.com/2024/12/13/07c98a67-49c6-4eea-9d91-5957d51b5391_default_user_profile_image.svg")
+                .profileImage("https://filmeet-images.s3.ap-northeast-2.amazonaws.com/2024/12/19/59d509ec-a51c-4bfc-8e9f-2479a98358bb_DefaultProfile.svg")
                 .build();
         User savedUser = userRepository.save(newUser);
 
