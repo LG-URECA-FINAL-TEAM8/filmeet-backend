@@ -77,7 +77,7 @@ public class CosineSimilarityUtil {
             vector.add(value);
         }
 
-        // 행동 점수 정규화 (기본 최대값: 100)
+        // 행동 점수 정규화 (기본 최대값: 5)
         vector.add(normalizeActivityScore(user.getGameActivityScore()));
         vector.add(normalizeActivityScore(user.getLikeActivityScore()));
         vector.add(normalizeActivityScore(user.getCollectionActivityScore()));
@@ -92,7 +92,7 @@ public class CosineSimilarityUtil {
     }
 
     private static double normalizeActivityScore(int score) {
-        int maxScore = 100;
+        int maxScore = 5;
         return Math.min(score / (double) maxScore, 1.0);
     }
 
