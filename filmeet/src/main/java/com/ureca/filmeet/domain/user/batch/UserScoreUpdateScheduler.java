@@ -17,7 +17,6 @@ public class UserScoreUpdateScheduler {
     private final JobLauncher jobLauncher;
     private final Job userScoreUpdateJob;
 
-    //    @Scheduled(cron = "*/10 * * * * ?")
     @Scheduled(cron = "0 0 3 * * ?")
     public void runBatchJob() {
         try {
