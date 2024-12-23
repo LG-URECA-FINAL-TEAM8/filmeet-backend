@@ -132,7 +132,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieCustom
     List<Movie> findRandomMovies(@Param("totalRounds") Integer totalRounds);
 
     @Query(value = "SELECT * FROM movie m " +
-            "WHERE MATCH(m.title) AGAINST(:search) > 0 AND m.is_deleted = false",
+            "WHERE MATCH(m.lower_title) AGAINST(:search) > 0 AND m.is_deleted = false",
             nativeQuery = true)
     Slice<Movie> findMoviesByTitle(
             @Param("search") String search,

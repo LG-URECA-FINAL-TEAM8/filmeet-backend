@@ -139,16 +139,17 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
         }
 
         String cleanedTitle = preprocessTitle(title);
-        return movie.title.containsIgnoreCase(title)
+
+        return movie.title.containsIgnoreCase(title.trim())
                 .or(Expressions.booleanTemplate(
-                        "function('REPLACE', {0}, ' ', '') like {1}",
+                        "function('TRIM', {0}) like {1}",
                         movie.title, "%" + cleanedTitle + "%"
                 ));
     }
 
-    // 검색어 전처리
+    // 검색어 전처리 (양쪽 공백 제거)
     private String preprocessTitle(String title) {
-        return (title == null || title.isBlank()) ? "" : title.replace(" ", "");
+        return (title == null || title.isBlank()) ? "" : title.trim();
     }
 
     @Override
